@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SocioSolve Jharkhand - OTP Verification</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#3e644a",
+            "on-primary-fixed-variant": "#294e36",
+            "surface-container": "#f0edf1",
+            "surface": "#fbf8fc",
+            "on-secondary-container": "#6f4600",
+            "primary-fixed": "#c2edcb",
+            "primary-fixed-dim": "#a7d1b0",
+            "tertiary": "#4d6055",
+            "surface-variant": "#e4e1e6",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f6f2f7",
+            "secondary-container": "#fdb248",
+            "primary-container": "#567d62",
+            "on-primary": "#ffffff",
+            "background": "#fbf8fc",
+            "on-error": "#ffffff",
+            "tertiary-container": "#66796d",
+            "on-surface-variant": "#424942",
+            "outline": "#727972",
+            "on-primary-container": "#f6fff4",
+            "inverse-on-surface": "#f3f0f4",
+            "surface-tint": "#41674c",
+            "on-secondary-fixed-variant": "#643f00",
+            "tertiary-fixed-dim": "#b7cbbd",
+            "on-tertiary-fixed": "#0d1f16",
+            "on-secondary-fixed": "#2a1800",
+            "inverse-surface": "#303033",
+            "on-primary-fixed": "#00210f",
+            "on-background": "#1b1b1e",
+            "surface-bright": "#fbf8fc",
+            "surface-container-highest": "#e4e1e6",
+            "secondary-fixed-dim": "#ffb959",
+            "on-tertiary-container": "#f5fff6",
+            "on-error-container": "#93000a",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#394b40",
+            "surface-container-high": "#eae7eb",
+            "on-secondary": "#ffffff",
+            "outline-variant": "#c1c8c0",
+            "inverse-primary": "#a7d1b0",
+            "tertiary-fixed": "#d3e8d9",
+            "error": "#ba1a1a",
+            "on-surface": "#1b1b1e",
+            "secondary": "#845400",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#ffddb6",
+            "surface-dim": "#dcd9dd"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-lg": "1.5rem",
+            "margin": "1rem",
+            "space-xl": "2.5rem",
+            "gutter": "1rem",
+            "gutter-desktop": "1.5rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "margin-tablet": "2rem",
+            "space-sm": "0.5rem",
+            "margin-desktop": "3rem"
+          },
+          fontFamily: {
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "label-lg": ["Inter"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          fontSize: {
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-md": ["13px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .caret-blink {
+      animation: blink 1s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#F4F3ED] text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary/20 selection:text-primary">
+<!-- 1. FULL-WIDTH TOP NAVIGATION BANNER (100% VIEWPORT WIDTH) -->
+<header class="w-full bg-[#3e644a] text-on-primary border-b border-[#31503b] shadow-sm sticky top-0 z-30">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<!-- Brand / Logo -->
+<div class="flex items-center gap-3">
+<button aria-label="Go back to previous screen" class="flex items-center justify-center min-w-[38px] min-h-[38px] w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-[#c2edcb] flex items-center justify-center text-[#294e36] shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="eco">eco</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-[16px] font-bold tracking-tight text-white leading-none">SocioSolve</span>
+<span class="font-label-sm text-[10px] text-[#c2edcb] tracking-wider uppercase">Jharkhand Grassroots Portal</span>
+</div>
+</div>
+</div>
+<!-- Right Header Utilities -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-label-md border border-white/15">
+<span class="material-symbols-outlined text-[14px] text-[#fdb248]" data-icon="lock">lock</span>
+<span>Secure 256-Bit SSL</span>
+</div>
+<div class="inline-flex items-center gap-1 text-white/80 hover:text-white text-xs font-label-md px-2 py-1 cursor-pointer">
+<span class="material-symbols-outlined text-[16px]" data-icon="help">help</span>
+<span class="hidden md:inline">Need Help?</span>
+</div>
+</div>
+</div>
+</header>
+<!-- 2. MAIN WORKSPACE WITH 12-COLUMN CONTAINER CAPPED AT 1200px -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12 flex flex-col justify-center">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+<!-- DESKTOP CONTEXT / SECURITY BENEFITS COLUMN (col-span-6 / col-span-7) -->
+<div class="hidden lg:flex lg:col-span-6 flex-col justify-center pr-4">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#3e644a]/10 border border-[#3e644a]/20 text-[#3e644a] w-fit mb-4">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified">verified</span>
+<span class="font-label-md text-xs tracking-wide font-semibold">Verified Citizen Portal</span>
+</div>
+<h2 class="font-display-lg text-[36px] font-bold text-[#18181B] tracking-tight leading-[1.2] mb-4">
+        Direct Governance for Panchayats &amp; Municipalities of Jharkhand
+      </h2>
+<p class="font-body-md text-[#424942] text-base leading-relaxed mb-8">
+        Your verification authenticates access to grassroots public grievance tracking, social welfare schemes, and block-level updates.
+      </p>
+<!-- Trust Badges List -->
+<div class="space-y-4">
+<div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#3e644a]/15 shadow-[0_2px_8px_rgba(24,24,27,0.03)]">
+<div class="w-10 h-10 rounded-xl bg-[#c2edcb]/60 flex items-center justify-center text-[#3e644a] flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]" data-icon="speed">speed</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-sm font-semibold text-[#18181B]">Instant verification</h4>
+<p class="font-body-sm text-xs text-[#727972] mt-0.5">Automated SMS delivery backed by state grassroots communication towers.</p>
+</div>
+</div>
+<div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#3e644a]/15 shadow-[0_2px_8px_rgba(24,24,27,0.03)]">
+<div class="w-10 h-10 rounded-xl bg-[#c2edcb]/60 flex items-center justify-center text-[#3e644a] flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-sm font-semibold text-[#18181B]">Panchayats &amp; Municipalities of Jharkhand</h4>
+<p class="font-body-sm text-xs text-[#727972] mt-0.5">Direct integration with 24 districts across urban local bodies and gram sabhas.</p>
+</div>
+</div>
+<div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#3e644a]/15 shadow-[0_2px_8px_rgba(24,24,27,0.03)]">
+<div class="w-10 h-10 rounded-xl bg-[#fdb248]/20 flex items-center justify-center text-[#845400] flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]" data-icon="security">security</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-sm font-semibold text-[#18181B]">256-bit SSL End-to-End Encryption</h4>
+<p class="font-body-sm text-xs text-[#727972] mt-0.5">Strict privacy standards compliant with digital governance protection norms.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- VERIFICATION CARD (col-span-12 on mobile, col-span-6 on desktop) -->
+<div class="col-span-12 lg:col-span-6 w-full max-w-[440px] mx-auto">
+<div class="bg-white rounded-3xl shadow-[0_8px_30px_rgba(24,24,27,0.08)] border border-[rgba(91,130,102,0.18)] overflow-hidden">
+<!-- Top Forest Green Header -->
+<div class="bg-[#3e644a] p-6 sm:p-7 text-on-primary rounded-b-2xl shadow-sm relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-white/5 pointer-events-none blur-lg"></div>
+<div class="absolute left-0 bottom-0 w-24 h-24 rounded-full bg-black/5 pointer-events-none blur-md"></div>
+<!-- Mobile Header Navigation (visible on small screens) -->
+<div class="flex lg:hidden items-center justify-between relative z-10 mb-5">
+<button aria-label="Go back to previous screen" class="flex items-center justify-center min-w-[40px] min-h-[40px] w-10 h-10 rounded-full bg-white/10 text-on-primary hover:bg-white/20 active:scale-95 transition-all focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-on-primary text-xs font-label-md">
+<span class="material-symbols-outlined text-[15px] text-[#c2edcb]" data-icon="eco">eco</span>
+<span>SocioSolve</span>
+</div>
+<div class="w-10 h-10 flex items-center justify-center text-white/70">
+<span class="material-symbols-outlined text-[18px]" data-icon="shield">shield</span>
+</div>
+</div>
+<div class="relative z-10">
+<h1 class="font-headline-lg text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">
+              Verification
+            </h1>
+<p class="font-body-md text-sm sm:text-base text-white/90 leading-relaxed">
+              Enter the 6-digit OTP sent to <span class="font-semibold text-white tracking-wide">+91 99XXXXXX34</span>
+<button class="inline-flex items-center font-label-md text-xs sm:text-sm text-[#c2edcb] hover:text-white underline underline-offset-4 ml-1.5 focus:outline-none cursor-pointer" type="button">
+                Edit number
+              </button>
+</p>
+</div>
+</div>
+<!-- Card Body -->
+<div class="p-6 sm:p-7 space-y-6">
+<!-- 6-Digit Verification Code Inputs -->
+<div>
+<label class="block text-center font-label-md text-xs font-semibold text-[#424942] uppercase tracking-wider mb-3">
+              Enter 6-Digit Code
+            </label>
+<div aria-label="6-Digit Verification Code" class="flex items-center justify-between gap-1.5 sm:gap-2 max-w-[340px] mx-auto" role="group">
+<!-- Box 1 (Active / Filled) -->
+<div class="relative flex-1 aspect-square max-w-[48px] min-h-[46px] bg-white rounded-xl border border-[#3e644a]/30 ring-2 ring-[#fdb248] flex items-center justify-center shadow-[0_2px_8px_rgba(24,24,27,0.06)]">
+<span class="font-mono text-xl sm:text-2xl font-bold text-[#18181B]">8</span>
+<span class="caret-blink absolute right-2 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#fdb248] rounded-full"></span>
+</div>
+<!-- Box 2 (Filled) -->
+<div class="flex-1 aspect-square max-w-[48px] min-h-[46px] bg-white rounded-xl border border-[#3e644a]/25 flex items-center justify-center shadow-[0_2px_8px_rgba(24,24,27,0.04)]">
+<span class="font-mono text-xl sm:text-2xl font-bold text-[#18181B]">4</span>
+</div>
+<!-- Box 3 -->
+<div class="flex-1 aspect-square max-w-[48px] min-h-[46px] bg-[#FAF9F5] rounded-xl border border-[#3e644a]/20 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-[#889C8F]/40"></div>
+</div>
+<!-- Box 4 -->
+<div class="flex-1 aspect-square max-w-[48px] min-h-[46px] bg-[#FAF9F5] rounded-xl border border-[#3e644a]/20 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-[#889C8F]/40"></div>
+</div>
+<!-- Box 5 -->
+<div class="flex-1 aspect-square max-w-[48px] min-h-[46px] bg-[#FAF9F5] rounded-xl border border-[#3e644a]/20 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-[#889C8F]/40"></div>
+</div>
+<!-- Box 6 -->
+<div class="flex-1 aspect-square max-w-[48px] min-h-[46px] bg-[#FAF9F5] rounded-xl border border-[#3e644a]/20 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-[#889C8F]/40"></div>
+</div>
+</div>
+</div>
+<!-- Countdown Timer and Resend Actions -->
+<div class="flex flex-col items-center justify-center space-y-3 text-center">
+<!-- Countdown timer (00:54 default countdown) with warm amber accent -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF9F5] border border-[#3e644a]/20 text-[#18181B]">
+<span class="material-symbols-outlined text-[17px] text-[#fdb248]" data-icon="timer">timer</span>
+<span class="font-body-sm text-xs text-[#727972]">Resend code in</span>
+<span class="font-mono text-xs font-bold text-[#845400] bg-[#fdb248]/20 px-2 py-0.5 rounded tracking-wider" id="countdown">00:54</span>
+</div>
+<!-- Resend SMS Button -->
+<button aria-label="Request SMS resend" class="min-h-[40px] inline-flex items-center px-3 font-label-md text-xs sm:text-sm text-[#3e644a] font-semibold hover:underline active:scale-95 transition-transform cursor-pointer" type="button">
+              Resend OTP via SMS
+            </button>
+<!-- 'Didn't receive code? Try WhatsApp' Box -->
+<button class="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-[#FAF9F5] hover:bg-white border border-[#3e644a]/20 hover:border-[#3e644a]/40 hover:shadow-sm active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2 shadow-[0_1px_4px_rgba(24,24,27,0.03)] text-[#18181B] cursor-pointer" type="button">
+<span class="material-symbols-outlined text-[18px] text-[#3e644a]" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-label-md text-xs sm:text-sm font-medium text-[#18181B]">Didn't receive code? Try WhatsApp</span>
+</button>
+</div>
+<!-- Primary CTA Button with iOS active:scale-95 spring physics -->
+<button class="w-full min-h-[50px] py-3.5 px-6 bg-[#3e644a] hover:bg-[#33533d] active:scale-95 text-white font-headline-sm text-base font-semibold rounded-xl shadow-[0_4px_16px_rgba(62,100,74,0.28)] flex items-center justify-center gap-2 transition-all duration-150 ease-out focus:outline-none focus:ring-4 focus:ring-[#3e644a]/25 cursor-pointer" type="button">
+<span>Verify &amp; Proceed</span>
+<span class="material-symbols-outlined text-[19px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Grassroots Security Badge -->
+<div class="flex items-center justify-center gap-1.5 pt-1 text-[#727972]">
+<span class="material-symbols-outlined text-[15px] text-[#3e644a]" data-icon="verified_user">verified_user</span>
+<span class="font-label-sm text-xs">Secured by SocioSolve Grassroots Network</span>
+</div>
+<!-- Virtual Dialpad (Rendered primarily for mobile view / quick accessibility) -->
+<div class="lg:hidden pt-3 border-t border-[rgba(91,130,102,0.15)]">
+<div aria-label="Virtual NumPad" class="grid grid-cols-3 gap-1.5 text-center">
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">1</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">2</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">3</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">4</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">5</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">6</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">7</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">8</span>
+</button>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">9</span>
+</button>
+<div class="min-h-[44px]"></div>
+<button class="min-h-[44px] py-1.5 rounded-xl bg-white hover:bg-surface-variant active:scale-90 border border-[rgba(91,130,102,0.15)] flex flex-col items-center justify-center text-xs font-bold" type="button">
+<span class="font-mono text-lg text-[#18181B]">0</span>
+</button>
+<button aria-label="Backspace digit" class="min-h-[44px] py-1.5 rounded-xl bg-transparent hover:bg-white/50 active:scale-90 flex items-center justify-center text-[#18181B]" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="backspace">backspace</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 3. FULL-WIDTH TRUST FOOTER (100% VIEWPORT WIDTH) -->
+<footer class="w-full bg-[#eae7eb] border-t border-[rgba(91,130,102,0.15)] mt-auto text-[#424942]">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#3e644a]"></span>
+<span class="font-medium text-[#18181B]">Government of Jharkhand Grievance &amp; Public Redressal Initiative</span>
+</div>
+<div class="flex items-center gap-5 text-[#727972]">
+<a class="hover:text-[#3e644a] transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-[#3e644a] transition-colors" href="#">Citizen Charter</a>
+<a class="hover:text-[#3e644a] transition-colors" href="#">District Helpline: 1800-XXX-XXXX</a>
+</div>
+</div>
+</footer>
+<script>
+  // Countdown simulation starting from 54 seconds
+  let seconds = 54;
+  const timerDisplay = document.getElementById('countdown');
+  if (timerDisplay) {
+    const interval = setInterval(() => {
+      if (seconds > 0) {
+        seconds--;
+        const formatted = seconds < 10 ? `00:0${seconds}` : `00:${seconds}`;
+        timerDisplay.textContent = formatted;
+      } else {
+        clearInterval(interval);
+        timerDisplay.textContent = "00:00";
+      }
+    }, 1000);
+  }
+</script>
+</body></html>

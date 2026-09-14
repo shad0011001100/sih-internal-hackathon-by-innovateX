@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SocioSolve Jharkhand - Report Civic Issue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#3e644a",
+            "primary-dark": "#294e36",
+            "primary-light": "#c2edcb",
+            "primary-container": "#567d62",
+            secondary: "#845400",
+            "secondary-container": "#fdb248",
+            surface: "#fbf8fc",
+            "surface-container": "#f0edf1",
+            "surface-low": "#f6f2f7",
+            "on-surface": "#1b1b1e",
+            "on-surface-variant": "#424942",
+            outline: "#727972",
+            "outline-variant": "#c1c8c0",
+            tertiary: "#4d6055"
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #fbf8fc;
+      color: #1b1b1e;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .spring-press {
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+    }
+    .spring-press:active {
+      transform: scale(0.97) translateY(1px);
+    }
+    .mic-pulse-ring {
+      animation: pulse-ring 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.22);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+    }
+    .waveform-bar {
+      animation: wave-anim 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes wave-anim {
+      0% { height: 6px; }
+      100% { height: 28px; }
+    }
+  </style>
+</head>
+<body class="bg-[#fbf8fc] text-[#1b1b1e] min-h-screen flex flex-col antialiased selection:bg-[#fdb248] selection:text-[#1b1b1e]">
+<!-- FULL-WIDTH TOP HEADER & NAVIGATION -->
+<header class="w-full bg-[#3e644a] text-white sticky top-0 z-40 shadow-md">
+<!-- Main Topbar -->
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<a aria-label="Back to feed" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors text-white" href="#">
+<span class="material-symbols-outlined text-[22px]">arrow_back</span>
+</a>
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-[#c2edcb] text-[#3e644a] flex items-center justify-center font-bold shadow-sm">
+<span class="material-symbols-outlined text-[20px]">eco</span>
+</div>
+<div>
+<span class="font-bold tracking-tight text-base sm:text-lg block leading-none">SocioSolve</span>
+<span class="text-[11px] text-white/75 font-medium tracking-wide uppercase">Jharkhand Grievance Redressal</span>
+</div>
+</div>
+</div>
+<!-- Right Header Actions -->
+<div class="flex items-center gap-3">
+<div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-xs text-white font-medium">
+<span class="w-2 h-2 rounded-full bg-[#fdb248] animate-pulse"></span>
+<span>GP Live Portal • Ranchi District</span>
+</div>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">language</span>
+<span class="hidden sm:inline">English / हिन्दी</span>
+</button>
+</div>
+</div>
+<!-- Breadcrumb Bar -->
+<div class="border-t border-white/10 bg-[#34553f]/70 backdrop-blur-sm">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between text-xs text-white/80">
+<nav aria-label="Breadcrumb" class="flex items-center space-x-1.5 font-medium">
+<a class="hover:text-white transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px] text-white/50">chevron_right</span>
+<a class="hover:text-white transition-colors" href="#">Feed</a>
+<span class="material-symbols-outlined text-[14px] text-white/50">chevron_right</span>
+<span class="text-[#c2edcb] font-semibold">Report Issue</span>
+</nav>
+<div class="hidden sm:flex items-center gap-1.5 text-white/70 text-[11px] font-mono">
+<span class="material-symbols-outlined text-[14px] text-[#fdb248]">gavel</span>
+<span>Jharkhand Public Service Guarantee Act Compliant</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN VIEWPORT CONTAINER (Centered 12-column grid max-w-[1200px]) -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+<!-- Page Title Header -->
+<div class="mb-6 lg:mb-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3e644a]/10 text-[#3e644a] text-xs font-semibold tracking-wide mb-2">
+<span class="material-symbols-outlined text-[15px]">campaign</span>
+<span>Public Grievance Intake Form</span>
+</div>
+<h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1b1b1e] tracking-tight">
+        File a Civic Grievance
+      </h1>
+<p class="text-sm sm:text-base text-[#424942] mt-1.5 max-w-2xl">
+        Empowering rural &amp; urban communities in Jharkhand. Submit via voice recording, photo evidence, or written grievance with automatic geotagging.
+      </p>
+</div>
+<!-- Responsive 12-Column Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+<!-- LEFT / MAIN CONTENT SECTION (col-span-12 lg:col-span-7 xl:col-span-8) -->
+<div class="lg:col-span-7 xl:col-span-8 space-y-6">
+<!-- 1. ISSUE TITLE -->
+<div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
+<label class="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono mb-2" for="issue-title">
+            1. Issue Title <span class="text-red-500">*</span>
+</label>
+<div class="relative">
+<input class="w-full bg-[#fbf8fc] rounded-xl px-4 py-3.5 border border-[#c1c8c0]/70 text-[#1b1b1e] placeholder-[#727972] text-sm sm:text-base focus:bg-white focus:border-[#3e644a] focus:ring-2 focus:ring-[#3e644a]/20 outline-none transition-all font-medium" id="issue-title" placeholder="e.g. Broken Handpump near Tribal Welfare Hostel" type="text" value="Broken Handpump near Tribal Welfare Hostel"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center text-xs text-[#3e644a] bg-[#c2edcb]/50 px-2 py-1 rounded-md font-mono">
+              Auto-clarity: High
+            </div>
+</div>
+<p class="text-xs text-[#727972] mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-[#4d6055]">info</span>
+            Provide a short, direct summary mentioning landmark or specific place.
+          </p>
+</div>
+<!-- 2. CATEGORY SELECTOR CHIPS -->
+<div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<label class="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono">
+              2. Select Category <span class="text-red-500">*</span>
+</label>
+<span class="text-xs text-[#4d6055] font-mono">Select best match</span>
+</div>
+<div class="flex flex-wrap gap-2.5">
+<!-- Active Category: Water Supply -->
+<button class="px-4 py-2.5 rounded-xl bg-[#3e644a] text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-2 shadow-sm border border-[#3e644a] ring-2 ring-[#3e644a]/20 spring-press" type="button">
+<span class="material-symbols-outlined text-[18px]">water_drop</span>
+<span>Water Supply</span>
+</button>
+<button class="px-4 py-2.5 rounded-xl bg-[#fbf8fc] hover:bg-[#eae7eb] text-[#1b1b1e] border border-[#c1c8c0]/70 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors spring-press" type="button">
+<span class="material-symbols-outlined text-[18px] text-[#4d6055]">alt_route</span>
+<span>Roads &amp; Sanitation</span>
+</button>
+<button class="px-4 py-2.5 rounded-xl bg-[#fbf8fc] hover:bg-[#eae7eb] text-[#1b1b1e] border border-[#c1c8c0]/70 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors spring-press" type="button">
+<span class="material-symbols-outlined text-[18px] text-[#845400]">lightbulb</span>
+<span>Street Lighting</span>
+</button>
+<button class="px-4 py-2.5 rounded-xl bg-[#fbf8fc] hover:bg-[#eae7eb] text-[#1b1b1e] border border-[#c1c8c0]/70 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors spring-press" type="button">
+<span class="material-symbols-outlined text-[18px] text-[#4d6055]">local_hospital</span>
+<span>Healthcare</span>
+</button>
+<button class="px-4 py-2.5 rounded-xl bg-[#fbf8fc] hover:bg-[#eae7eb] text-[#1b1b1e] border border-[#c1c8c0]/70 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors spring-press" type="button">
+<span class="material-symbols-outlined text-[18px] text-[#4d6055]">directions_bus</span>
+<span>Public Transport</span>
+</button>
+</div>
+</div>
+<!-- 3. VOICE RECORDING & TRANSCRIPTION MODULE (Accessible Voice First) -->
+<div class="bg-[#fbf8fc] rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/60 shadow-sm relative overflow-hidden">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold uppercase tracking-wider text-[#3e644a] bg-[#c2edcb]/60 px-2.5 py-0.5 rounded-md font-mono">Option A • Voice Complaint</span>
+<span class="text-xs text-[#727972]">AI Auto-Transcription</span>
+</div>
+<span class="inline-flex items-center gap-1.5 text-xs text-[#424942] font-medium bg-white border border-[#c1c8c0]/60 px-3 py-1 rounded-full shadow-2xs">
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+              Hindi / Santhali / Nagpuri / Mundari
+            </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center bg-white rounded-xl p-4 sm:p-5 border border-[#c1c8c0]/40">
+<!-- Mic Trigger -->
+<div class="md:col-span-4 flex flex-col items-center justify-center text-center py-2">
+<div class="relative flex items-center justify-center mb-3">
+<div class="absolute w-20 h-20 rounded-full bg-[#fdb248]/25 mic-pulse-ring pointer-events-none"></div>
+<button aria-label="Record voice complaint" class="w-16 h-16 rounded-full bg-[#845400] hover:bg-[#6f4600] text-white flex items-center justify-center shadow-lg shadow-[#845400]/25 spring-press cursor-pointer z-10" type="button">
+<span class="material-symbols-outlined text-[32px]">mic</span>
+</button>
+</div>
+<p class="text-xs font-bold text-[#1b1b1e]">बोलकर दर्ज करें</p>
+<p class="text-[11px] text-[#727972] mt-0.5">Tap to record up to 2 mins</p>
+</div>
+<!-- Waveform & Transcript Output -->
+<div class="md:col-span-8 bg-[#fbf8fc] rounded-lg p-3.5 border border-[#c1c8c0]/50 flex flex-col justify-between">
+<div class="flex items-center justify-between pb-2 border-b border-[#c1c8c0]/40">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="text-xs font-mono font-semibold text-[#845400]">Voice Note Captured (0:42)</span>
+</div>
+<!-- Simulated Waveform Audio Indicator -->
+<div class="flex items-center gap-1 h-6 px-2 bg-white rounded-md border border-[#c1c8c0]/40">
+<div class="w-1 bg-[#845400] rounded-full waveform-bar" style="animation-delay: 0.1s; height: 14px;"></div>
+<div class="w-1 bg-[#845400] rounded-full waveform-bar" style="animation-delay: 0.3s; height: 22px;"></div>
+<div class="w-1 bg-[#845400] rounded-full waveform-bar" style="animation-delay: 0.15s; height: 10px;"></div>
+<div class="w-1 bg-[#845400] rounded-full waveform-bar" style="animation-delay: 0.4s; height: 26px;"></div>
+<div class="w-1 bg-[#845400] rounded-full waveform-bar" style="animation-delay: 0.2s; height: 16px;"></div>
+<div class="w-1 bg-[#845400] rounded-full waveform-bar" style="animation-delay: 0.35s; height: 12px;"></div>
+</div>
+</div>
+<div class="mt-2 text-xs text-[#1b1b1e] bg-white p-2.5 rounded border border-[#c1c8c0]/30 italic leading-relaxed">
+<span class="font-semibold not-italic text-[#3e644a] font-mono text-[10px] uppercase block mb-1">Live Santhali/Hindi Translation Preview:</span>
+                "चापाकल पिछले 3 हफ़्ते से खराब है, 40 परिवारों को पीने के पानी की भारी परेशानी हो रही है।"
+              </div>
+</div>
+</div>
+</div>
+<!-- 4. TEXT DESCRIPTION FIELD -->
+<div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<label class="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono" for="issue-description">
+              3. Written Description &amp; Details
+            </label>
+<span class="text-xs text-[#727972] font-mono">214 / 500 chars</span>
+</div>
+<div class="bg-[#fbf8fc] rounded-xl p-3.5 border border-[#c1c8c0]/70 focus-within:border-[#3e644a] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#3e644a]/20 transition-all">
+<textarea class="w-full bg-transparent text-[#1b1b1e] placeholder-[#727972] text-sm focus:outline-none resize-none min-h-[110px] leading-relaxed" id="issue-description" placeholder="e.g., The handpump near the primary school in Ward 4 has been broken for 3 weeks, causing severe drinking water shortage for 40 households..." rows="4">The community handpump located adjacent to the Tribal Welfare Hostel in Ward 4 (Doranda) has stopped pumping water completely for over 20 days. Nearly 40 tribal families and school children have no clean drinking water access.</textarea>
+<div class="pt-2 border-t border-[#c1c8c0]/40 flex items-center justify-between text-xs text-[#727972] font-mono">
+<span class="inline-flex items-center gap-1.5 text-[#4d6055]">
+<span class="material-symbols-outlined text-[15px]">translate</span>
+<span>Supported: English, हिन्दी, संथाली (Ol Chiki transcript)</span>
+</span>
+<span class="text-emerald-700 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Sufficient detail
+              </span>
+</div>
+</div>
+</div>
+<!-- 5. MEDIA UPLOAD DROPZONE WITH GEOTAG DETECTION -->
+<div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<label class="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono">
+              4. Media Upload &amp; Geotagged Evidence
+            </label>
+<span class="text-xs text-[#3e644a] font-mono font-medium">GPS Auto-Lock Enabled</span>
+</div>
+<!-- Dropzone Container -->
+<div class="bg-[#fbf8fc] rounded-2xl p-6 border-2 border-dashed border-[#c1c8c0] hover:border-[#3e644a] transition-all cursor-pointer group text-center flex flex-col items-center justify-center">
+<div class="flex items-center justify-center gap-3 text-[#4d6055] mb-2.5 group-hover:text-[#3e644a] transition-colors">
+<div class="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">photo_camera</span>
+</div>
+<div class="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">videocam</span>
+</div>
+<div class="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">add_photo_alternate</span>
+</div>
+</div>
+<p class="text-sm font-semibold text-[#1b1b1e] group-hover:text-[#3e644a] transition-colors">
+              Drag and drop photos or videos, or <span class="text-[#3e644a] underline decoration-2">browse files</span>
+</p>
+<p class="text-xs text-[#727972] mt-1 font-mono">
+              Supports JPG, PNG, MP4 (Max 25MB). Auto-extracts EXIF GPS coordinates.
+            </p>
+<!-- Geotag Badge Notice -->
+<div class="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c2edcb]/50 border border-[#3e644a]/20 text-xs font-semibold text-[#294e36]">
+<span class="material-symbols-outlined text-[16px] text-[#3e644a]">pin_drop</span>
+<span>Detected Geo-Tag: <strong>Ward 4, Doranda, Ranchi (23.3297° N, 85.3262° E)</strong></span>
+</div>
+</div>
+<!-- Uploaded Thumbnail Preview Strip -->
+<div class="mt-3 flex items-center gap-3 overflow-x-auto pb-1">
+<div class="flex items-center gap-2.5 p-2 bg-[#f0edf1] rounded-xl border border-[#c1c8c0]/50 text-xs">
+<div class="w-8 h-8 rounded-lg bg-[#3e644a]/20 flex items-center justify-center text-[#3e644a]">
+<span class="material-symbols-outlined text-[18px]">image</span>
+</div>
+<div class="text-left">
+<p class="font-medium text-[#1b1b1e] truncate max-w-[140px]">handpump_rust_leak.jpg</p>
+<p class="text-[10px] text-[#727972] font-mono">2.4 MB • GPS Verified</p>
+</div>
+<button aria-label="Remove image" class="text-[#727972] hover:text-red-600 ml-1" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 6. URGENCY LEVEL TOGGLE -->
+<div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
+<label class="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono mb-2">
+            5. Priority &amp; Urgency Level
+          </label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<!-- Routine -->
+<label class="flex items-start p-3.5 rounded-xl border-2 border-[#c1c8c0]/60 hover:border-[#3e644a]/40 bg-[#fbf8fc] cursor-pointer transition-all">
+<input class="mt-0.5 text-[#3e644a] focus:ring-[#3e644a]" name="urgency" type="radio" value="routine"/>
+<div class="ml-3">
+<span class="text-xs font-bold text-[#1b1b1e] block">Routine</span>
+<span class="text-[11px] text-[#727972] leading-tight block mt-0.5">Standard 7-day municipal redressal cycle</span>
+</div>
+</label>
+<!-- Urgent 48h (Selected) -->
+<label class="flex items-start p-3.5 rounded-xl border-2 border-[#845400] bg-[#fdb248]/10 cursor-pointer shadow-xs transition-all">
+<input checked="" class="mt-0.5 text-[#845400] focus:ring-[#845400]" name="urgency" type="radio" value="urgent"/>
+<div class="ml-3">
+<div class="flex items-center gap-1.5">
+<span class="text-xs font-bold text-[#845400]">Urgent 48h</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#845400]"></span>
+</div>
+<span class="text-[11px] text-[#845400] font-medium leading-tight block mt-0.5">Direct alert to Ward Overseer</span>
+</div>
+</label>
+<!-- Emergency -->
+<label class="flex items-start p-3.5 rounded-xl border-2 border-[#c1c8c0]/60 hover:border-red-500/50 bg-[#fbf8fc] cursor-pointer transition-all">
+<input class="mt-0.5 text-red-600 focus:ring-red-600" name="urgency" type="radio" value="emergency"/>
+<div class="ml-3">
+<span class="text-xs font-bold text-red-700 block">Emergency</span>
+<span class="text-[11px] text-[#727972] leading-tight block mt-0.5">Direct line to District Magistrate &amp; BDO</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- RIGHT RAIL (col-span-12 lg:col-span-5 xl:col-span-4 sticky lg:top-24 space-y-5) -->
+<aside class="lg:col-span-5 xl:col-span-4 space-y-5">
+<!-- Action Card: Primary Submit CTA -->
+<div class="bg-white rounded-2xl p-6 border border-[#3e644a]/30 shadow-md">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[20px] text-[#3e644a]">send_and_archive</span>
+<h2 class="text-base font-bold text-[#1b1b1e]">Ready to Submit?</h2>
+</div>
+<p class="text-xs text-[#424942] mb-4 leading-relaxed">
+            Your grievance will immediately generate an official tracking token sent via SMS to your mobile and dispatch to local ward representatives.
+          </p>
+<button class="w-full py-3.5 px-6 rounded-xl bg-[#3e644a] hover:bg-[#294e36] active:bg-[#1b1b1e] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-lg shadow-[#3e644a]/25 spring-press cursor-pointer border border-[#c2edcb]/30" type="button">
+<span>Submit Grievance</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<div class="mt-4 pt-3.5 border-t border-[#c1c8c0]/40 space-y-2 text-[11px] text-[#727972] font-mono">
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5 text-[#3e644a]">
+<span class="material-symbols-outlined text-[14px]">sms</span> Free SMS tracking
+              </span>
+<span class="text-emerald-700 font-semibold">Active</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">lock</span> Identity Privacy
+              </span>
+<span>Encrypted</span>
+</div>
+</div>
+</div>
+<!-- Real-Time Resolution SLA Preview Card -->
+<div class="bg-[#f6f2f7] rounded-2xl p-5 border border-[#c1c8c0]/60 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-[#c1c8c0]/50 mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-[#3e644a]">speed</span>
+<span class="text-xs font-bold uppercase tracking-wider font-mono text-[#1b1b1e]">Resolution SLA</span>
+</div>
+<span class="text-[11px] font-mono font-bold text-[#3e644a] bg-[#c2edcb] px-2 py-0.5 rounded-full">Live Stats</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-baseline justify-between">
+<span class="text-xs text-[#424942]">Panchayat Live Response:</span>
+<span class="text-sm font-bold text-[#1b1b1e] font-mono">~4.2 Days</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-[#c1c8c0]/40 rounded-full h-2 overflow-hidden">
+<div class="bg-[#3e644a] h-2 rounded-full" style="width: 72%"></div>
+</div>
+<p class="text-[11px] text-[#727972]">
+              72% of water-related tickets in Ranchi District resolved under 5 calendar days.
+            </p>
+</div>
+</div>
+<!-- Assigned Department Preview -->
+<div class="bg-white rounded-2xl p-5 border border-[#c1c8c0]/50 shadow-sm">
+<span class="text-xs font-bold uppercase tracking-wider font-mono text-[#727972] block mb-2">
+            Auto-Assigned Routing
+          </span>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#c2edcb]/60 flex items-center justify-center text-[#3e644a] shrink-0 font-bold text-base">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<div class="text-xs">
+<p class="font-bold text-[#1b1b1e]">PHED &amp; RMC Ward 4 Cell</p>
+<p class="text-[#727972] font-mono mt-0.5">Drinking Water &amp; Sanitation Dept, Doranda</p>
+</div>
+</div>
+<div class="mt-3 bg-[#fbf8fc] p-2.5 rounded-xl border border-[#c1c8c0]/40 text-[11px] text-[#424942]">
+<span class="font-semibold text-[#3e644a]">Supervisor in charge:</span> Er. R. K. Soren (Executive Engineer)
+          </div>
+</div>
+<!-- Community Reporter Guidelines -->
+<div class="bg-white rounded-2xl p-5 border border-[#c1c8c0]/50 shadow-sm">
+<h3 class="text-xs font-bold uppercase tracking-wider font-mono text-[#1b1b1e] mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#845400]">tips_and_updates</span>
+            Reporter Guidelines
+          </h3>
+<ul class="space-y-2 text-xs text-[#424942]">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#3e644a] shrink-0 mt-0.5">check</span>
+<span><strong>Keep photos clear:</strong> Show the broken component and surrounding street view.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#3e644a] shrink-0 mt-0.5">check</span>
+<span><strong>Mention households affected:</strong> Helps prioritize crew dispatch.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#3e644a] shrink-0 mt-0.5">check</span>
+<span><strong>Student solver network:</strong> Local youth volunteers review reports daily to verify.</span>
+</li>
+</ul>
+</div>
+<!-- Help Desk Info -->
+<div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-[#845400] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>
+<span>Toll-Free Helpline: <strong>1800-345-6541</strong></span>
+</div>
+<span class="font-mono text-[10px] bg-amber-100 px-2 py-0.5 rounded">24x7</span>
+</div>
+</aside>
+</div>
+</main>
+<!-- FULL-WIDTH FOOTER -->
+<footer class="w-full bg-[#1b1b1e] text-white mt-12 sm:mt-16 border-t border-[#303033]">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+<!-- Col 1 -->
+<div class="md:col-span-1 space-y-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-[#3e644a] text-[#c2edcb] flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">eco</span>
+</div>
+<span class="font-bold text-base text-white tracking-tight">SocioSolve</span>
+</div>
+<p class="text-xs text-[#e4e1e6]/70 leading-relaxed">
+            Community-driven civic grievance redressal and rural infrastructure monitoring platform for Jharkhand.
+          </p>
+</div>
+<!-- Col 2 -->
+<div class="text-xs space-y-2">
+<h4 class="font-bold text-white uppercase tracking-wider font-mono text-[11px]">Key Sectors</h4>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Drinking Water (PHED)</a></p>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Rural Roads (PMGSY)</a></p>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Power Distribution (JBVNL)</a></p>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Anganwadi &amp; Health Centers</a></p>
+</div>
+<!-- Col 3 -->
+<div class="text-xs space-y-2">
+<h4 class="font-bold text-white uppercase tracking-wider font-mono text-[11px]">Citizen Services</h4>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Track Complaint Status</a></p>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Panchayat Scorecards</a></p>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Student Volunteer Network</a></p>
+<p><a class="text-[#e4e1e6]/70 hover:text-white transition-colors" href="#">Right to Service Charter</a></p>
+</div>
+<!-- Col 4 -->
+<div class="text-xs space-y-3">
+<h4 class="font-bold text-white uppercase tracking-wider font-mono text-[11px]">Jharkhand State Portal</h4>
+<p class="text-[#e4e1e6]/70 leading-relaxed">
+            Department of Rural Development &amp; Panchayati Raj, Government of Jharkhand.
+          </p>
+<div class="inline-flex items-center gap-1.5 text-xs text-[#c2edcb] bg-white/10 px-3 py-1.5 rounded-lg font-mono">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>Official Redressal Gateway</span>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t border-[#303033] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#e4e1e6]/60">
+<p>© 2025 SocioSolve Jharkhand. All rights reserved.</p>
+<div class="flex items-center space-x-6 text-xs">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Redressal</a>
+<a class="hover:text-white transition-colors" href="#">Help &amp; FAQ</a>
+<a class="hover:text-white transition-colors" href="#">Contact Nodal Officer</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

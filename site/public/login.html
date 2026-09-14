@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SocioSolve Jharkhand - Civic Access Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#3e644a",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#66796d",
+            "surface-bright": "#fbf8fc",
+            "inverse-surface": "#303033",
+            "surface-container-highest": "#e4e1e6",
+            "surface-container-low": "#f6f2f7",
+            "background": "#fbf8fc",
+            "surface-tint": "#41674c",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#a7d1b0",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#fbf8fc",
+            "on-surface-variant": "#424942",
+            "on-secondary-fixed": "#2a1800",
+            "error": "#ba1a1a",
+            "outline-variant": "#c1c8c0",
+            "outline": "#727972",
+            "surface-container": "#f0edf1",
+            "tertiary-fixed": "#d3e8d9",
+            "primary-container": "#567d62",
+            "on-background": "#1b1b1e",
+            "secondary-fixed-dim": "#ffb959",
+            "on-primary-container": "#f6fff4",
+            "surface-container-high": "#eae7eb",
+            "secondary-fixed": "#ffddb6",
+            "on-surface": "#1b1b1e",
+            "primary-fixed-dim": "#a7d1b0",
+            "on-primary-fixed": "#00210f",
+            "primary-fixed": "#c2edcb",
+            "tertiary": "#4d6055",
+            "secondary-container": "#fdb248",
+            "secondary": "#845400"
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #fbf8fc;
+      color: #1b1b1e;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .active-spring:active {
+      transform: translateY(1.5px) scale(0.985);
+      transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .custom-shadow {
+      box-shadow: 0 12px 36px -4px rgba(62, 100, 74, 0.12), 0 4px 12px -2px rgba(27, 27, 30, 0.04);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-background text-on-background selection:bg-[#c2edcb] selection:text-[#00210f]">
+<!-- Top Navigation Header -->
+<header class="w-full bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/60 sticky top-0 z-50">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-sm ring-2 ring-primary/20">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-base sm:text-lg font-bold text-on-surface tracking-tight leading-none">SocioSolve</span>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-tertiary-fixed text-primary tracking-wide uppercase">Jharkhand</span>
+</div>
+<p class="text-[11px] text-outline font-medium tracking-wide">Government &amp; Civic Technology Initiative</p>
+</div>
+</div>
+<div class="hidden md:flex items-center space-x-6 text-sm font-medium text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Districts Map</a>
+<a class="hover:text-primary transition-colors" href="#">University Cohorts</a>
+<a class="hover:text-primary transition-colors" href="#">Open Data</a>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center space-x-1.5 text-xs text-primary font-semibold bg-primary/10 px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">security</span>
+<span>Verified Citizen Portal</span>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button class="text-xs font-semibold text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1">
+<span class="material-symbols-outlined text-base">translate</span>
+<span class="hidden sm:inline">हिन्दी / English</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Container (12-Column Responsive Layout) -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-14 flex items-center">
+<div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+<!-- Left Column: Grassroots Mission & Civic Context (Desktop Focused, hidden/condensed on mobile) -->
+<section class="lg:col-span-7 flex flex-col justify-center space-y-6 sm:space-y-8 pr-0 lg:pr-4">
+<div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-tertiary-fixed/60 border border-primary/20 text-primary w-fit">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">hub</span>
+<span class="text-xs font-bold tracking-wide uppercase">Connecting 24 Districts of Jharkhand</span>
+</div>
+<div class="space-y-3">
+<h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-on-surface tracking-tight leading-[1.15]">
+            Grassroots Citizen Problem Solving. <span class="text-primary">Solved Locally.</span>
+</h1>
+<p class="text-base sm:text-lg text-on-surface-variant max-w-xl leading-relaxed">
+            Directly connect civic challenges with district administrative officers, public policy researchers, and engineering student cohorts across Jharkhand.
+          </p>
+</div>
+<!-- Metric highlights -->
+<div class="grid grid-cols-3 gap-3 sm:gap-4 py-2">
+<div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/60">
+<div class="text-xl sm:text-2xl font-bold text-primary font-mono-code">24 / 24</div>
+<div class="text-xs text-on-surface-variant font-medium mt-0.5">Districts Active</div>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/60">
+<div class="text-xl sm:text-2xl font-bold text-primary font-mono-code">4,200+</div>
+<div class="text-xs text-on-surface-variant font-medium mt-0.5">Civic Solvers</div>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/60">
+<div class="text-xl sm:text-2xl font-bold text-[#845400] font-mono-code">94.8%</div>
+<div class="text-xs text-on-surface-variant font-medium mt-0.5">Resolution Rate</div>
+</div>
+</div>
+<!-- Partner Banner / Features list -->
+<div class="space-y-3 pt-1">
+<div class="flex items-start space-x-3.5 text-sm text-on-surface">
+<div class="w-6 h-6 rounded-full bg-[#c2edcb] text-[#00210f] flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+<div>
+<span class="font-semibold text-on-surface">BIT Mesra, NIT Jamshedpur &amp; University Capstone Solvers</span>
+<p class="text-xs text-outline mt-0.5">Student innovator teams paired with local panchayats to build practical civic interventions.</p>
+</div>
+</div>
+<div class="flex items-start space-x-3.5 text-sm text-on-surface">
+<div class="w-6 h-6 rounded-full bg-[#c2edcb] text-[#00210f] flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+<div>
+<span class="font-semibold text-on-surface">Tamper-Proof Citizen Governance</span>
+<p class="text-xs text-outline mt-0.5">End-to-end audit trails with instant SMS status dispatch directly to registered Jharkhand mobile numbers.</p>
+</div>
+</div>
+</div>
+<!-- Institutional Quote Badge -->
+<div class="hidden sm:flex items-center space-x-3 p-3.5 bg-surface-container rounded-xl border border-outline-variant/50">
+<span class="material-symbols-outlined text-primary text-2xl">account_balance</span>
+<div class="text-xs text-on-surface-variant">
+            Supported by Jharkhand Department of Higher and Technical Education &amp; Rural Development Cell.
+          </div>
+</div>
+</section>
+<!-- Right Column: Elevated Login Card (Mobile Original Flow + Desktop Polish) -->
+<section class="lg:col-span-5 w-full max-w-[480px] mx-auto lg:max-w-none">
+<div class="relative w-full rounded-2xl overflow-hidden custom-shadow bg-surface-container-lowest border border-outline-variant/60 flex flex-col">
+<!-- Card Header Banner -->
+<header class="relative w-full h-40 sm:h-44 overflow-hidden bg-primary-container">
+<div class="absolute inset-0 bg-cover bg-center mix-blend-multiply opacity-55" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDz2VzkDmymWMza0l2kCSTT9eSjQeHXY7hRnrQ0t5Yj6KSPuNRvRRhOvHX8fGRKs7dUOOkUbbjW9-RnSjjhRcLAKM3eskxt-a7WFfv8lnjLsFSxtzmR9y69eGOMHR3Qh0T0NaezcmBfXG_Nx98usBUHKtZVYbJGYCNTDmByX_3MVaCkrpbI62_0uMc1tTOMm0D0ZoeBvd55_EQC7d945bsGadPT8RdOKbvxDvEcOIFtcO0jAcdfYLGAYw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-primary/45 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-between p-5 sm:p-6 text-white">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+<span class="material-symbols-outlined text-secondary-fixed text-lg" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="text-xs font-semibold tracking-wider uppercase text-white">SocioSolve Jharkhand</span>
+</div>
+<span class="flex items-center space-x-1 text-xs bg-primary/90 text-white px-2.5 py-1 rounded-full border border-white/25">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>Civic Portal</span>
+</span>
+</div>
+<div>
+<span class="text-xs text-secondary-fixed uppercase tracking-widest font-semibold block mb-0.5">Grassroots Access</span>
+<h2 class="text-2xl sm:text-[26px] font-bold text-white tracking-tight">Welcome back</h2>
+</div>
+</div>
+</header>
+<!-- Login Form Content -->
+<div class="p-5 sm:p-7 flex flex-col space-y-5 sm:space-y-6">
+<div class="space-y-1">
+<p class="text-sm sm:text-base font-semibold text-on-surface">Login with your mobile number</p>
+<p class="text-xs text-outline">We will verify your citizen profile via a standard 6-digit SMS OTP</p>
+</div>
+<form class="flex flex-col space-y-4" onsubmit="event.preventDefault();">
+<div class="space-y-1.5">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant" for="mobile-number">Mobile Number</label>
+<div class="flex items-center bg-surface-container-low rounded-xl border border-outline-variant focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all min-h-[50px] px-3.5">
+<div class="flex items-center space-x-1 pr-3 border-r border-outline-variant py-2 text-on-surface-variant select-none">
+<span class="text-base font-semibold font-mono-code">+91</span>
+<span class="material-symbols-outlined text-outline text-lg">expand_more</span>
+</div>
+<input autocomplete="tel" class="w-full bg-transparent pl-3.5 pr-2 py-3 text-base font-semibold text-on-surface placeholder-outline outline-none tracking-wide font-mono-code border-0 focus:ring-0" id="mobile-number" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit number" type="tel"/>
+</div>
+</div>
+<!-- Civic Verification Prompt -->
+<div class="flex items-start space-x-3 p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/60">
+<div class="w-7 h-7 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div class="text-xs leading-relaxed text-on-surface">
+<span class="font-bold text-primary block">Instant Civic Verification</span>
+                  A 6-digit OTP will be sent to your mobile number for secure authentication.
+                </div>
+</div>
+<!-- University or Industry Partner Portal Shortcut -->
+<div class="rounded-xl bg-surface-container-low p-3 flex items-center justify-between transition-colors hover:bg-surface-container-high border border-outline-variant/50 cursor-pointer">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-lg">domain</span>
+</div>
+<div class="text-left">
+<p class="text-xs font-semibold text-on-surface">University or Industry Partner?</p>
+<p class="text-[11px] text-outline">Access specialized portals with institutional ID</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-xl">arrow_forward</span>
+</div>
+<!-- Action Submit Button with iOS spring active state -->
+<button class="active-spring w-full h-12 rounded-xl bg-primary hover:bg-primary-container text-white font-semibold text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2" type="submit">
+<span>Send OTP</span>
+<span class="material-symbols-outlined text-xl">arrow_circle_right</span>
+</button>
+<!-- Alternative Verification Methods -->
+<div class="pt-2">
+<div class="relative flex py-1 items-center">
+<div class="flex-grow border-t border-outline-variant/60"></div>
+<span class="flex-shrink mx-3 text-[11px] font-semibold text-outline uppercase tracking-wider">Or continue with</span>
+<div class="flex-grow border-t border-outline-variant/60"></div>
+</div>
+<div class="grid grid-cols-2 gap-2.5 mt-2.5">
+<button class="active-spring flex items-center justify-center space-x-2 py-2 px-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors text-xs font-semibold text-on-surface" type="button">
+<span class="material-symbols-outlined text-emerald-600 text-base">chat</span>
+<span>WhatsApp OTP</span>
+</button>
+<button class="active-spring flex items-center justify-center space-x-2 py-2 px-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors text-xs font-semibold text-on-surface" type="button">
+<span class="material-symbols-outlined text-primary text-base">badge</span>
+<span>Aadhaar e-KYC</span>
+</button>
+</div>
+</div>
+</form>
+<div class="pt-1 flex flex-col items-center justify-center space-y-2 text-center">
+<div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-surface-container text-tertiary">
+<span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-xs font-semibold">Secured by SocioSolve Grassroots Network</span>
+</div>
+<p class="text-[11px] text-outline max-w-xs leading-relaxed">
+                By continuing, you agree to our <a class="text-primary underline underline-offset-2 font-medium hover:text-primary-container" href="#">terms of service</a> and <a class="text-primary underline underline-offset-2 font-medium hover:text-primary-container" href="#">privacy policy</a>.
+              </p>
+</div>
+</div>
+<!-- Bottom Card Trust Bar -->
+<div class="bg-surface-container p-3.5 flex items-center justify-around text-center border-t border-outline-variant/40">
+<div class="flex items-center space-x-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary">gavel</span>
+<span class="text-xs font-medium">Civic Trust</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center space-x-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary">groups</span>
+<span class="text-xs font-medium">Citizen Led</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center space-x-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary">lock</span>
+<span class="text-xs font-medium">256-Bit SSL</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Full-Width Footer spanning 100% of the screen -->
+<footer class="w-full bg-surface-container-high border-t border-outline-variant/60 mt-auto">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8 pb-8 border-b border-outline-variant/40">
+<div class="space-y-2.5 md:col-span-1">
+<div class="flex items-center space-x-2">
+<div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<span class="font-bold text-on-surface text-base">SocioSolve</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+            Decentralized public problem resolution platform bridging Jharkhand's citizens, administration, and universities.
+          </p>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-on-surface mb-3">Districts &amp; Hubs</h3>
+<ul class="space-y-1.5 text-xs text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Ranchi Central Division</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Jamshedpur &amp; East Singhbhum</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Dhanbad Industrial Hub</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Hazaribagh &amp; Santhal Pargana</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-on-surface mb-3">Institutional Links</h3>
+<ul class="space-y-1.5 text-xs text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">BIT Mesra Innovation Cell</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Panchayat Grievance API</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Volunteer Solver Onboarding</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Jharkhand Open Data Portal</a></li>
+</ul>
+</div>
+<div class="space-y-2">
+<h3 class="text-xs font-bold uppercase tracking-wider text-on-surface mb-3">Civic Helpline</h3>
+<div class="flex items-center space-x-2 text-xs text-on-surface font-semibold bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
+<span class="material-symbols-outlined text-primary text-lg">call</span>
+<span>Toll-Free: 1800-345-XXXX</span>
+</div>
+<p class="text-[11px] text-outline">Available Monday to Saturday, 9:00 AM – 6:00 PM IST</p>
+</div>
+</div>
+<!-- Bottom Credits & Compliance -->
+<div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-outline space-y-3 sm:space-y-0">
+<div>© 2025 SocioSolve Jharkhand. Designed for citizen transparency.</div>
+<div class="flex items-center space-x-5">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Accessibility</a>
+<a class="hover:text-primary transition-colors" href="#">RTI Portal</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

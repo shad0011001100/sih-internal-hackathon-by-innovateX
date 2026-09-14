@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SocioSolve Jharkhand — Citizen Dashboard &amp; Feed</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#b7cbbd",
+            "on-tertiary-fixed-variant": "#394b40",
+            "secondary-fixed": "#ffddb6",
+            "secondary-container": "#fdb248",
+            "on-primary-fixed-variant": "#294e36",
+            "on-tertiary-container": "#f5fff6",
+            "on-surface": "#1b1b1e",
+            "on-error": "#ffffff",
+            "on-secondary-container": "#6f4600",
+            "surface-container-highest": "#e4e1e6",
+            "on-primary-container": "#f6fff4",
+            "background": "#fbf8fc",
+            "primary": "#3e644a",
+            "primary-container": "#567d62",
+            "primary-fixed": "#c2edcb",
+            "outline-variant": "#c1c8c0",
+            "inverse-surface": "#303033",
+            "on-background": "#1b1b1e",
+            "surface-bright": "#fbf8fc",
+            "on-secondary-fixed-variant": "#643f00",
+            "inverse-primary": "#a7d1b0",
+            "tertiary-fixed": "#d3e8d9",
+            "on-surface-variant": "#424942",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#00210f",
+            "tertiary": "#4d6055",
+            "primary-fixed-dim": "#a7d1b0",
+            "on-tertiary-fixed": "#0d1f16",
+            "secondary-fixed-dim": "#ffb959",
+            "surface-container-low": "#f6f2f7",
+            "outline": "#727972",
+            "error-container": "#ffdad6",
+            "surface-dim": "#dcd9dd",
+            "tertiary-container": "#66796d",
+            "surface-container": "#f0edf1",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#2a1800",
+            "on-primary": "#ffffff",
+            "surface-tint": "#41674c",
+            "on-tertiary": "#ffffff",
+            "secondary": "#845400",
+            "surface-container-high": "#eae7eb",
+            "inverse-on-surface": "#f3f0f4",
+            "surface-variant": "#e4e1e6",
+            "surface": "#fbf8fc",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "body-sm": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "label-lg": ["Inter", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Material Symbols base styling */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-1 {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Whisper Border custom utility */
+    .whisper-border {
+      border: 1px solid rgba(91, 130, 102, 0.18);
+    }
+    
+    /* Soft ambient elevation for cards */
+    .ambient-shadow {
+      box-shadow: 0 4px 20px -2px rgba(27, 27, 30, 0.05), 0 2px 6px -1px rgba(27, 27, 30, 0.03);
+    }
+    .elevated-fab-shadow {
+      box-shadow: 0 8px 24px rgba(253, 178, 72, 0.45), 0 2px 6px rgba(27, 27, 30, 0.08);
+    }
+
+    /* Pulse animation */
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.4; }
+    }
+    .animate-pulse-dot {
+      animation: pulse-dot 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Hide scrollbar for tabs */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- Top Header / Navigation Bar (Full-Width Responsive Desktop & Mobile) -->
+<header class="bg-primary sticky top-0 z-40 shadow-sm border-b border-primary-container/40">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<!-- Brand Logo & Region -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest/15 flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-2xl" data-icon="eco">eco</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xl font-bold font-headline-sm text-on-primary tracking-tight">SocioSolve</span>
+<span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-primary-container/80 border border-primary-fixed/25 text-[11px] font-mono uppercase tracking-wider text-primary-fixed">Jharkhand</span>
+</div>
+<p class="hidden sm:block text-[11px] text-primary-fixed/80 font-medium">Government of Jharkhand • Citizen Grievance Redressal</p>
+</div>
+</div>
+<!-- Desktop Nav Links -->
+<nav aria-label="Desktop primary" class="hidden md:flex items-center gap-1 lg:gap-2">
+<a class="px-3.5 py-2 rounded-full text-on-primary bg-primary-container/70 font-label-md text-sm font-semibold flex items-center gap-1.5 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="feed">feed</span>
+        Home &amp; Feed
+      </a>
+<a class="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="assignment_add">assignment_add</span>
+        Report Issue
+      </a>
+<a class="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="diversity_3">diversity_3</span>
+        Initiatives
+      </a>
+<a class="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="forum">forum</span>
+        Connect
+      </a>
+</nav>
+<!-- Right Controls: Language Switch & Report CTA -->
+<div class="flex items-center gap-2 sm:gap-3">
+<!-- Language Switch -->
+<button aria-label="Change Language" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-container/50 hover:bg-primary-container text-on-primary text-xs font-semibold border border-primary-fixed/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-base" data-icon="translate">translate</span>
+<span class="font-mono">EN</span>
+<span class="opacity-50">/</span>
+<span class="font-sans">हिन्दी</span>
+</button>
+<!-- Desktop Report Button -->
+<button class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary-container hover:bg-secondary-container/90 text-on-secondary-container font-headline-sm text-xs md:text-sm font-bold shadow-sm transition-all active:scale-95">
+<span class="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
+<span>Report Issue</span>
+</button>
+<!-- User Avatar / Mobile Profile Trigger -->
+<div class="w-9 h-9 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-xs ring-2 ring-primary-container cursor-pointer">
+        RK
+      </div>
+</div>
+</div>
+</header>
+<!-- Mobile Hero Banner (Visible only on mobile screens < lg) -->
+<section class="lg:hidden bg-primary relative px-4 pt-3 pb-12 rounded-b-[28px] text-on-primary overflow-hidden">
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none opacity-10 overflow-hidden">
+<svg class="w-full h-full object-cover" fill="none" preserveaspectratio="none" viewbox="0 0 400 200">
+<path d="M0,80 C120,130 240,40 400,100 L400,200 L0,200 Z" fill="#FFFFFF"></path>
+<path d="M0,130 C150,80 280,160 400,110 L400,200 L0,200 Z" fill="#C2EDCB"></path>
+</svg>
+</div>
+<div class="relative z-10 flex flex-col space-y-2">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary-container/70 border border-primary-fixed/20 text-on-primary-container text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified_user">verified_user</span>
+        Verified Citizen
+      </span>
+<span class="text-xs text-primary-fixed/90 font-mono tracking-wider">JH-01-RNC</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold font-headline-lg tracking-tight">Johar, Ramesh!</h2>
+<div class="flex items-center gap-1.5 mt-0.5 text-primary-fixed text-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span>
+<span>Ranchi District, Ward 4</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Mobile Stats Strip (Overlap banner on mobile) -->
+<section class="lg:hidden px-4 -mt-7 relative z-20 mb-4">
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface-container-lowest rounded-2xl p-4 whisper-border ambient-shadow flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant font-label-md text-xs">My Reports</span>
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-base" data-icon="assignment">assignment</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-2xl font-bold font-mono text-on-surface leading-none">2</span>
+<span class="text-[11px] text-on-surface-variant">Active cases</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-4 whisper-border ambient-shadow flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant font-label-md text-xs">Resolved</span>
+<div class="w-7 h-7 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-2xl font-bold font-mono text-primary leading-none">1</span>
+<span class="text-[11px] text-primary font-semibold">Community win</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Responsive Content Container: 12-Column Grid (Desktop max-w-[1200px]) -->
+<div class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- ============================================== -->
+<!-- LEFT COLUMN (col-span-3 on Desktop): Citizen Profile & Ward Vitals -->
+<!-- ============================================== -->
+<aside class="hidden lg:block lg:col-span-3 space-y-5 sticky top-24">
+<!-- Citizen Profile Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
+<div class="flex items-start justify-between mb-4">
+<div class="relative">
+<div class="w-16 h-16 rounded-2xl bg-primary text-on-primary flex items-center justify-center text-2xl font-bold font-headline-md shadow-sm">
+              RK
+            </div>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary-fixed flex items-center justify-center text-primary text-xs ring-2 ring-surface-container-lowest" title="Verified">
+<span class="material-symbols-outlined text-[13px] fill-1" data-icon="check">check</span>
+</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed/40 text-on-primary-fixed-variant text-[11px] font-mono font-semibold">
+            JH-01-RNC
+          </span>
+</div>
+<h3 class="text-headline-md font-headline-md font-bold text-on-surface">Johar, Ramesh Kumar</h3>
+<p class="text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="shield">shield</span>
+          Verified Resident • Ward 4 Steward
+        </p>
+<!-- Civic Reputation Meter -->
+<div class="mt-4 p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30">
+<div class="flex items-center justify-between text-xs font-semibold mb-1.5">
+<span class="text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="stars">stars</span>
+              Civic Reputation
+            </span>
+<span class="font-mono text-primary font-bold">890 <span class="text-outline text-[10px]">/ 1000</span></span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-2 rounded-full transition-all" style="width: 89%"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-1.5">Top 5% active reporter in Ranchi Municipal Zone</p>
+</div>
+<!-- Case Counts Grid -->
+<div class="grid grid-cols-2 gap-2.5 mt-4">
+<div class="bg-surface-container-low/70 rounded-xl p-3 border border-outline-variant/20">
+<span class="text-[11px] text-on-surface-variant font-medium">My Active Cases</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="text-2xl font-bold font-mono text-on-surface">2</span>
+<span class="text-[10px] text-secondary font-semibold">Under review</span>
+</div>
+</div>
+<div class="bg-surface-container-low/70 rounded-xl p-3 border border-outline-variant/20">
+<span class="text-[11px] text-on-surface-variant font-medium">Resolved Cases</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="text-2xl font-bold font-mono text-primary">1</span>
+<span class="text-[10px] text-primary font-semibold">Community win</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ward 4 Vitals Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
+<div class="flex items-center justify-between mb-3.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="analytics">analytics</span>
+<h4 class="font-headline-sm text-sm font-bold text-on-surface">Ward 4 Vitals</h4>
+</div>
+<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">Live</span>
+</div>
+<ul class="space-y-3 text-xs">
+<li class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+<span class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-blue-600 text-base" data-icon="water_drop">water_drop</span>
+              Water Supply Index
+            </span>
+<span class="font-mono font-bold text-on-surface">82% <span class="text-[10px] text-primary font-semibold">Stable</span></span>
+</li>
+<li class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+<span class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-amber-500 text-base" data-icon="lightbulb">lightbulb</span>
+              Streetlights Functional
+            </span>
+<span class="font-mono font-bold text-on-surface">94% <span class="text-[10px] text-primary font-semibold">Normal</span></span>
+</li>
+<li class="flex items-center justify-between">
+<span class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-emerald-600 text-base" data-icon="delete_sweep">delete_sweep</span>
+              Waste Cleared Today
+            </span>
+<span class="font-mono font-bold text-on-surface">98% <span class="text-[10px] text-primary font-semibold">On-time</span></span>
+</li>
+</ul>
+</div>
+<!-- Civic First Responders Helpline -->
+<div class="bg-primary/5 rounded-3xl p-5 border border-primary/20">
+<div class="flex items-center gap-2.5 text-primary mb-2">
+<span class="material-symbols-outlined text-xl" data-icon="emergency">emergency</span>
+<h5 class="font-headline-sm text-sm font-bold">Civic First Responders</h5>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+          Urgent municipal emergency in your ward? Direct bridge to Ranchi Municipal Disaster Cell.
+        </p>
+<a class="mt-3 inline-flex items-center justify-center w-full gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container transition-all" href="tel:1913">
+<span class="material-symbols-outlined text-base" data-icon="call">call</span>
+<span>Call 1913 Toll-Free</span>
+</a>
+</div>
+</aside>
+<!-- ============================================== -->
+<!-- CENTER FEED (col-span-6 on Desktop): Search, Filters, Issue Cards -->
+<!-- ============================================== -->
+<main class="lg:col-span-6 space-y-4 pb-20 lg:pb-8">
+<!-- Search & Filters Container -->
+<div class="bg-surface-container-lowest rounded-3xl p-4 whisper-border ambient-shadow space-y-3">
+<!-- Live Search Bar -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-xl" data-icon="search">search</span>
+<input class="w-full pl-10 pr-10 py-2.5 bg-surface-container-low rounded-2xl border-0 focus:ring-2 focus:ring-primary text-body-md text-sm text-on-surface placeholder:text-outline-variant font-medium" placeholder="Search civic issues by locality, handpump, road, ward..." type="text"/>
+<button aria-label="Filter" class="absolute right-2.5 p-1.5 text-on-surface-variant hover:text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="tune">tune</span>
+</button>
+</div>
+<!-- Filter Pills Tablist -->
+<div aria-label="Issue filters" class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1" role="tablist">
+<button aria-selected="true" class="min-h-[38px] px-4 py-1.5 rounded-full bg-primary text-on-primary text-label-md text-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm" role="tab" type="button">
+            All Issues (18)
+          </button>
+<button aria-selected="false" class="min-h-[38px] px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant whisper-border hover:bg-surface-container-high text-label-md text-xs font-medium whitespace-nowrap active:scale-95 transition-all" role="tab" type="button">
+            My Ward (Ward 4)
+          </button>
+<button aria-selected="false" class="min-h-[38px] px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant whisper-border hover:bg-surface-container-high text-label-md text-xs font-medium whitespace-nowrap active:scale-95 transition-all" role="tab" type="button">
+            In Progress (7)
+          </button>
+<button aria-selected="false" class="min-h-[38px] px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant whisper-border hover:bg-surface-container-high text-label-md text-xs font-medium whitespace-nowrap active:scale-95 transition-all" role="tab" type="button">
+            Resolved (11)
+          </button>
+</div>
+</div>
+<!-- Grievance Card 1: Urgent Handpump Broken near Tribal Welfare Hostel -->
+<article class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow transition-all hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary">
+<!-- Top Status & Category Row -->
+<div class="flex items-center justify-between gap-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold tracking-wide">
+<span class="relative flex h-2 w-2">
+<span class="animate-pulse-dot absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-error"></span>
+</span>
+              Urgent • Pending 48h
+            </span>
+<span class="hidden sm:inline-flex items-center text-xs font-mono text-outline">#JH-2024-8841</span>
+</div>
+<span class="text-xs font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+            Water Supply
+          </span>
+</div>
+<!-- Issue Title -->
+<h4 class="text-headline-sm font-headline-sm text-on-surface font-bold text-lg mb-1.5">
+          Broken Handpump near Tribal Welfare Hostel, Ward 4
+        </h4>
+<!-- Description -->
+<p class="text-body-md text-sm text-on-surface-variant mb-3 leading-relaxed">
+          The primary deep-bore handpump has suffered riser pipe detachment. 45 tribal student residents and 30 surrounding households are relying on temporary tanker supply. Needs emergency mechanical cylinder replacement.
+        </p>
+<!-- Attached Photo / Ground Evidence Visual -->
+<div class="mb-4 rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-high relative max-h-56">
+<div class="aspect-video w-full bg-gradient-to-tr from-surface-container-highest via-surface-container to-surface-container-high flex flex-col items-center justify-center p-6 text-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-1" data-icon="water_damage">water_damage</span>
+<span class="text-xs font-semibold text-on-surface">Ground Verification Photo Submitted</span>
+<span class="text-[11px] font-mono text-outline mt-0.5">GPS Tagged: 23.3441° N, 85.3096° E • Oct 12, 10:14 AM</span>
+</div>
+<span class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-inverse-surface/80 text-inverse-on-surface text-[10px] font-mono flex items-center gap-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[12px]" data-icon="photo_camera">photo_camera</span>
+            Verified Field Upload
+          </span>
+</div>
+<!-- Student Solver Adoption Badge -->
+<div class="p-3 rounded-2xl bg-tertiary-fixed/60 border border-tertiary-fixed-dim/40 flex items-center justify-between gap-2 mb-4">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-xl bg-tertiary text-on-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-base" data-icon="school">school</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-tertiary-fixed">Adopted by BIT Mesra Civil Club</p>
+<p class="text-[11px] text-on-tertiary-fixed-variant">Youth Technical Taskforce assigned to assist Ranchi Municipal Corp</p>
+</div>
+</div>
+<span class="text-[11px] font-mono font-bold text-primary bg-surface-container-lowest px-2 py-0.5 rounded-md">
+            Inspection Sat
+          </span>
+</div>
+<!-- Bottom Action Row: Metadata, Upvote & Share -->
+<div class="flex items-center justify-between pt-3 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 text-xs text-on-surface-variant font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="calendar_today">calendar_today</span>
+              Oct 12
+            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="location_on">location_on</span>
+              Ranchi Ward 4
+            </span>
+<span class="hidden sm:flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="chat">chat</span>
+              14 comments
+            </span>
+</div>
+<div class="flex items-center gap-2">
+<!-- Share button -->
+<button aria-label="Share Issue" class="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-transform active:scale-90">
+<span class="material-symbols-outlined text-base" data-icon="share">share</span>
+</button>
+<!-- Upvote Button with iOS feedback -->
+<button aria-label="Upvote this issue (current 38 upvotes)" class="h-9 px-3.5 rounded-full bg-surface-container hover:bg-primary-container/20 text-on-surface active:scale-90 transition-transform duration-150 flex items-center gap-1.5 font-mono text-xs font-bold">
+<span class="material-symbols-outlined text-primary text-base" data-icon="keyboard_arrow_up">keyboard_arrow_up</span>
+<span>38</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Grievance Card 2: Resolved Road Repair with Before/After Showcase -->
+<article class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow transition-all hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary">
+<!-- Top Status & Category Row -->
+<div class="flex items-center justify-between gap-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold tracking-wide">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+              Resolved &amp; Citizen Audited
+            </span>
+</div>
+<span class="text-xs font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+            Roads &amp; Sanitation
+          </span>
+</div>
+<h4 class="text-headline-sm font-headline-sm text-on-surface font-bold text-lg mb-1.5">
+          Deep Pothole &amp; Waterlogging on Morabadi Main Link
+        </h4>
+<p class="text-body-md text-sm text-on-surface-variant mb-3 leading-relaxed">
+          Critical road depression filled and resurfaced with cold-mix bitumen by municipal contractors and youth engineering volunteers. Completed 18 hours ahead of schedule.
+        </p>
+<!-- Before / After Showcase -->
+<div class="grid grid-cols-2 gap-2 mb-4">
+<div class="relative rounded-2xl overflow-hidden bg-surface-container-high border border-outline-variant/30 p-3 flex flex-col justify-end min-h-[110px]">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-inverse-surface/80 text-inverse-on-surface text-[10px] font-bold">BEFORE</span>
+<div class="flex items-center gap-1.5 text-error text-[11px] font-medium mt-auto">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+<span>Hazardous depression</span>
+</div>
+</div>
+<div class="relative rounded-2xl overflow-hidden bg-primary-fixed/30 border border-primary/20 p-3 flex flex-col justify-end min-h-[110px]">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary text-on-primary text-[10px] font-bold">AFTER (SOLVED)</span>
+<div class="flex items-center gap-1.5 text-primary text-[11px] font-medium mt-auto">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+<span>Smooth asphalt paved</span>
+</div>
+</div>
+</div>
+<!-- Bottom Action Row -->
+<div class="flex items-center justify-between pt-3 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 text-xs text-on-surface-variant font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="calendar_today">calendar_today</span>
+              Oct 09
+            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="location_on">location_on</span>
+              Morabadi Sector
+            </span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Share Issue" class="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-transform active:scale-90">
+<span class="material-symbols-outlined text-base" data-icon="share">share</span>
+</button>
+<button aria-label="Upvote this issue (current 56 upvotes)" class="h-9 px-3.5 rounded-full bg-primary-fixed text-on-primary-fixed active:scale-90 transition-transform duration-150 flex items-center gap-1.5 font-mono text-xs font-bold">
+<span class="material-symbols-outlined text-primary text-base" data-icon="keyboard_arrow_up">keyboard_arrow_up</span>
+<span>56</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Grievance Card 3: Solar LED Initiative Milestone Tracker -->
+<article class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow transition-all hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary">
+<div class="flex items-center justify-between gap-2 mb-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold tracking-wide">
+<span class="material-symbols-outlined text-sm" data-icon="light_mode">light_mode</span>
+            Initiative • In Progress
+          </span>
+<span class="text-xs font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+            Ward Clean Energy
+          </span>
+</div>
+<h4 class="text-headline-sm font-headline-sm text-on-surface font-bold text-lg mb-1.5">
+          Solar Streetlight Installation along Kanke Road
+        </h4>
+<p class="text-body-md text-sm text-on-surface-variant mb-3 leading-relaxed">
+          Community-funded green lighting initiative by Ranchi Urban Development Authority &amp; Ward Residents Committee. 24 of 40 poles energised.
+        </p>
+<!-- Milestone Progress Tracker -->
+<div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2 mb-4">
+<div class="flex items-center justify-between text-xs font-bold">
+<span class="text-on-surface">60% Milestone Achieved</span>
+<span class="font-mono text-secondary">24 / 40 Poles</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2.5 overflow-hidden">
+<div class="bg-secondary-container h-2.5 rounded-full transition-all" style="width: 60%"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-on-surface-variant pt-1 font-mono">
+<span>Survey Done</span>
+<span>Procured</span>
+<span class="text-primary font-bold">Installation</span>
+<span class="opacity-50">Handover</span>
+</div>
+</div>
+<!-- Bottom Action Row -->
+<div class="flex items-center justify-between pt-3 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 text-xs text-on-surface-variant font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="calendar_today">calendar_today</span>
+              Oct 05
+            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="location_on">location_on</span>
+              Kanke Road
+            </span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Share Issue" class="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-transform active:scale-90">
+<span class="material-symbols-outlined text-base" data-icon="share">share</span>
+</button>
+<button aria-label="Upvote this issue (current 92 upvotes)" class="h-9 px-3.5 rounded-full bg-surface-container hover:bg-primary-container/20 text-on-surface active:scale-90 transition-transform duration-150 flex items-center gap-1.5 font-mono text-xs font-bold">
+<span class="material-symbols-outlined text-primary text-base" data-icon="keyboard_arrow_up">keyboard_arrow_up</span>
+<span>92</span>
+</button>
+</div>
+</div>
+</article>
+</main>
+<!-- ============================================== -->
+<!-- RIGHT RAIL (col-span-3 on Desktop): Heatmap, Student Solvers, Hotline -->
+<!-- ============================================== -->
+<aside class="hidden lg:block lg:col-span-3 space-y-5 sticky top-24">
+<!-- Ranchi Ward Map / Live Heatmap Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
+<div class="flex items-center justify-between mb-3">
+<h4 class="font-headline-sm text-sm font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="map">map</span>
+            Ranchi Live Heatmap
+          </h4>
+<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-bold">12 Wards</span>
+</div>
+<!-- Simulated Stylized Ward Grid Heatmap -->
+<div class="relative rounded-2xl overflow-hidden bg-surface-container-low border border-outline-variant/30 p-3">
+<div class="grid grid-cols-4 gap-1.5 aspect-square">
+<div class="rounded-lg bg-primary/20 hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary transition-colors cursor-pointer" title="Ward 1 - Normal">W1</div>
+<div class="rounded-lg bg-primary-fixed hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary transition-colors cursor-pointer" title="Ward 2 - Low">W2</div>
+<div class="rounded-lg bg-secondary-container/60 hover:bg-secondary-container flex flex-col items-center justify-center text-[10px] font-mono font-bold text-on-secondary-container transition-colors cursor-pointer" title="Ward 3 - Medium Load">W3</div>
+<div class="rounded-lg bg-error-container hover:bg-error-container/90 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-on-error-container ring-2 ring-error transition-colors cursor-pointer" title="Ward 4 (You) - High Activity">W4★</div>
+<div class="rounded-lg bg-primary-fixed/80 hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary cursor-pointer">W5</div>
+<div class="rounded-lg bg-secondary-container/40 hover:bg-secondary-container flex flex-col items-center justify-center text-[10px] font-mono font-bold text-on-secondary-container cursor-pointer">W6</div>
+<div class="rounded-lg bg-primary/20 hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary cursor-pointer">W7</div>
+<div class="rounded-lg bg-primary-fixed hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary cursor-pointer">W8</div>
+<div class="rounded-lg bg-primary/10 hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary cursor-pointer">W9</div>
+<div class="rounded-lg bg-secondary-container/50 hover:bg-secondary-container flex flex-col items-center justify-center text-[10px] font-mono font-bold text-on-secondary-container cursor-pointer">W10</div>
+<div class="rounded-lg bg-primary-fixed hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary cursor-pointer">W11</div>
+<div class="rounded-lg bg-primary/20 hover:bg-primary/40 flex flex-col items-center justify-center text-[10px] font-mono font-bold text-primary cursor-pointer">W12</div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-on-surface-variant font-mono mt-2 pt-2 border-t border-outline-variant/20">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-fixed"></span> Low</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary-container"></span> Mod</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span> High Priority</span>
+</div>
+</div>
+</div>
+<!-- Student Solvers Active Colleges Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
+<div class="flex items-center justify-between mb-3">
+<h4 class="font-headline-sm text-sm font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+            Student Solvers
+          </h4>
+<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">Active</span>
+</div>
+<p class="text-xs text-on-surface-variant mb-3">Colleges adopting Jharkhand civic infrastructure problems:</p>
+<ul class="space-y-2.5">
+<li class="flex items-center justify-between p-2.5 rounded-2xl bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="w-7 h-7 rounded-xl bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-xs font-mono">BM</span>
+<div>
+<p class="text-xs font-bold text-on-surface">BIT Mesra</p>
+<p class="text-[10px] text-on-surface-variant">14 Active Grievance Adoptions</p>
+</div>
+</div>
+<span class="text-xs font-mono font-bold text-primary">#1</span>
+</li>
+<li class="flex items-center justify-between p-2.5 rounded-2xl bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="w-7 h-7 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center font-bold text-xs font-mono">RU</span>
+<div>
+<p class="text-xs font-bold text-on-surface">Ranchi University</p>
+<p class="text-[10px] text-on-surface-variant">9 Sanitation Audits</p>
+</div>
+</div>
+<span class="text-xs font-mono font-bold text-outline">#2</span>
+</li>
+<li class="flex items-center justify-between p-2.5 rounded-2xl bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="w-7 h-7 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs font-mono">IIM</span>
+<div>
+<p class="text-xs font-bold text-on-surface">IIM Ranchi</p>
+<p class="text-[10px] text-on-surface-variant">Policy &amp; Supply Chain Support</p>
+</div>
+</div>
+<span class="text-xs font-mono font-bold text-outline">#3</span>
+</li>
+</ul>
+</div>
+<!-- Ward Notice Highlights Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
+<div class="flex items-center gap-2 text-on-surface font-headline-sm font-bold text-sm mb-2.5">
+<span class="material-symbols-outlined text-secondary" data-icon="campaign">campaign</span>
+          Ward Highlights Notice
+        </div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+          Bi-weekly Ward 4 Sabha scheduled this Sunday 10:00 AM at Community Hall Morabadi. Topic: Monsoon drainage cleaning review.
+        </p>
+<span class="inline-block mt-2 text-[11px] font-semibold text-primary hover:underline cursor-pointer">Download Agenda (PDF) →</span>
+</div>
+<!-- Multilingual Voice Hotline Card -->
+<div class="rounded-3xl p-5 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-2xl text-secondary-fixed" data-icon="record_voice_over">record_voice_over</span>
+<h5 class="font-headline-sm text-sm font-bold">Multilingual Voice Hotline</h5>
+</div>
+<p class="text-xs text-primary-fixed/90 leading-relaxed mb-3">
+          Can't type? Report via phone in <strong class="text-white">Santali, Ho, Kurukh, Mundari, or Hindi</strong>.
+        </p>
+<div class="p-3 rounded-2xl bg-surface-container-lowest/15 border border-surface-container-lowest/20 flex items-center justify-between">
+<div>
+<span class="text-[10px] font-mono uppercase text-primary-fixed">Toll-Free Helpline</span>
+<p class="text-sm font-bold font-mono text-white tracking-wide">1800-JH-VOICE</p>
+</div>
+<a class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-transform" href="tel:18005486423">
+<span class="material-symbols-outlined text-base" data-icon="call">call</span>
+</a>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<!-- Floating Action Button (FAB) for Reporting Civic Issues (Mobile Only) -->
+<aside class="lg:hidden fixed bottom-20 right-5 z-40">
+<button aria-label="Report new civic issue" class="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center elevated-fab-shadow active:scale-90 transition-transform focus:outline-none focus:ring-4 focus:ring-secondary-container/40" type="button">
+<span class="material-symbols-outlined text-[32px] select-none pointer-events-none" data-icon="add">add</span>
+</button>
+</aside>
+<!-- BottomNavBar (Mobile Only) -->
+<nav aria-label="Primary Mobile Navigation" class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface-container-low/95 backdrop-blur-md shadow-sm border-t border-outline-variant/30">
+<button aria-current="page" aria-label="Home" class="flex flex-col items-center justify-center min-h-[44px] min-w-[44px] bg-primary-container text-on-primary-container rounded-xl px-4 py-1 active:scale-90 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="spa">spa</span>
+<span class="text-label-sm font-label-sm text-[11px] mt-0.5">Home</span>
+</button>
+<button aria-label="Initiatives" class="flex flex-col items-center justify-center min-h-[44px] min-w-[44px] text-on-surface-variant px-3 py-1 hover:text-primary active:scale-90 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="diversity_3">diversity_3</span>
+<span class="text-label-sm font-label-sm text-[11px] mt-0.5">Initiatives</span>
+</button>
+<button aria-label="Connect" class="flex flex-col items-center justify-center min-h-[44px] min-w-[44px] text-on-surface-variant px-3 py-1 hover:text-primary active:scale-90 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-label-sm font-label-sm text-[11px] mt-0.5">Connect</span>
+</button>
+</nav>
+<!-- Full-Width Multi-Column Footer (Spanning 100% Viewport) -->
+<footer class="w-full bg-surface-container border-t border-outline-variant/30 text-on-surface-variant mt-auto">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+<!-- Col 1: Brand & Gov Info -->
+<div class="space-y-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="eco">eco</span>
+</div>
+<span class="text-base font-bold font-headline-sm text-on-surface">SocioSolve Jharkhand</span>
+</div>
+<p class="text-xs leading-relaxed text-on-surface-variant">
+          Unified civic technology and community engagement platform developed in partnership with the Department of Urban Development &amp; Housing, Government of Jharkhand.
+        </p>
+<div class="pt-1 flex items-center gap-2 text-xs font-mono text-outline">
+<span>RNC-CIVIC-V2.4</span>
+<span>•</span>
+<span class="inline-flex items-center gap-1 text-primary font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Systems Operational
+          </span>
+</div>
+</div>
+<!-- Col 2: Grievance Redressal -->
+<div class="space-y-2.5">
+<h5 class="font-headline-sm text-xs font-bold uppercase tracking-wider text-on-surface">Civic Grievance</h5>
+<ul class="space-y-2 text-xs">
+<li><a class="hover:text-primary transition-colors" href="#">Water &amp; Sanitation (Jal Jeevan)</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Road Resurfacing &amp; Potholes</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Streetlighting &amp; Clean Energy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Solid Waste &amp; Drainage Desiltation</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Ward Grievance Escalation Chart</a></li>
+</ul>
+</div>
+<!-- Col 3: Youth & Academic Solvers -->
+<div class="space-y-2.5">
+<h5 class="font-headline-sm text-xs font-bold uppercase tracking-wider text-on-surface">Youth &amp; Academia</h5>
+<ul class="space-y-2 text-xs">
+<li><a class="hover:text-primary transition-colors" href="#">Student Solver Fellowship</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Engineering Clubs Adoption Portal</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Civic Data &amp; Research Sandbox</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">BIT Mesra &amp; RU Innovation Chapter</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Quarterly Jharkhand Civic Hackathon</a></li>
+</ul>
+</div>
+<!-- Col 4: State Helplines -->
+<div class="space-y-3">
+<h5 class="font-headline-sm text-xs font-bold uppercase tracking-wider text-on-surface">Emergency &amp; Support</h5>
+<p class="text-xs text-on-surface-variant">24/7 dedicated redressal hotlines across 24 districts:</p>
+<div class="space-y-1.5 text-xs font-mono">
+<div class="p-2 rounded-xl bg-surface-container-lowest whisper-border flex items-center justify-between">
+<span class="text-on-surface-variant">Civic Emergency:</span>
+<span class="font-bold text-primary">1913</span>
+</div>
+<div class="p-2 rounded-xl bg-surface-container-lowest whisper-border flex items-center justify-between">
+<span class="text-on-surface-variant">Tribal Voice Helpline:</span>
+<span class="font-bold text-secondary">1800-JH-VOICE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sub-footer copyright & language -->
+<div class="pt-6 border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
+<p>© 2025 Government of Jharkhand &amp; SocioSolve Citizens Collective. All rights reserved.</p>
+<div class="flex items-center gap-4 text-[11px]">
+<a class="hover:text-primary transition-colors" href="#">Citizen Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Open Data Portal</a>
+<a class="hover:text-primary transition-colors" href="#">Ward Guidelines</a>
+<a class="hover:text-primary transition-colors" href="#">Accessibility (WCAG 2.1)</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Micro-Interactions Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Interactive filter tabs toggle logic
+    const tabs = document.querySelectorAll('[role="tab"]');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.setAttribute('aria-selected', 'false');
+          t.classList.remove('bg-primary', 'text-on-primary', 'font-semibold', 'shadow-sm');
+          t.classList.add('bg-surface-container', 'text-on-surface-variant', 'font-medium');
+        });
+        tab.setAttribute('aria-selected', 'true');
+        tab.classList.remove('bg-surface-container', 'text-on-surface-variant', 'font-medium');
+        tab.classList.add('bg-primary', 'text-on-primary', 'font-semibold', 'shadow-sm');
+      });
+    });
+
+    // Upvote pill interactive increment with iOS feedback
+    const upvoteBtns = document.querySelectorAll('button[aria-label*="Upvote"]');
+    upvoteBtns.forEach(btn => {
+      let voted = false;
+      btn.addEventListener('click', () => {
+        const counterSpan = btn.querySelector('span:last-child');
+        if (counterSpan) {
+          let count = parseInt(counterSpan.textContent.trim(), 10) || 0;
+          if (!voted) {
+            counterSpan.textContent = count + 1;
+            btn.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+            btn.classList.remove('bg-surface-container');
+            voted = true;
+          } else {
+            counterSpan.textContent = count - 1;
+            btn.classList.remove('bg-primary-fixed', 'text-on-primary-fixed');
+            btn.classList.add('bg-surface-container');
+            voted = false;
+          }
+        }
+      });
+    });
+  });
+</script>
+</body></html>

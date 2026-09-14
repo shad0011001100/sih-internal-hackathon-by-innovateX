@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>SocioSolve Jharkhand - Citizen Profile Setup</title>
+<!-- Google Fonts: Plus Jakarta Sans & Inter + Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#3e644a",
+            "on-primary": "#ffffff",
+            "primary-container": "#567d62",
+            "on-primary-container": "#f6fff4",
+            "secondary": "#845400",
+            "secondary-container": "#fdb248",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#ffddb6",
+            "on-secondary-fixed": "#2a1800",
+            "tertiary": "#4d6055",
+            "tertiary-container": "#66796d",
+            "on-tertiary": "#ffffff",
+            "background": "#fbf8fc",
+            "on-background": "#1b1b1e",
+            "surface": "#fbf8fc",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f6f2f7",
+            "surface-container": "#f0edf1",
+            "surface-container-high": "#eae7eb",
+            "surface-container-highest": "#e4e1e6",
+            "on-surface": "#1b1b1e",
+            "on-surface-variant": "#424942",
+            "outline": "#727972",
+            "outline-variant": "#c1c8c0"
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          boxShadow: {
+            'card': '0 10px 30px -5px rgba(62, 100, 74, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04)',
+            'float': '0 20px 40px -10px rgba(62, 100, 74, 0.16)'
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #fbf8fc;
+      color: #1b1b1e;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* iOS tactile spring physics */
+    .spring-press {
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .spring-press:active {
+      transform: scale(0.98) translateY(1px);
+    }
+    
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.fill-1 {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-background text-on-surface antialiased">
+<!-- 1. Full-Width Header & Navigation -->
+<header class="w-full bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/50 sticky top-0 z-50">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+<!-- Brand Logo -->
+<a class="flex items-center space-x-3 group" href="#">
+<div class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-md shadow-primary/20 group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined fill-1 text-2xl">eco</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center space-x-1.5">
+<span class="font-heading font-extrabold text-lg sm:text-xl text-primary tracking-tight">SocioSolve</span>
+<span class="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-primary-fixed text-primary">Jharkhand</span>
+</div>
+<span class="text-[11px] text-tertiary font-medium hidden sm:inline">Gram &amp; Nagar Panchayat Civic Action Hub</span>
+</div>
+</a>
+<!-- Quick Nav & Civic Badge -->
+<div class="flex items-center space-x-3 sm:space-x-6">
+<div class="hidden md:flex items-center space-x-6 text-sm font-medium text-on-surface-variant">
+<span class="flex items-center space-x-1 text-primary font-semibold">
+<span class="material-symbols-outlined fill-1 text-base">how_to_reg</span>
+<span>Registration Portal</span>
+</span>
+<a class="hover:text-primary transition-colors" href="#">Knowledge Base</a>
+<a class="hover:text-primary transition-colors" href="#">Helpline</a>
+</div>
+<div class="flex items-center space-x-2 border-l border-outline-variant/40 pl-3 sm:pl-6">
+<span class="hidden sm:inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-surface-container text-xs font-semibold text-tertiary">
+<span class="material-symbols-outlined fill-1 text-sm text-primary">verified_user</span>
+<span>Govt. Affiliated</span>
+</span>
+<button class="w-9 h-9 rounded-full bg-surface-container-low text-on-surface flex items-center justify-center hover:bg-surface-container transition-colors text-xs font-bold" title="Language Switcher">
+            हि / EN
+          </button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Container: 12-Column Responsive Layout -->
+<main class="flex-grow max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+<!-- Breadcrumb & Top Indicator -->
+<div class="mb-6 flex items-center justify-between text-xs sm:text-sm text-tertiary">
+<div class="flex items-center space-x-2">
+<a class="hover:text-primary flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-base">home</span>
+<span>Jharkhand Civic Hub</span>
+</a>
+<span>/</span>
+<span class="font-semibold text-primary">Citizen Onboarding</span>
+</div>
+<div class="flex items-center gap-1 font-semibold text-primary text-xs bg-primary/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-sm">flag</span>
+<span>Stage 1 of 3: Civic Profile</span>
+</div>
+</div>
+<!-- Desktop Grid (col-span-5 + col-span-7) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Inspiring Onboarding Workspace Overview (Desktop col-span-5) -->
+<div class="lg:col-span-5 space-y-6">
+<!-- Welcoming Hero Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-8 border border-outline-variant/40 shadow-card">
+<span class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-secondary bg-secondary-fixed/50 px-2.5 py-1 rounded-full mb-3">
+<span class="material-symbols-outlined fill-1 text-xs">nature_people</span>
+            Grassroots Stewardship
+          </span>
+<h2 class="font-heading font-bold text-2xl sm:text-3xl text-on-surface tracking-tight leading-tight mb-3">
+            Shape Your Panchayat's Tomorrow
+          </h2>
+<p class="text-on-surface-variant text-sm sm:text-base leading-relaxed mb-6">
+            Join over <strong class="text-primary font-semibold">1,40,000+</strong> residents, youth solvers, and village mukhiyas actively resolving civic, water, road, and welfare challenges across all 24 districts of Jharkhand.
+          </p>
+<!-- Select Role Pills -->
+<div class="space-y-2 mb-6">
+<label class="block text-xs font-bold uppercase tracking-wider text-outline">Select Your Engagement Role</label>
+<div class="grid grid-cols-3 gap-2" id="roleSelector">
+<button class="role-chip active flex flex-col items-center justify-center p-2.5 rounded-xl border-2 border-primary bg-primary/5 text-primary text-center transition-all cursor-pointer" type="button">
+<span class="material-symbols-outlined fill-1 text-xl mb-1">person</span>
+<span class="text-xs font-bold">Resident</span>
+</button>
+<button class="role-chip flex flex-col items-center justify-center p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/40 text-center transition-all cursor-pointer" type="button">
+<span class="material-symbols-outlined text-xl mb-1">school</span>
+<span class="text-xs font-semibold">Student Solver</span>
+</button>
+<button class="role-chip flex flex-col items-center justify-center p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/40 text-center transition-all cursor-pointer" type="button">
+<span class="material-symbols-outlined text-xl mb-1">account_balance</span>
+<span class="text-xs font-semibold">Panchayat Official</span>
+</button>
+</div>
+</div>
+<!-- Milestones Checklist -->
+<div class="border-t border-outline-variant/30 pt-5 space-y-3.5">
+<div class="text-xs font-bold uppercase tracking-wider text-outline mb-2">Onboarding Roadmap</div>
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">
+                1
+              </div>
+<div class="flex-1 text-sm">
+<div class="font-semibold text-primary flex items-center justify-between">
+<span>Profile &amp; District Routing</span>
+<span class="text-[11px] font-bold text-secondary uppercase">In Progress</span>
+</div>
+<p class="text-xs text-on-surface-variant">Accurately ties your voice to your specific Gram Panchayat or Urban Ward.</p>
+</div>
+</div>
+<div class="flex items-start space-x-3 opacity-60">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest text-tertiary flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">
+                2
+              </div>
+<div class="flex-1 text-sm">
+<div class="font-semibold text-on-surface">Community Issue Submissions</div>
+<p class="text-xs text-on-surface-variant">Instant geotagged photo reporting with automated AI problem classification.</p>
+</div>
+</div>
+<div class="flex items-start space-x-3 opacity-60">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest text-tertiary flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">
+                3
+              </div>
+<div class="flex-1 text-sm">
+<div class="font-semibold text-on-surface">Gram Sabha Verification</div>
+<p class="text-xs text-on-surface-variant">Track verified department allocations and live resolution timestamps.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Community Impact Metrics Mini-Card -->
+<div class="bg-primary/5 border border-primary/20 rounded-2xl p-5 hidden sm:flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined fill-1">handshake</span>
+</div>
+<div>
+<p class="text-xs text-tertiary font-medium">Citizen Cases Solved</p>
+<p class="text-lg font-heading font-bold text-primary">87.4% Resolution Rate</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs text-tertiary font-medium">Active Districts</p>
+<p class="text-lg font-heading font-bold text-on-surface">24 / 24</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Elevated Profile Setup Card (col-span-7) -->
+<div class="lg:col-span-7">
+<div class="relative w-full rounded-2xl overflow-hidden shadow-card border border-outline-variant/40 bg-surface-container-lowest">
+<!-- Forest Canopy Header -->
+<div class="relative w-full h-44 sm:h-48 overflow-hidden bg-primary-container">
+<div class="absolute inset-0 bg-cover bg-center mix-blend-multiply opacity-55" data-alt="Scenic landscape of Jharkhand with morning sunlight streaming through dense sal forest canopies, warm golden earth, mist between tall trees, deep forest greens and earthen ochre hues, captured with soft atmospheric depth and organic calmness." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDz2VzkDmymWMza0l2kCSTT9eSjQeHXY7hRnrQ0t5Yj6KSPuNRvRRhOvHX8fGRKs7dUOOkUbbjW9-RnSjjhRcLAKM3eskxt-a7WFfv8lnjLsFSxtzmR9y69eGOMHR3Qh0T0NaezcmBfXG_Nx98usBUHKtZVYbJGYCNTDmByX_3MVaCkrpbI62_0uMc1tTOMm0D0ZoeBvd55_EQC7d945bsGadPT8RdOKbvxDvEcOIFtcO0jAcdfYLGAYw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-primary/30 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-between p-5 sm:p-6 text-on-primary">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2 bg-surface-container-lowest/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
+<span class="material-symbols-outlined text-secondary-fixed text-base fill-1">eco</span>
+<span class="font-semibold text-xs tracking-wider uppercase text-on-primary">SocioSolve Jharkhand</span>
+</div>
+<span class="flex items-center space-x-1 text-xs font-semibold bg-primary/80 text-on-primary px-3 py-1 rounded-full border border-white/20 shadow-sm">
+<span class="material-symbols-outlined text-sm fill-1">verified_user</span>
+<span>Civic Portal</span>
+</span>
+</div>
+<div>
+<span class="text-xs text-secondary-fixed uppercase tracking-widest font-bold block mb-0.5">Grassroots Onboarding</span>
+<h1 class="font-heading text-2xl sm:text-3xl font-bold text-on-primary tracking-tight">Setup Profile</h1>
+<p class="text-xs sm:text-sm text-on-primary/90 mt-0.5">Tell us a bit about yourself to route issues to your local administration.</p>
+</div>
+</div>
+</div>
+<!-- Form Body -->
+<div class="p-6 sm:p-8 flex flex-col">
+<!-- Avatar Upload Area -->
+<div class="flex justify-center -mt-16 sm:-mt-20 mb-4">
+<div class="relative group cursor-pointer" id="avatarPicker" title="Click to upload profile photo">
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-surface-container-lowest border-4 border-surface-container-lowest shadow-float flex flex-col items-center justify-center transition-transform group-hover:scale-105 active:scale-95 duration-200 overflow-hidden ring-2 ring-primary/20">
+<span class="material-symbols-outlined text-primary text-3xl sm:text-4xl">photo_camera</span>
+<span class="text-[10px] sm:text-[11px] font-bold text-tertiary mt-0.5 tracking-tight uppercase">Add Photo</span>
+</div>
+<div class="absolute bottom-1 right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-secondary text-on-secondary border-2 border-surface-container-lowest flex items-center justify-center shadow-md group-hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined text-base sm:text-lg font-bold">add</span>
+</div>
+<input accept="image/*" class="hidden" id="photoInput" type="file"/>
+</div>
+</div>
+<!-- Profile Form -->
+<form class="space-y-4 sm:space-y-5" id="profileForm" onsubmit="event.preventDefault();">
+<!-- Full Name -->
+<div class="space-y-1.5">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant pl-1" for="fullName">
+                  Full Name <span class="text-secondary font-bold">*</span>
+</label>
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant/60 rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-outline pl-3.5 pr-2 text-xl">person</span>
+<input class="w-full h-12 sm:h-13 px-1 bg-transparent text-on-surface text-sm sm:text-base placeholder:text-outline/70 focus:outline-none" id="fullName" name="fullName" placeholder="e.g. Ramesh Kumar" required="" type="text" value="Ramesh Kumar"/>
+</div>
+</div>
+<!-- Two Column on Desktop: District & Block/Village -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- District Selector -->
+<div class="space-y-1.5">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant pl-1" for="districtSelect">
+                    District <span class="text-secondary font-bold">*</span>
+</label>
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant/60 rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-outline pl-3.5 pr-2 text-xl">location_on</span>
+<select class="w-full h-12 sm:h-13 px-1 bg-transparent text-on-surface text-sm sm:text-base focus:outline-none cursor-pointer pr-10" id="districtSelect" name="district" required="">
+<option disabled="" hidden="" value="">Select your district</option>
+<option selected="" value="Ranchi">Ranchi</option>
+<option value="Dhanbad">Dhanbad</option>
+<option value="East Singhbhum (Jamshedpur)">East Singhbhum (Jamshedpur)</option>
+<option value="Bokaro">Bokaro</option>
+<option value="Hazaribagh">Hazaribagh</option>
+<option value="Deoghar">Deoghar</option>
+<option value="Dumka">Dumka</option>
+<option value="Giridih">Giridih</option>
+<option value="Palamu">Palamu</option>
+<option value="Ramgarh">Ramgarh</option>
+<option value="West Singhbhum">West Singhbhum</option>
+<option value="Gumla">Gumla</option>
+<option value="Khunti">Khunti</option>
+<option value="Latehar">Latehar</option>
+<option value="Simdega">Simdega</option>
+<option value="Godda">Godda</option>
+<option value="Jamtara">Jamtara</option>
+<option value="Koderma">Koderma</option>
+<option value="Pakur">Pakur</option>
+<option value="Sahebganj">Sahebganj</option>
+<option value="Saraikela Kharsawan">Saraikela Kharsawan</option>
+<option value="Chatra">Chatra</option>
+<option value="Garhwa">Garhwa</option>
+<option value="Lohardaga">Lohardaga</option>
+</select>
+<div class="pointer-events-none absolute right-3 flex items-center text-primary">
+<span class="material-symbols-outlined text-xl">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Block / Village Selector -->
+<div class="space-y-1.5">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant pl-1" for="blockSelect">
+                    Block / Village <span class="text-secondary font-bold">*</span>
+</label>
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant/60 rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-outline pl-3.5 pr-2 text-xl">home_pin</span>
+<select class="w-full h-12 sm:h-13 px-1 bg-transparent text-on-surface text-sm sm:text-base focus:outline-none cursor-pointer pr-10" id="blockSelect" name="block" required="">
+<option disabled="" hidden="" value="">Select your block</option>
+<option selected="" value="Kanke">Kanke (Ranchi)</option>
+<option value="Namkum">Namkum (Ranchi)</option>
+<option value="Ratu">Ratu (Ranchi)</option>
+<option value="Ormanjhi">Ormanjhi (Ranchi)</option>
+<option value="Bundu">Bundu (Ranchi)</option>
+<option value="Angara">Angara (Ranchi)</option>
+<option value="Bero">Bero (Ranchi)</option>
+<option value="Burmu">Burmu (Ranchi)</option>
+<option value="Chanho">Chanho (Ranchi)</option>
+<option value="Itki">Itki (Ranchi)</option>
+<option value="Mandar">Mandar (Ranchi)</option>
+<option value="Nagri">Nagri (Ranchi)</option>
+<option value="Silli">Silli (Ranchi)</option>
+<option value="Sonahatu">Sonahatu (Ranchi)</option>
+<option value="Tamar">Tamar (Ranchi)</option>
+<option value="Other">Other Block / Gram Panchayat</option>
+</select>
+<div class="pointer-events-none absolute right-3 flex items-center text-primary">
+<span class="material-symbols-outlined text-xl">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ward Number / Panchayat Area Field -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between pl-1">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant" for="wardNumber">
+                    Ward Number / Mohalla / Tola
+                  </label>
+<span class="text-[11px] text-tertiary">Optional for hyper-local tracking</span>
+</div>
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant/60 rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-outline pl-3.5 pr-2 text-xl">tag</span>
+<input class="w-full h-12 sm:h-13 px-1 bg-transparent text-on-surface text-sm sm:text-base placeholder:text-outline/70 focus:outline-none" id="wardNumber" name="wardNumber" placeholder="e.g. Ward No. 12, Pahan Toli" type="text"/>
+</div>
+</div>
+<!-- Helper Routing notice -->
+<div class="p-3 bg-surface-container rounded-xl flex items-start space-x-2.5 text-xs text-tertiary">
+<span class="material-symbols-outlined fill-1 text-primary text-base mt-0.5">info</span>
+<span>Automatic routing matches your submissions directly with the BDO (Block Development Officer) and Gram Mukhiya desk.</span>
+</div>
+<!-- Primary Submit Button with iOS Spring Feedback -->
+<button class="spring-press w-full h-13 py-3.5 px-6 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-heading font-bold text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 cursor-pointer mt-2" id="submitBtn" type="button">
+<span>Save &amp; Complete Setup</span>
+<span class="material-symbols-outlined text-xl">arrow_circle_right</span>
+</button>
+</form>
+<!-- Trust badge -->
+<div class="pt-4 sm:pt-6 flex flex-col items-center justify-center space-y-1 text-center">
+<div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-surface-container text-tertiary text-xs font-semibold">
+<span class="material-symbols-outlined text-sm text-primary fill-1">shield</span>
+<span>End-to-End Encrypted Civic Identification</span>
+</div>
+<p class="text-[11px] text-outline max-w-sm">Governed under Jharkhand Panchayati Raj Citizen Charters and Personal Data Protection norms.</p>
+</div>
+</div>
+<!-- Bottom Micro-Badges -->
+<div class="bg-surface-container px-6 py-3.5 flex items-center justify-around text-center border-t border-outline-variant/30">
+<div class="flex items-center space-x-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary">gavel</span>
+<span class="text-xs font-semibold">Civic Trust</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center space-x-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary">groups</span>
+<span class="text-xs font-semibold">Citizen Led</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center space-x-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary">lock</span>
+<span class="text-xs font-semibold">256-Bit SSL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 4. Full-Width Footer spanning 100% Viewport -->
+<footer class="w-full bg-surface-container-low border-t border-outline-variant/40 mt-12 sm:mt-16 text-xs text-on-surface-variant">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<!-- Brand Summary -->
+<div class="md:col-span-2 space-y-2">
+<div class="flex items-center space-x-2 text-primary font-heading font-bold text-base">
+<span class="material-symbols-outlined fill-1 text-xl">eco</span>
+<span>SocioSolve Jharkhand Civic Platform</span>
+</div>
+<p class="text-tertiary text-xs leading-relaxed max-w-md">
+            A state-wide public welfare digital infrastructure fostering transparent communication between citizens, youth problem solvers, and rural local governance bodies (Gram Panchayats).
+          </p>
+</div>
+<!-- Helpline & Support -->
+<div class="space-y-1.5">
+<h4 class="font-bold text-on-surface uppercase tracking-wider text-[11px]">Civic Helpline &amp; Grievance</h4>
+<p class="text-tertiary">Toll-Free Helpline: <strong class="text-on-surface">1800-120-JHK</strong></p>
+<p class="text-tertiary">Panchayati Raj Cell: <span class="text-primary font-medium">help@sociosolve.jharkhand.gov.in</span></p>
+<p class="text-tertiary">Working Hours: Mon–Sat, 9:00 AM – 6:00 PM</p>
+</div>
+<!-- Useful Links -->
+<div class="space-y-1.5">
+<h4 class="font-bold text-on-surface uppercase tracking-wider text-[11px]">Transparency &amp; Governance</h4>
+<ul class="space-y-1 text-tertiary">
+<li><a class="hover:text-primary transition-colors" href="#">Jharkhand Right to Service Act</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Gram Sabha Resolutions Portal</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacy Policy &amp; Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 pt-6 flex flex-col sm:flex-row items-center justify-between text-tertiary">
+<p>© 2025 SocioSolve Jharkhand Civic Innovation Initiative. All rights reserved.</p>
+<div class="flex items-center space-x-4 mt-3 sm:mt-0">
+<span class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-sm text-primary fill-1">check_circle</span>
+<span>State Digital Governance Certified</span>
+</span>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    // Avatar upload preview handler
+    const avatarPicker = document.getElementById('avatarPicker');
+    const photoInput = document.getElementById('photoInput');
+    
+    avatarPicker.addEventListener('click', () => {
+      photoInput.click();
+    });
+
+    photoInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const avatarContainer = avatarPicker.querySelector('.rounded-full');
+          avatarContainer.innerHTML = `<img src="${event.target.result}" alt="Profile avatar" class="w-full h-full object-cover rounded-full">`;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+    // Role selection interaction
+    const roleChips = document.querySelectorAll('#roleSelector .role-chip');
+    roleChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        roleChips.forEach(c => {
+          c.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+          c.classList.add('border-outline-variant/60', 'bg-surface-container-lowest', 'text-on-surface-variant');
+        });
+        chip.classList.remove('border-outline-variant/60', 'bg-surface-container-lowest', 'text-on-surface-variant');
+        chip.classList.add('border-primary', 'bg-primary/5', 'text-primary');
+      });
+    });
+
+    // Submit button tactile feedback & submission simulation
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.addEventListener('click', () => {
+      const name = document.getElementById('fullName').value.trim();
+      const district = document.getElementById('districtSelect').value;
+      const block = document.getElementById('blockSelect').value;
+
+      if (!name) {
+        document.getElementById('fullName').focus();
+        return;
+      }
+      if (!district) {
+        document.getElementById('districtSelect').focus();
+        return;
+      }
+      if (!block) {
+        document.getElementById('blockSelect').focus();
+        return;
+      }
+
+      // Success feedback state
+      submitBtn.innerHTML = `
+        <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
+        <span>Saving Profile...</span>
+      `;
+      submitBtn.disabled = true;
+      
+      setTimeout(() => {
+        submitBtn.className = "spring-press w-full h-13 py-3.5 px-6 rounded-xl bg-secondary text-on-secondary font-heading font-bold text-base shadow-md flex items-center justify-center space-x-2";
+        submitBtn.innerHTML = `
+          <span class="material-symbols-outlined text-xl fill-1">check_circle</span>
+          <span>Profile Saved Successfully!</span>
+        `;
+      }, 750);
+    });
+  </script>
+</body></html>

@@ -31,4 +31,17 @@ dist-ssr
 video/out/
 video/node_modules/
 
+# Python Virtual Environments & Bytecode
+backend/venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.db-journal
+
+# Binaries
+cloudflared.exe
+*.exe
+
+
 

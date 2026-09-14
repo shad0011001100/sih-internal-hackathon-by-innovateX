@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>SocioSolve — Solutions for Jharkhand</title>
+<!-- Google Fonts: Plus Jakarta Sans, Inter & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-error-container": "#93000a",
+            "surface-tint": "#41674c",
+            "primary": "#3e644a",
+            "tertiary-fixed-dim": "#b7cbbd",
+            "secondary-fixed": "#ffddb6",
+            "primary-fixed": "#c2edcb",
+            "on-primary-fixed": "#00210f",
+            "inverse-primary": "#a7d1b0",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#a7d1b0",
+            "surface-container-high": "#eae7eb",
+            "tertiary": "#4d6055",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#1b1b1e",
+            "secondary-fixed-dim": "#ffb959",
+            "inverse-surface": "#303033",
+            "outline-variant": "#c1c8c0",
+            "on-secondary-fixed-variant": "#643f00",
+            "background": "#fbf8fc",
+            "tertiary-fixed": "#d3e8d9",
+            "inverse-on-surface": "#f3f0f4",
+            "outline": "#727972",
+            "surface-container": "#f0edf1",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f6f2f7",
+            "secondary": "#845400",
+            "surface-container-highest": "#e4e1e6",
+            "on-tertiary-container": "#f5fff6",
+            "surface-variant": "#e4e1e6",
+            "on-secondary-fixed": "#2a1800",
+            "on-background": "#1b1b1e",
+            "on-secondary-container": "#6f4600",
+            "on-primary": "#ffffff",
+            "on-tertiary-fixed-variant": "#394b40",
+            "on-tertiary-fixed": "#0d1f16",
+            "tertiary-container": "#66796d",
+            "secondary-container": "#fdb248",
+            "surface-dim": "#dcd9dd",
+            "on-surface-variant": "#424942",
+            "surface": "#fbf8fc",
+            "error-container": "#ffdad6",
+            "surface-bright": "#fbf8fc",
+            "error": "#ba1a1a",
+            "primary-container": "#567d62",
+            "on-secondary": "#ffffff",
+            "on-primary-container": "#f6fff4",
+            "on-primary-fixed-variant": "#294e36"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter-desktop": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "margin-desktop": "3rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "margin-tablet": "2rem"
+          },
+          fontFamily: {
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "label-lg": ["Inter", "sans-serif"]
+          },
+          fontSize: {
+            "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+            "body-md": ["15px", { lineHeight: "22px", fontWeight: "400" }],
+            "body-lg": ["17px", { lineHeight: "26px", fontWeight: "400" }],
+            "headline-md": ["22px", { lineHeight: "28px", fontWeight: "600" }],
+            "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+            "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-md": ["13px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
+            "label-lg": ["15px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+            "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }],
+            "display-lg-mobile": ["30px", { lineHeight: "38px", letterSpacing: "-0.015em", fontWeight: "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+    }
+    /* Touch Target HIG Protection */
+    .touch-target-hig {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  </style>
+<style>
+    body {
+      min-height: 100dvh;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#3D5A45] text-on-surface flex flex-col justify-between antialiased selection:bg-[#ECA43B] selection:text-black">
+<!-- Full-width atmospheric background layer -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute -top-32 -left-20 w-[600px] h-[600px] rounded-full bg-emerald-300/10 blur-3xl"></div>
+<div class="absolute top-1/4 right-[-100px] w-[500px] h-[500px] rounded-full bg-[#ECA43B]/10 blur-3xl"></div>
+<div class="absolute bottom-0 left-1/3 w-[700px] h-[400px] rounded-full bg-[#294e36]/40 blur-3xl"></div>
+<!-- Topography Contour Lines Motif -->
+<svg class="absolute inset-0 w-full h-full opacity-[0.06] object-cover" fill="none" preserveaspectratio="none" stroke="#FFFFFF" stroke-width="1.2" viewbox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+<path d="M-50 180 C 380 120, 820 280, 1500 160"></path>
+<path d="M-40 380 C 410 420, 960 260, 1520 370"></path>
+<path d="M-60 620 C 390 530, 980 660, 1500 560"></path>
+<path d="M-20 840 C 420 900, 960 760, 1530 820"></path>
+</svg>
+</div>
+<!-- Header (Full-width spanning with max-w-[1200px] content) -->
+<header class="relative z-20 w-full border-b border-white/10 bg-[#3D5A45]/40 backdrop-blur-md">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+<!-- Brand mark & title in header for desktop / identity -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#F4F3ED] shadow-sm border border-[#5B8266]/20 flex items-center justify-center transition-transform hover:scale-105 active:scale-95">
+<svg class="w-6 h-6 text-[#5B8266]" fill="currentColor" viewbox="0 0 24 24">
+<path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5c0 3.1 2.05 5.16 4.12 5.86C7.54 15.11 9.94 10.37 17 8Z"></path>
+</svg>
+</div>
+<div>
+<span class="text-white font-bold text-lg tracking-tight block leading-tight">SocioSolve</span>
+<span class="text-[#E6EDE7] text-xs font-medium tracking-wide">Government &amp; Civic Innovation • Jharkhand</span>
+</div>
+</div>
+<!-- Desktop quick status indicator -->
+<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white/90">
+<span class="w-2 h-2 rounded-full bg-[#ECA43B] animate-pulse"></span>
+<span class="font-medium">State Innovation Cell Active</span>
+</div>
+</div>
+</header>
+<!-- Centered 12-Column Responsive Content Container -->
+<main class="relative z-10 w-full flex-1 flex items-center py-6 sm:py-10 lg:py-12">
+<div class="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Mobile-optimized view (Portrait stack) visible on mobile, expanded 12-column layout on lg screens -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
+<!-- LEFT / MAIN COLUMN (col-span-7 on desktop): Brand narrative, Value pillars & Grassroots stats -->
+<div class="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
+<!-- Brand Emblem (Visible distinctly on desktop & mobile) -->
+<div class="w-[72px] h-[72px] lg:w-20 lg:h-20 rounded-2xl bg-[#F4F3ED] shadow-md border border-[#5B8266]/20 flex items-center justify-center mb-4 transition-all duration-300 hover:scale-105 active:scale-95 touch-target-hig">
+<svg class="w-10 h-10 lg:w-12 lg:h-12 text-[#5B8266]" fill="currentColor" viewbox="0 0 24 24">
+<path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5c0 3.1 2.05 5.16 4.12 5.86C7.54 15.11 9.94 10.37 17 8Z"></path>
+</svg>
+</div>
+<h1 class="text-white font-headline-lg-mobile text-display-lg-mobile lg:text-display-lg font-bold tracking-tight">
+          SocioSolve
+        </h1>
+<p class="mt-1 text-[#E6EDE7] font-body-md text-body-md lg:text-body-lg tracking-wide font-medium">
+          Solutions for Jharkhand
+        </p>
+<!-- Mission & Purpose Card (Glassmorphism with Whisper Border) -->
+<section class="w-full mt-6 sm:mt-7 bg-white/[0.12] backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-white/[0.22] shadow-[0_4px_24px_rgba(24,24,27,0.08)] text-left">
+<!-- Eyebrow label -->
+<div class="flex items-center justify-between gap-2 mb-2.5">
+<span class="text-emerald-100 font-label-sm text-label-sm tracking-widest font-semibold uppercase">
+              WHAT DO WE DO?
+            </span>
+<span class="flex h-2 w-2 rounded-full bg-[#ECA43B] animate-pulse"></span>
+</div>
+<!-- Mission Statement (Verbatim) -->
+<p class="text-white/95 font-body-md text-body-md lg:text-body-lg leading-relaxed font-normal">
+            We solve societal challenges faced by Jharkhand people — where a student works on it to find solutions under a university or industry.
+          </p>
+<!-- Civic Badge (Verbatim) -->
+<div class="mt-4 pt-3.5 border-t border-white/15 flex items-center gap-2 text-white/90">
+<span class="material-symbols-outlined text-[18px] text-[#ffddb6]" data-icon="diversity_3">diversity_3</span>
+<span class="font-label-sm text-label-sm text-white/90 font-medium">
+              Civic Innovation &amp; Research Platform
+            </span>
+</div>
+</section>
+<!-- Grassroots stats / Civic credibility pillars (Rich desktop value additions) -->
+<div class="hidden sm:grid grid-cols-3 gap-3 w-full mt-4">
+<div class="bg-white/[0.08] backdrop-blur-sm rounded-2xl p-3.5 border border-white/10 text-left">
+<div class="text-lg font-bold text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[#ECA43B] text-[18px]">domain</span> 24
+            </div>
+<p class="text-xs text-white/75 mt-0.5">Districts Covered</p>
+</div>
+<div class="bg-white/[0.08] backdrop-blur-sm rounded-2xl p-3.5 border border-white/10 text-left">
+<div class="text-lg font-bold text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[#ECA43B] text-[18px]">school</span> 45+
+            </div>
+<p class="text-xs text-white/75 mt-0.5">Universities &amp; Labs</p>
+</div>
+<div class="bg-white/[0.08] backdrop-blur-sm rounded-2xl p-3.5 border border-white/10 text-left">
+<div class="text-lg font-bold text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[#ECA43B] text-[18px]">handshake</span> 120+
+            </div>
+<p class="text-xs text-white/75 mt-0.5">Industry Mentors</p>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (col-span-5 on desktop): Elevated Card with Language Selection and CTA -->
+<div class="lg:col-span-5 w-full flex justify-center lg:justify-end">
+<div class="w-full max-w-[420px] bg-gradient-to-b from-[#4E7358]/95 to-[#3D5A45]/95 backdrop-blur-xl border border-white/20 rounded-[32px] p-6 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col justify-between">
+<!-- Card Header / Title -->
+<div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#ECA43B] text-[22px]">translate</span>
+<span class="text-white font-semibold text-base">Regional Portal Access</span>
+</div>
+<span class="text-xs text-white/60 font-medium px-2 py-0.5 rounded bg-white/10">v2.4</span>
+</div>
+<!-- Language Selection Section -->
+<section class="w-full flex flex-col">
+<label class="text-white/80 font-label-sm text-label-sm tracking-widest font-semibold uppercase mb-3 px-1">
+              CHOOSE LANGUAGE
+            </label>
+<!-- Language Buttons Grid: 2 columns with English, Hindi, Santhali, Ho -->
+<div aria-label="Choose Language" class="grid grid-cols-2 gap-2.5 w-full" id="languageGroup" role="radiogroup">
+<!-- English Button (Initially Active: Mustard Accent) -->
+<button aria-checked="true" class="lang-btn relative min-h-[52px] touch-target-hig px-3.5 py-3 rounded-xl font-bold flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.97] shadow-sm bg-[#ECA43B] text-[#18181B] border-2 border-[#ECA43B]" id="langEnBtn" onclick="selectLanguage('en')" role="radio" type="button">
+<span class="font-label-lg text-label-lg">English</span>
+<span class="material-symbols-outlined text-[18px] text-[#18181B]" data-icon="check_circle" id="enCheckIcon">check_circle</span>
+</button>
+<!-- Hindi Button -->
+<button aria-checked="false" class="lang-btn relative min-h-[52px] touch-target-hig px-3.5 py-3 rounded-xl font-medium flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.97] shadow-sm bg-white/15 text-white border border-white/30 hover:bg-white/20" id="langHiBtn" onclick="selectLanguage('hi')" role="radio" type="button">
+<span class="font-label-lg text-label-lg tracking-wide">हिन्दी</span>
+<span class="material-symbols-outlined text-[18px] text-[#18181B] hidden" data-icon="check_circle" id="hiCheckIcon">check_circle</span>
+</button>
+<!-- Santhali (Ol Chiki) Button -->
+<button aria-checked="false" class="lang-btn relative min-h-[52px] touch-target-hig px-3.5 py-3 rounded-xl font-medium flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.97] shadow-sm bg-white/15 text-white border border-white/30 hover:bg-white/20" id="langSatBtn" onclick="selectLanguage('sat')" role="radio" type="button">
+<span class="font-label-lg text-label-lg tracking-wide">ᱥᱟᱱᱛᱟᱲᱤ</span>
+<span class="material-symbols-outlined text-[18px] text-[#18181B] hidden" data-icon="check_circle" id="satCheckIcon">check_circle</span>
+</button>
+<!-- Ho Button -->
+<button aria-checked="false" class="lang-btn relative min-h-[52px] touch-target-hig px-3.5 py-3 rounded-xl font-medium flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.97] shadow-sm bg-white/15 text-white border border-white/30 hover:bg-white/20" id="langHoBtn" onclick="selectLanguage('ho')" role="radio" type="button">
+<span class="font-label-lg text-label-lg tracking-wide">हो (Ho)</span>
+<span class="material-symbols-outlined text-[18px] text-[#18181B] hidden" data-icon="check_circle" id="hoCheckIcon">check_circle</span>
+</button>
+</div>
+</section>
+<!-- Divider with quick reassurance info -->
+<div class="my-5 pt-4 border-t border-white/15 flex items-center justify-between text-xs text-white/80">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-emerald-200">verified_user</span>
+              Free &amp; Open Access
+            </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#ffddb6]">school</span>
+              Student &amp; Industry
+            </span>
+</div>
+<!-- Bottom Action CTA -->
+<div class="w-full flex flex-col items-center">
+<button class="w-full min-h-[54px] touch-target-hig bg-[#ECA43B] hover:bg-[#df9932] text-[#18181B] font-headline-sm text-headline-sm font-bold rounded-2xl flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.22)] transition-all duration-150 active:scale-[0.97] active:translate-y-0.5" id="getStartedBtn" onclick="handleGetStarted()" type="button">
+<span id="ctaText">Get Started</span>
+<span class="material-symbols-outlined font-bold text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Reassurance Microcopy (Verbatim) -->
+<p class="mt-3.5 text-white/75 font-label-sm text-label-sm tracking-wide text-center" id="footerMicrocopy">
+              Building a better Jharkhand together
+            </p>
+<!-- Subtle iOS style home-indicator bar for mobile contexts -->
+<div class="w-28 h-1 bg-white/30 rounded-full mt-3 lg:hidden"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Full-Width Footer spanning 100% viewport width -->
+<footer class="relative z-20 w-full border-t border-white/10 bg-[#3D5A45]/40 backdrop-blur-md">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/70">
+<div class="flex items-center gap-2">
+<span>© 2025 SocioSolve — Solutions for Jharkhand.</span>
+<span class="hidden sm:inline">•</span>
+<span class="hidden sm:inline">Empowering Youth &amp; Civic Innovation</span>
+</div>
+<div class="flex items-center gap-4">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">University Guidelines</a>
+<a class="hover:text-white transition-colors" href="#">Help Desk</a>
+</div>
+</div>
+</footer>
+<script>
+    let currentLang = 'en';
+
+    const langConfigs = {
+      en: {
+        cta: "Get Started",
+        microcopy: "Building a better Jharkhand together"
+      },
+      hi: {
+        cta: "आगे बढ़ें",
+        microcopy: "मिलकर एक बेहतर झारखंड का निर्माण करें"
+      },
+      sat: {
+        cta: "ᱞᱟᱦᱟ ᱥᱮᱱ (Get Started)",
+        microcopy: "ᱢᱤᱫ ᱥᱟᱶᱛᱮ ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱵᱮᱱᱟᱣ ᱢᱟ"
+      },
+      ho: {
+        cta: "ᱮᱛᱚᱦᱚᱵ (Get Started)",
+        microcopy: "Building a better Jharkhand together"
+      }
+    };
+
+    function selectLanguage(lang) {
+      currentLang = lang;
+      const langKeys = ['en', 'hi', 'sat', 'ho'];
+      
+      langKeys.forEach(k => {
+        const btnId = 'lang' + k.charAt(0).toUpperCase() + k.slice(1) + 'Btn';
+        const checkId = k + 'CheckIcon';
+        const btn = document.getElementById(btnId);
+        const check = document.getElementById(checkId);
+
+        if (!btn || !check) return;
+
+        if (k === lang) {
+          btn.className = "lang-btn relative min-h-[52px] touch-target-hig px-3.5 py-3 rounded-xl font-bold flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.97] shadow-sm bg-[#ECA43B] text-[#18181B] border-2 border-[#ECA43B]";
+          btn.setAttribute('aria-checked', 'true');
+          check.classList.remove('hidden');
+        } else {
+          btn.className = "lang-btn relative min-h-[52px] touch-target-hig px-3.5 py-3 rounded-xl font-medium flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.97] shadow-sm bg-white/15 text-white border border-white/30 hover:bg-white/20";
+          btn.setAttribute('aria-checked', 'false');
+          check.classList.add('hidden');
+        }
+      });
+
+      const ctaText = document.getElementById('ctaText');
+      const footerMicrocopy = document.getElementById('footerMicrocopy');
+      if (langConfigs[lang]) {
+        ctaText.textContent = langConfigs[lang].cta;
+        if (footerMicrocopy) {
+          footerMicrocopy.textContent = langConfigs[lang].microcopy;
+        }
+      }
+    }
+
+    function handleGetStarted() {
+      const btn = document.getElementById('getStartedBtn');
+      btn.classList.add('opacity-90', 'scale-95');
+      setTimeout(() => {
+        btn.classList.remove('scale-95');
+      }, 150);
+    }
+  </script>
+</body></html>

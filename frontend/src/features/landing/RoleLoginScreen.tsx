@@ -1,0 +1,682 @@
+// @ts-nocheck
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import { useToast } from "../../context/ToastContext";
+
+// Per-role configuration
+const roleConfig = {
+    citizen: {
+        icon: "person",
+        label: "Citizen Portal",
+        sublabel: "Report civic issues anonymously",
+        color: "bg-primary",
+        loginType: "phone_otp",
+        fields: [
+            {
+                id: "phone",
+                label: "Mobile Number",
+                prefix: "+91",
+                placeholder: "10-digit mobile number",
+                inputMode: "numeric",
+                maxLength: 10,
+                icon: "phone_android",
+            }
+        ],
+        hint: "A 6-digit OTP will be sent to verify your identity.",
+        ctaLabel: "Send OTP",
+    },
+    student: {
+        icon: "school",
+        label: "Student / Institution Portal",
+        sublabel: "Login with APAAR ID or University Gmail",
+        color: "bg-tertiary",
+        loginType: "student_university",
+        fields: [],  // Dynamic based on tab
+        hint: "Students use APAAR ID. Universities use institutional Gmail.",
+        ctaLabel: "Login",
+    },
+    official: {
+        icon: "account_balance",
+        label: "Government Official Portal",
+        sublabel: "Secure Government Access",
+        color: "bg-secondary",
+        loginType: "gov_id",
+        fields: [
+            {
+                id: "gov_id",
+                label: "Government Employee ID",
+                prefix: "GOV-",
+                placeholder: "Your unique employee ID",
+                inputMode: "text",
+                maxLength: 20,
+                icon: "badge",
+            },
+            {
+                id: "password",
+                label: "Access Password",
+                prefix: null,
+                placeholder: "Secure portal password",
+                inputMode: "text",
+                maxLength: 64,
+                icon: "lock",
+                type: "password",
+            }
+        ],
+        hint: "Use your government-issued employee ID and password.",
+        ctaLabel: "Access Portal",
+    },
+    industry: {
+        icon: "business",
+        label: "Industry Partner Portal",
+        sublabel: "Corporate & Industry Access",
+        color: "bg-on-surface",
+        loginType: "partner_id",
+        fields: [
+            {
+                id: "partner_id",
+                label: "Partner Organisation ID",
+                prefix: "IND-",
+                placeholder: "Your unique partner code",
+                inputMode: "text",
+                maxLength: 20,
+                icon: "corporate_fare",
+            },
+            {
+                id: "password",
+                label: "Access Password",
+                prefix: null,
+                placeholder: "Secure portal password",
+                inputMode: "text",
+                maxLength: 64,
+                icon: "lock",
+                type: "password",
+            }
+        ],
+        hint: "Use your SocioSolve-issued Industry Partner ID and password.",
+        ctaLabel: "Access Partner Portal",
+    },
+    university: {
+        icon: "account_balance",
+        label: "University & Academia Portal",
+        sublabel: "Academic Innovation & Mentorship",
+        color: "bg-[#526070]",
+        loginType: "university_direct",
+        fields: [
+            {
+                id: "uni_email",
+                label: "Institutional Email / Gmail",
+                prefix: null,
+                placeholder: "admin@bitmesra.ac.in",
+                inputMode: "email",
+                maxLength: 100,
+                icon: "mail",
+            },
+            {
+                id: "uni_password",
+                label: "Access Password",
+                prefix: null,
+                placeholder: "Portal password (sanjha@2025)",
+                inputMode: "text",
+                maxLength: 64,
+                icon: "lock",
+                type: "password",
+            }
+        ],
+        hint: "Use your verified institutional email to access department telemetry.",
+        ctaLabel: "Access University Portal",
+    },
+};
+
+// Role → dashboard redirect mapping
+const ROLE_DASHBOARD = {
+    citizen: "/dashboard",
+    student: "/student-dashboard",
+    university: "/university-dashboard",
+    official: "/official-dashboard",
+    verifier: "/official-dashboard",
+    industry: "/industry-dashboard",
+    admin: "/official-dashboard",
+};
+
+export default function RoleLoginScreen() {
+    const navigate = useNavigate();
+    const { role } = useParams();
+    const cfg = roleConfig[role] || roleConfig.citizen;
+    const setAuth = useAuthStore((s) => s.setAuth);
+    const setPhone = useAuthStore((s) => s.setPhone);
+    const { showToast } = useToast();
+
+    const [values, setValues] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [otpSent, setOtpSent] = useState(false);
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+    // Student/University tab toggle (only for the student role page)
+    const [activeTab, setActiveTab] = useState("student"); // "student" | "university"
+
+    const handleOtpChange = (index, value) => {
+        if (!/^[0-9]*$/.test(value)) return;
+        const newOtp = [...otp];
+        newOtp[index] = value;
+        setOtp(newOtp);
+        if (value !== "" && index < 5) {
+            document.getElementById(`otp-box-${index + 1}`)?.focus();
+        }
+    };
+    const handleOtpKeyDown = (index, e) => {
+        if (e.key === "Backspace" && otp[index] === "" && index > 0) {
+            document.getElementById(`otp-box-${index - 1}`)?.focus();
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+
+        try {
+            if (cfg.loginType === "phone_otp") {
+                const phone = values["phone"] || "";
+                if (phone.length !== 10) throw new Error("Please enter a valid 10-digit number");
+
+                if (!otpSent) {
+                    try {
+                        setLoading(true);
+                        const res = await fetch("/api/auth/send-otp", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ phone_number: "+91" + phone }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.detail || "Failed to send OTP");
+                        setPhone("+91" + phone);
+                        setOtpSent(true);
+                        showToast("OTP sent to +91 " + phone, "info");
+                    } catch (err) {
+                        setError(err.message);
+                        showToast(err.message, "error");
+                    } finally {
+                        setLoading(false);
+                    }
+                } else {
+                    try {
+                        setLoading(true);
+                        const code = otp.join("");
+                        if (code.length !== 6) throw new Error("Please enter all 6 digits");
+                        const res = await fetch("/api/auth/verify-otp", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ phone_number: "+91" + phone, otp: code }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.detail || "Invalid OTP");
+                        setAuth(data.role, data.user_id);
+                        setPhone("+91" + phone);
+                        showToast("Verification successful! Redirecting...", "success");
+                        navigate(ROLE_DASHBOARD[data.role] || "/dashboard");
+                    } catch (err) {
+                        setError(err.message);
+                        showToast(err.message, "error");
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+
+            } else if (cfg.loginType === "student_university") {
+                if (activeTab === "student") {
+                    // Student login with APAAR ID & Password
+                    try {
+                        setLoading(true);
+                        const apaarId = values["apaar_id"]?.trim();
+                        const password = values["student_password"]?.trim();
+                        if (!apaarId) throw new Error("Please enter your APAAR ID");
+                        if (!password) throw new Error("Please enter your portal password");
+                        const res = await fetch("/api/auth/student/login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ apaar_id: apaarId, password: password }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.detail || "Login failed");
+                        setAuth(data.role, data.user_id);
+                        showToast("Student login successful!", "success");
+                        navigate(ROLE_DASHBOARD[data.role] || "/student-dashboard");
+                    } catch (err) {
+                        setError(err.message);
+                        showToast(err.message, "error");
+                    } finally {
+                        setLoading(false);
+                    }
+                } else {
+                    // University login with Gmail + password
+                    try {
+                        setLoading(true);
+                        const email = values["uni_email"]?.trim();
+                        const password = values["uni_password"];
+                        if (!email) throw new Error("Please enter your institutional email");
+                        if (!password) throw new Error("Please enter a password");
+                        const res = await fetch("/api/auth/university/login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email, password }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.detail || "Login failed");
+                        setAuth(data.role, data.user_id);
+                        showToast("Institutional login successful!", "success");
+                        navigate(ROLE_DASHBOARD[data.role] || "/university-dashboard");
+                    } catch (err) {
+                        setError(err.message);
+                        showToast(err.message, "error");
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+
+            } else if (cfg.loginType === "gov_id") {
+                try {
+                    setLoading(true);
+                    const res = await fetch("/api/auth/official/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ employee_id: values["gov_id"], password: values["password"] }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.detail || "Login failed");
+                    setAuth(data.role, data.user_id);
+                    showToast("Official access granted.", "success");
+                    navigate(ROLE_DASHBOARD[data.role] || "/official-dashboard");
+                } catch (err) {
+                    setError(err.message);
+                    showToast(err.message, "error");
+                } finally {
+                    setLoading(false);
+                }
+
+            } else if (cfg.loginType === "partner_id") {
+                try {
+                    setLoading(true);
+                    const res = await fetch("/api/auth/industry/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ partner_id: values["partner_id"], password: values["password"] }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.detail || "Login failed");
+                    setAuth(data.role, data.user_id);
+                    showToast("Partner portal access granted.", "success");
+                    navigate(ROLE_DASHBOARD[data.role] || "/industry-dashboard");
+                } catch (err) {
+                    setError(err.message);
+                    showToast(err.message, "error");
+                } finally {
+                    setLoading(false);
+                }
+            } else if (cfg.loginType === "university_direct") {
+                try {
+                    setLoading(true);
+                    const email = (values["uni_email"] || "").trim();
+                    const password = values["uni_password"] || "";
+                    if (!email) throw new Error("Please enter your institutional email");
+                    if (!password) throw new Error("Please enter a password");
+                    const res = await fetch("/api/auth/university/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, password }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.detail || "Login failed");
+                    setAuth(data.role, data.user_id);
+                    showToast("Institutional login successful!", "success");
+                    navigate(ROLE_DASHBOARD[data.role] || "/university-dashboard");
+                } catch (err) {
+                    setError(err.message);
+                    showToast(err.message, "error");
+                } finally {
+                    setLoading(false);
+                }
+            }
+        } catch (err) {
+            setError(err.message);
+            showToast(err.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleQuickDemo = async () => {
+        setError(null);
+        setLoading(true);
+        try {
+            if (role === "citizen") {
+                setValues({ phone: "9876543210" });
+                const res = await fetch("/api/auth/verify-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ phone_number: "+919876543210", otp: "123456" }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Demo verification failed");
+                setAuth(data.role, data.user_id);
+                setPhone("+919876543210");
+                showToast("Demo Citizen verified! Entering dashboard...", "success");
+                navigate("/dashboard");
+            } else if (role === "student" && activeTab === "student") {
+                setValues({ apaar_id: "APAAR-12345", student_password: "mypassword123" });
+                const res = await fetch("/api/auth/student/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ apaar_id: "APAAR-12345", password: "mypassword123" }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Demo login failed");
+                setAuth(data.role, data.user_id);
+                showToast("Demo Student logged in! Entering Innovation Hub...", "success");
+                navigate("/student-dashboard");
+            } else if (role === "university" || (role === "student" && activeTab === "university")) {
+                setValues({ uni_email: "admin@bitmesra.ac.in", uni_password: "sanjha@2025" });
+                const res = await fetch("/api/auth/university/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: "admin@bitmesra.ac.in", password: "sanjha@2025" }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Demo login failed");
+                setAuth(data.role, data.user_id);
+                showToast("Demo University (BIT Mesra) logged in! Entering Academic Portal...", "success");
+                navigate("/university-dashboard");
+            } else if (role === "official") {
+                setValues({ gov_id: "GOV-001", password: "sanjha@2025" });
+                const res = await fetch("/api/auth/official/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ employee_id: "GOV-001", password: "sanjha@2025" }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Demo login failed");
+                setAuth(data.role, data.user_id);
+                showToast("Demo Official (IAS Municipal Commissioner) logged in! Entering Portal...", "success");
+                navigate("/official-dashboard");
+            } else if (role === "industry") {
+                setValues({ partner_id: "IND-001", password: "sanjha@2025" });
+                const res = await fetch("/api/auth/industry/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ partner_id: "IND-001", password: "sanjha@2025" }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Demo login failed");
+                setAuth(data.role, data.user_id);
+                showToast("Demo Partner (Tata Steel Foundation) logged in! Entering Portal...", "success");
+                navigate("/industry-dashboard");
+            }
+        } catch (err: any) {
+            setError(err.message || "Quick demo login failed");
+            showToast(err.message || "Quick demo login failed", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Dynamic fields for student/university tab
+    const getFields = () => {
+        if (cfg.loginType === "student_university") {
+            if (activeTab === "student") {
+                return [
+                    {
+                        id: "apaar_id",
+                        label: "APAAR ID",
+                        prefix: null,
+                        placeholder: "Enter your APAAR Student ID",
+                        inputMode: "text",
+                        maxLength: 30,
+                        icon: "badge",
+                    },
+                    {
+                        id: "student_password",
+                        label: "Access Password",
+                        prefix: null,
+                        placeholder: "Create or enter your password",
+                        inputMode: "text",
+                        maxLength: 64,
+                        icon: "lock",
+                        type: "password",
+                    },
+                ];
+            } else {
+                return [
+                    {
+                        id: "uni_email",
+                        label: "Institutional Gmail",
+                        prefix: null,
+                        placeholder: "university@edu.in or gmail.com",
+                        inputMode: "email",
+                        maxLength: 100,
+                        icon: "mail",
+                    },
+                    {
+                        id: "uni_password",
+                        label: "Password",
+                        prefix: null,
+                        placeholder: "Create or enter password",
+                        inputMode: "text",
+                        maxLength: 64,
+                        icon: "lock",
+                        type: "password",
+                    },
+                ];
+            }
+        }
+        return cfg.fields;
+    };
+
+    const displayFields = getFields();
+    const ctaLabel = cfg.loginType === "student_university"
+        ? (activeTab === "student" ? "Login with APAAR ID" : "Login with Gmail")
+        : cfg.ctaLabel;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="min-h-screen flex flex-col bg-background"
+        >
+            {/* Colored Hero Header */}
+            <div className={`${cfg.color} px-6 pt-12 pb-10 relative overflow-hidden`}>
+                <div className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: "radial-gradient(circle at 80% 20%, white 1px, transparent 1px)", backgroundSize: "28px 28px" }}
+                />
+                <button
+                    type="button"
+                    onClick={() => navigate("/select-role")}
+                    className="mb-8 w-10 h-10 rounded-full bg-white/15 flex items-center justify-center active:scale-90 transition-transform relative"
+                >
+                    <span className="material-symbols-outlined text-white">arrow_back</span>
+                </button>
+                <div className="flex items-center space-x-3 relative">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                            {cfg.icon}
+                        </span>
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">{cfg.label}</h1>
+                        <p className="text-white/70 text-sm">{cfg.sublabel}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Login Card */}
+            <div className="flex-1 px-6 -mt-4 relative z-10 pb-8">
+                <form onSubmit={handleSubmit}>
+                    <div className="bg-surface-container-lowest rounded-3xl shadow-xl border border-outline-variant/40 p-6 space-y-5">
+
+                        {/* Student/University Tab Toggle */}
+                        {cfg.loginType === "student_university" && (
+                            <div className="flex rounded-2xl bg-surface-container-low p-1 gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => { setActiveTab("student"); setError(null); }}
+                                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                                        activeTab === "student"
+                                            ? "bg-tertiary text-on-tertiary shadow-sm"
+                                            : "text-on-surface-variant hover:bg-surface-container"
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">person</span>
+                                    Student
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setActiveTab("university"); setError(null); }}
+                                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                                        activeTab === "university"
+                                            ? "bg-tertiary text-on-tertiary shadow-sm"
+                                            : "text-on-surface-variant hover:bg-surface-container"
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">apartment</span>
+                                    University
+                                </button>
+                            </div>
+                        )}
+
+                        {/* 1-Click Demo Evaluation Login for Hackathon Judges */}
+                        <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/25 flex flex-col gap-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[15px]">verified</span>
+                                    Judge & Evaluator 1-Click Access
+                                </span>
+                                <span className="text-[10px] bg-primary/20 text-primary font-mono font-bold px-2 py-0.5 rounded-full">
+                                    Instant Demo
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                disabled={loading}
+                                onClick={handleQuickDemo}
+                                className="w-full py-2.5 px-3 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-base">bolt</span>
+                                <span>
+                                    {role === "citizen" && "Auto-Fill & Verify Demo Citizen (+91 9876543210)"}
+                                    {role === "student" && (activeTab === "student" ? "Demo Login: Student Innovator (APAAR-12345)" : "Demo Login: BIT Mesra (admin@bitmesra.ac.in)")}
+                                    {role === "university" && "Demo Login: BIT Mesra (admin@bitmesra.ac.in)"}
+                                    {role === "official" && "Demo Login: IAS Municipal Commissioner (GOV-001)"}
+                                    {role === "industry" && "Demo Login: Tata Steel CSR Foundation (IND-001)"}
+                                </span>
+                            </button>
+                        </div>
+
+                        <div>
+                            <h2 className="text-base font-bold text-on-surface">
+                                {otpSent ? "Enter OTP" : "Or enter credentials manually"}
+                            </h2>
+                            <p className="text-xs text-on-surface-variant mt-0.5">
+                                {cfg.loginType === "student_university"
+                                    ? (activeTab === "student"
+                                        ? "Enter your APAAR Student ID and password. First login sets your secure password."
+                                        : "Login with your institutional Gmail and password. First login auto-registers your institution.")
+                                    : cfg.hint
+                                }
+                            </p>
+                        </div>
+
+                        {error && (
+                            <div className="p-3 rounded-xl bg-error-container text-on-error-container text-xs font-semibold flex items-start space-x-2">
+                                <span className="material-symbols-outlined text-base shrink-0">error</span>
+                                <span>{error}</span>
+                            </div>
+                        )}
+
+                        {/* Credential fields */}
+                        {!otpSent && displayFields.map((field) => (
+                            <motion.div
+                                key={field.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                            >
+                                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+                                    <span className="material-symbols-outlined text-sm align-middle mr-1">{field.icon}</span>
+                                    {field.label}
+                                </label>
+                                <div className="flex items-center bg-surface-container-low rounded-xl border border-outline-variant focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all h-14 px-4">
+                                    {field.prefix && (
+                                        <span className="text-sm font-bold text-on-surface-variant pr-3 border-r border-outline-variant mr-3 whitespace-nowrap">
+                                            {field.prefix}
+                                        </span>
+                                    )}
+                                    <input
+                                        type={field.type || "text"}
+                                        inputMode={field.inputMode}
+                                        maxLength={field.maxLength}
+                                        placeholder={field.placeholder}
+                                        value={values[field.id] || ""}
+                                        onChange={(e) => setValues(v => ({ ...v, [field.id]: e.target.value }))}
+                                        className="flex-1 bg-transparent text-base font-semibold text-on-surface placeholder-outline outline-none border-0 focus:ring-0 tracking-wide"
+                                    />
+                                </div>
+                            </motion.div>
+                        ))}
+
+                        {/* OTP boxes (only for citizen phone flow) */}
+                        {otpSent && cfg.loginType === "phone_otp" && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">
+                                    6-Digit OTP sent to +91 {values["phone"]}
+                                </label>
+                                <div className="grid grid-cols-6 gap-2">
+                                    {otp.map((digit, i) => (
+                                        <input
+                                            key={i}
+                                            id={`otp-box-${i}`}
+                                            type="text"
+                                            inputMode="numeric"
+                                            maxLength={1}
+                                            value={digit}
+                                            onChange={(e) => handleOtpChange(i, e.target.value)}
+                                            onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                                            className="aspect-square text-center text-xl font-bold font-mono-code bg-surface-container-low rounded-xl border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                        />
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => { setOtpSent(false); setOtp(["","","","","",""]); }}
+                                    className="mt-3 text-xs text-primary font-semibold underline underline-offset-2"
+                                >
+                                    ← Change number
+                                </button>
+                            </motion.div>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full h-14 rounded-2xl ${cfg.color} text-white font-bold text-base flex items-center justify-center space-x-2 shadow-lg active:scale-95 transition-transform disabled:opacity-70`}
+                        >
+                            {loading ? (
+                                <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                            ) : (
+                                <>
+                                    <span>{otpSent ? "Verify & Login" : ctaLabel}</span>
+                                    <span className="material-symbols-outlined">arrow_circle_right</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+
+                <div className="mt-4 flex items-center justify-center space-x-2">
+                    <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
+                    <p className="text-xs text-outline">256-bit SSL Secured · SocioSolve Jharkhand</p>
+                </div>
+            </div>
+        </motion.div>
+    );
+}

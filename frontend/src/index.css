@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tertiary-fixed-dim: #b7cbbd;
+  --color-on-tertiary-fixed-variant: #394b40;
+  --color-secondary-fixed: #ffddb6;
+  --color-secondary-container: #fdb248;
+  --color-on-primary-fixed-variant: #294e36;
+  --color-on-tertiary-container: #f5fff6;
+  --color-on-surface: #1b1b1e;
+  --color-on-error: #ffffff;
+  --color-on-secondary-container: #6f4600;
+  --color-surface-container-highest: #e4e1e6;
+  --color-on-primary-container: #f6fff4;
+  --color-background: #fbf8fc;
+  --color-primary: #3e644a;
+  --color-primary-container: #567d62;
+  --color-primary-fixed: #c2edcb;
+  --color-outline-variant: #c1c8c0;
+  --color-inverse-surface: #303033;
+  --color-on-background: #1b1b1e;
+  --color-surface-bright: #fbf8fc;
+  --color-on-secondary-fixed-variant: #643f00;
+  --color-inverse-primary: #a7d1b0;
+  --color-tertiary-fixed: #d3e8d9;
+  --color-on-surface-variant: #424942;
+  --color-on-secondary: #ffffff;
+  --color-on-primary-fixed: #00210f;
+  --color-tertiary: #4d6055;
+  --color-primary-fixed-dim: #a7d1b0;
+  --color-on-tertiary-fixed: #0d1f16;
+  --color-secondary-fixed-dim: #ffb959;
+  --color-surface-container-low: #f6f2f7;
+  --color-outline: #727972;
+  --color-error-container: #ffdad6;
+  --color-surface-dim: #dcd9dd;
+  --color-tertiary-container: #66796d;
+  --color-surface-container: #f0edf1;
+  --color-error: #ba1a1a;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-secondary-fixed: #2a1800;
+  --color-on-primary: #ffffff;
+  --color-surface-tint: #41674c;
+  --color-on-tertiary: #ffffff;
+  --color-secondary: #845400;
+  --color-surface-container-high: #eae7eb;
+  --color-inverse-on-surface: #f3f0f4;
+  --color-surface-variant: #e4e1e6;
+  --color-surface: #fbf8fc;
+  --color-on-error-container: #93000a;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono-code: "JetBrains Mono", monospace;
+}
+
+:root {
+  --background: var(--color-background);
+  --on-background: var(--color-on-background);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--on-background);
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Add some base custom classes used in the HTML */
+.active-spring:active {
+  transform: scale(0.97);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0,0,0,0.02);
+}
