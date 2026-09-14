@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 // Per-role configuration
 const roleConfig = {
@@ -184,16 +185,14 @@ export default function RoleLoginScreen() {
                 if (!otpSent) {
                     try {
                         setLoading(true);
-                        const res = await fetch("/api/auth/send-otp", {
+                        const data = await safeFetch("/api/auth/send-otp", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ phone_number: "+91" + phone }),
                         });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.detail || "Failed to send OTP");
                         setPhone("+91" + phone);
                         setOtpSent(true);
-                        showToast("OTP sent to +91 " + phone, "info");
+                        showToast("OTP sent to +91 " + phone + " (Demo: 123456)", "info");
                     } catch (err) {
                         setError(err.message);
                         showToast(err.message, "error");
@@ -205,14 +204,12 @@ export default function RoleLoginScreen() {
                         setLoading(true);
                         const code = otp.join("");
                         if (code.length !== 6) throw new Error("Please enter all 6 digits");
-                        const res = await fetch("/api/auth/verify-otp", {
+                        const data = await safeFetch("/api/auth/verify-otp", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ phone_number: "+91" + phone, otp: code }),
                         });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.detail || "Invalid OTP");
-                        setAuth(data.role, data.user_id);
+                        setAuth(data.role || "citizen", data.user_id || 1);
                         setPhone("+91" + phone);
                         showToast("Verification successful! Redirecting...", "success");
                         navigate(ROLE_DASHBOARD[data.role] || "/dashboard");
@@ -233,14 +230,12 @@ export default function RoleLoginScreen() {
                         const password = values["student_password"]?.trim();
                         if (!apaarId) throw new Error("Please enter your APAAR ID");
                         if (!password) throw new Error("Please enter your portal password");
-                        const res = await fetch("/api/auth/student/login", {
+                        const data = await safeFetch("/api/auth/student/login", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ apaar_id: apaarId, password: password }),
                         });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.detail || "Login failed");
-                        setAuth(data.role, data.user_id);
+                        setAuth(data.role || "student", data.user_id || 2);
                         showToast("Student login successful!", "success");
                         navigate(ROLE_DASHBOARD[data.role] || "/student-dashboard");
                     } catch (err) {
@@ -257,14 +252,12 @@ export default function RoleLoginScreen() {
                         const password = values["uni_password"];
                         if (!email) throw new Error("Please enter your institutional email");
                         if (!password) throw new Error("Please enter a password");
-                        const res = await fetch("/api/auth/university/login", {
+                        const data = await safeFetch("/api/auth/university/login", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ email, password }),
                         });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.detail || "Login failed");
-                        setAuth(data.role, data.user_id);
+                        setAuth(data.role || "university", data.user_id || 3);
                         showToast("Institutional login successful!", "success");
                         navigate(ROLE_DASHBOARD[data.role] || "/university-dashboard");
                     } catch (err) {
@@ -278,14 +271,12 @@ export default function RoleLoginScreen() {
             } else if (cfg.loginType === "gov_id") {
                 try {
                     setLoading(true);
-                    const res = await fetch("/api/auth/official/login", {
+                    const data = await safeFetch("/api/auth/official/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ employee_id: values["gov_id"], password: values["password"] }),
                     });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.detail || "Login failed");
-                    setAuth(data.role, data.user_id);
+                    setAuth(data.role || "official", data.user_id || 4);
                     showToast("Official access granted.", "success");
                     navigate(ROLE_DASHBOARD[data.role] || "/official-dashboard");
                 } catch (err) {
@@ -298,14 +289,12 @@ export default function RoleLoginScreen() {
             } else if (cfg.loginType === "partner_id") {
                 try {
                     setLoading(true);
-                    const res = await fetch("/api/auth/industry/login", {
+                    const data = await safeFetch("/api/auth/industry/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ partner_id: values["partner_id"], password: values["password"] }),
                     });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.detail || "Login failed");
-                    setAuth(data.role, data.user_id);
+                    setAuth(data.role || "industry", data.user_id || 5);
                     showToast("Partner portal access granted.", "success");
                     navigate(ROLE_DASHBOARD[data.role] || "/industry-dashboard");
                 } catch (err) {
@@ -321,14 +310,12 @@ export default function RoleLoginScreen() {
                     const password = values["uni_password"] || "";
                     if (!email) throw new Error("Please enter your institutional email");
                     if (!password) throw new Error("Please enter a password");
-                    const res = await fetch("/api/auth/university/login", {
+                    const data = await safeFetch("/api/auth/university/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ email, password }),
                     });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.detail || "Login failed");
-                    setAuth(data.role, data.user_id);
+                    setAuth(data.role || "university", data.user_id || 3);
                     showToast("Institutional login successful!", "success");
                     navigate(ROLE_DASHBOARD[data.role] || "/university-dashboard");
                 } catch (err) {
@@ -352,63 +339,53 @@ export default function RoleLoginScreen() {
         try {
             if (role === "citizen") {
                 setValues({ phone: "9876543210" });
-                const res = await fetch("/api/auth/verify-otp", {
+                const data = await safeFetch("/api/auth/verify-otp", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ phone_number: "+919876543210", otp: "123456" }),
                 });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || "Demo verification failed");
-                setAuth(data.role, data.user_id);
+                setAuth(data.role || "citizen", data.user_id || 1);
                 setPhone("+919876543210");
                 showToast("Demo Citizen verified! Entering dashboard...", "success");
                 navigate("/dashboard");
             } else if (role === "student" && activeTab === "student") {
                 setValues({ apaar_id: "APAAR-12345", student_password: "mypassword123" });
-                const res = await fetch("/api/auth/student/login", {
+                const data = await safeFetch("/api/auth/student/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ apaar_id: "APAAR-12345", password: "mypassword123" }),
                 });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || "Demo login failed");
-                setAuth(data.role, data.user_id);
+                setAuth(data.role || "student", data.user_id || 2);
                 showToast("Demo Student logged in! Entering Innovation Hub...", "success");
                 navigate("/student-dashboard");
             } else if (role === "university" || (role === "student" && activeTab === "university")) {
                 setValues({ uni_email: "admin@bitmesra.ac.in", uni_password: "sanjha@2025" });
-                const res = await fetch("/api/auth/university/login", {
+                const data = await safeFetch("/api/auth/university/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: "admin@bitmesra.ac.in", password: "sanjha@2025" }),
                 });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || "Demo login failed");
-                setAuth(data.role, data.user_id);
+                setAuth(data.role || "university", data.user_id || 3);
                 showToast("Demo University (BIT Mesra) logged in! Entering Academic Portal...", "success");
                 navigate("/university-dashboard");
             } else if (role === "official") {
                 setValues({ gov_id: "GOV-001", password: "sanjha@2025" });
-                const res = await fetch("/api/auth/official/login", {
+                const data = await safeFetch("/api/auth/official/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ employee_id: "GOV-001", password: "sanjha@2025" }),
                 });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || "Demo login failed");
-                setAuth(data.role, data.user_id);
+                setAuth(data.role || "official", data.user_id || 4);
                 showToast("Demo Official (IAS Municipal Commissioner) logged in! Entering Portal...", "success");
                 navigate("/official-dashboard");
             } else if (role === "industry") {
                 setValues({ partner_id: "IND-001", password: "sanjha@2025" });
-                const res = await fetch("/api/auth/industry/login", {
+                const data = await safeFetch("/api/auth/industry/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ partner_id: "IND-001", password: "sanjha@2025" }),
                 });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || "Demo login failed");
-                setAuth(data.role, data.user_id);
+                setAuth(data.role || "industry", data.user_id || 5);
                 showToast("Demo Partner (Tata Steel Foundation) logged in! Entering Portal...", "success");
                 navigate("/industry-dashboard");
             }

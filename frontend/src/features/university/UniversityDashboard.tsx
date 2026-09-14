@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function UniversityDashboard() {
     const [dashboardData, setDashboardData] = useState<any>(null);
@@ -26,25 +27,21 @@ export default function UniversityDashboard() {
         setLoading(true);
         setError(null);
         try {
-            const [dashRes, probRes, rankRes, studRes] = await Promise.all([
-                fetch("/api/university/dashboard"),
-                fetch("/api/university/problems"),
-                fetch("/api/university/ranking"),
-                fetch("/api/university/students")
+            const [dash, prob, rank, stud] = await Promise.all([
+                safeFetch("/api/university/dashboard"),
+                safeFetch("/api/university/problems"),
+                safeFetch("/api/university/ranking"),
+                safeFetch("/api/university/students")
             ]);
 
-            if (!dashRes.ok || !probRes.ok || !rankRes.ok || !studRes.ok) {
-                throw new Error("Failed to load university records");
-            }
-
-            setDashboardData(await dashRes.json());
-            setProblems(await probRes.json());
-            setRanking(await rankRes.json());
-            setStudents(await studRes.json());
+            setDashboardData(dash || {});
+            setProblems(Array.isArray(prob) ? prob : []);
+            setRanking(Array.isArray(rank) ? rank : []);
+            setStudents(Array.isArray(stud) ? stud : []);
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to load university records");
-            showToast("Unable to load university records. Please try again.", "error");
+            showToast("Unable to load university records.", "error");
         } finally {
             setLoading(false);
         }
@@ -53,7 +50,7 @@ export default function UniversityDashboard() {
     const handleLogout = async () => {
         setLoading(true);
         try {
-            await fetch("/api/auth/logout", { method: "POST" });
+            await safeFetch("/api/auth/logout", { method: "POST" });
             showToast("Logged out successfully", "info");
         } catch (e: any) {
             console.error(e);

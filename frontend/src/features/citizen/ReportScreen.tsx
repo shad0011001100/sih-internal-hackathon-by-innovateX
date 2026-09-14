@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 const CATEGORIES = [
     { label: "Civic Issue", icon: "campaign" },
@@ -94,19 +95,13 @@ export default function ReportScreen() {
                 photo_base64: photo || undefined,
             };
 
-            const res = await fetch("/api/reports", {
+            await safeFetch("/api/reports", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify(payload),
             });
 
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || `Server returned ${res.status}`);
-            }
-
-            const data = await res.json();
             showToast("Grievance submitted successfully! Ticket token generated.", "success");
             navigate("/dashboard");
         } catch (err: any) {

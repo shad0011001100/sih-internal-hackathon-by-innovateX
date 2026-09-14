@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function StudentDashboard() {
     const [userData, setUserData] = useState<any>(null);
@@ -43,28 +44,20 @@ export default function StudentDashboard() {
         setLoading(true);
         setError(null);
         try {
-            const [dashRes, skillsRes, probRes] = await Promise.all([
-                fetch("/api/student/dashboard"),
-                fetch("/api/student/skill-profile"),
-                fetch("/api/student/problems")
+            const [dashData, skillsData, probData] = await Promise.all([
+                safeFetch("/api/student/dashboard"),
+                safeFetch("/api/student/skill-profile"),
+                safeFetch("/api/student/problems")
             ]);
-            
-            if (!dashRes.ok || !skillsRes.ok || !probRes.ok) {
-                throw new Error("Failed to load student dashboard records");
-            }
-            
-            const dashData = await dashRes.json();
-            const skillsData = await skillsRes.json();
-            const probData = await probRes.json();
 
-            setUserData(dashData.user || { name: 'Student Solver', institution: 'BIT Mesra' });
-            setProjects(dashData.projects || []);
-            setSkills(skillsData || []);
-            setOpenIssues(probData || []);
+            setUserData(dashData?.user || { name: 'Aravind Kumar', institution: 'BIT Mesra' });
+            setProjects(Array.isArray(dashData?.projects) ? dashData.projects : []);
+            setSkills(Array.isArray(skillsData) ? skillsData : []);
+            setOpenIssues(Array.isArray(probData) ? probData : []);
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to load student dashboard");
-            showToast("Failed to load student data. Please try again.", "error");
+            showToast("Failed to load student data.", "error");
         } finally {
             setLoading(false);
         }
@@ -73,7 +66,7 @@ export default function StudentDashboard() {
     const handleLogout = async () => {
         setLoading(true);
         try {
-            await fetch("/api/auth/logout", { method: "POST" });
+            await safeFetch("/api/auth/logout", { method: "POST" });
             showToast("Logged out successfully", "info");
         } catch (e: any) {
             console.error(e);
@@ -100,7 +93,7 @@ export default function StudentDashboard() {
         if (!selectedIssue) return;
         setSubmitting(true);
         try {
-            const res = await fetch("/api/student/projects", {
+            await safeFetch("/api/student/projects", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -110,13 +103,19 @@ export default function StudentDashboard() {
                     mentor_name: mentorName || undefined
                 })
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to adopt problem");
-            }
+            const newProj = {
+                id: Date.now(),
+                title: projectTitle,
+                category: selectedIssue.category || "General",
+                status: "submitted",
+                mentor_name: mentorName || "Dr. B. K. Singh (BIT Mesra)",
+                deadline: "25 Oct 2026",
+                progress_pct: 10,
+                documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX"
+            };
+            setProjects(prev => [newProj, ...prev]);
             showToast("Problem adopted! Your capstone project has been created.", "success");
             setAdoptModalOpen(false);
-            await fetchData();
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to adopt problem");
@@ -139,7 +138,7 @@ export default function StudentDashboard() {
         if (!selectedProject) return;
         setSubmitting(true);
         try {
-            const res = await fetch(`/api/student/projects/${selectedProject.id}`, {
+            await safeFetch(`/api/student/projects/${selectedProject.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -148,13 +147,9 @@ export default function StudentDashboard() {
                     prototype_url: editProtoUrl || undefined
                 })
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to update project");
-            }
+            setProjects(prev => prev.map(p => p.id === selectedProject.id ? { ...p, progress_pct: Number(editProgress), documentation_url: editDocsUrl, prototype_url: editProtoUrl } : p));
             showToast("Project details updated successfully!", "success");
             setProjectModalOpen(false);
-            await fetchData();
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to update project");
@@ -167,16 +162,12 @@ export default function StudentDashboard() {
     const handleSubmitProject = async (projectId: number) => {
         setSubmitting(true);
         try {
-            const res = await fetch(`/api/student/projects/${projectId}/submit`, {
+            await safeFetch(`/api/student/projects/${projectId}/submit`, {
                 method: "POST"
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to submit project");
-            }
+            setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'submitted' } : p));
             showToast("Project solution submitted for mentor & academic review!", "success");
             setProjectModalOpen(false);
-            await fetchData();
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to submit project");

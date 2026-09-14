@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function DashboardScreen() {
     const [reports, setReports] = useState<any[]>([]);
@@ -94,27 +95,15 @@ export default function DashboardScreen() {
         setLoading(true);
         setError(null);
         try {
-            // Fetch user's personal reports AND public community feed in parallel
-            const [myRes, feedRes] = await Promise.all([
-                fetch("/api/reports/my", { credentials: "include" }).catch(() => null),
-                fetch("/api/reports?verified_only=false&limit=50", { credentials: "include" }).catch(() => null)
+            const [myData, feedData] = await Promise.all([
+                safeFetch("/api/reports/my", { credentials: "include" }),
+                safeFetch("/api/reports?verified_only=false&limit=50", { credentials: "include" })
             ]);
 
-            if (myRes && myRes.ok) {
-                const myData = await myRes.json();
-                setMyReports(Array.isArray(myData) ? myData : []);
-            } else {
-                setMyReports([]);
-            }
-
-            if (feedRes && feedRes.ok) {
-                const feedData = await feedRes.json();
-                setReports(Array.isArray(feedData) ? feedData : []);
-            } else {
-                throw new Error("Failed to load community grievances feed");
-            }
+            setMyReports(Array.isArray(myData) ? myData : []);
+            setReports(Array.isArray(feedData) ? feedData : []);
         } catch (err: any) {
-            const errorMsg = err.message || "Failed to load civic reports. Please check your network.";
+            const errorMsg = err.message || "Failed to load civic reports.";
             setError(errorMsg);
             showToast(errorMsg, "error");
         } finally {
@@ -129,7 +118,7 @@ export default function DashboardScreen() {
     const handleLogout = async () => {
         setLoading(true);
         try {
-            await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+            await safeFetch("/api/auth/logout", { method: "POST", credentials: "include" });
             showToast("Logged out successfully", "info");
         } catch (err: any) {
             setError("Logout failed");

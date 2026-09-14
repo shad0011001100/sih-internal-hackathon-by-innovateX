@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function IndustryDashboard() {
     const [dashboardData, setDashboardData] = useState<any>(null);
@@ -26,17 +27,12 @@ export default function IndustryDashboard() {
         setLoading(true);
         setError(null);
         try {
-            const [dashRes, marketRes] = await Promise.all([
-                fetch("/api/industry/dashboard"),
-                fetch("/api/industry/marketplace")
+            const [dash, market] = await Promise.all([
+                safeFetch("/api/industry/dashboard"),
+                safeFetch("/api/industry/marketplace")
             ]);
-            if (!dashRes.ok || !marketRes.ok) {
-                throw new Error("Failed to load industry dashboard data");
-            }
-            const dash = await dashRes.json();
-            const market = await marketRes.json();
-            setDashboardData(dash);
-            setMarketplace(market || []);
+            setDashboardData(dash || {});
+            setMarketplace(Array.isArray(market) ? market : []);
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to load dashboard data");
@@ -50,7 +46,7 @@ export default function IndustryDashboard() {
         setFundingId(projectId);
         setSubmitting(true);
         try {
-            const res = await fetch("/api/industry/fund", {
+            await safeFetch("/api/industry/fund", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -59,12 +55,8 @@ export default function IndustryDashboard() {
                     offer_type: "funding"
                 })
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Funding pledge failed");
-            }
             showToast(`Funding pledge of ${formatINR(amount)} initiated successfully!`, "success");
-            await fetchDashboardData();
+            setMarketplace(prev => prev.filter(m => m.id !== projectId));
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to pledge funding");
@@ -78,7 +70,7 @@ export default function IndustryDashboard() {
     const handleLogout = async () => {
         setLoading(true);
         try {
-            await fetch("/api/auth/logout", { method: "POST" });
+            await safeFetch("/api/auth/logout", { method: "POST" });
             showToast("Logged out successfully", "info");
         } catch (e: any) {
             console.error(e);

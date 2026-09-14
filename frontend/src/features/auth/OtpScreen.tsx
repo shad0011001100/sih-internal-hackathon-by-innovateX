@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function OtpScreen() {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -100,15 +101,13 @@ export default function OtpScreen() {
         setError(null);
         try {
             const phoneParam = rawPhone.startsWith("+91") ? rawPhone : "+91" + rawPhone;
-            const res = await fetch("/api/auth/send-otp", {
+            await safeFetch("/api/auth/send-otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone_number: phoneParam }),
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Failed to resend OTP");
             setCountdown(60);
-            showToast(`OTP resent successfully to ${displayPhone}`, "success");
+            showToast(`OTP resent successfully to ${displayPhone} (Demo Code: 123456)`, "success");
         } catch (err: any) {
             setError(err.message);
             showToast(err.message || "Failed to resend OTP", "error");
@@ -130,13 +129,11 @@ export default function OtpScreen() {
         setError(null);
         try {
             const phoneParam = rawPhone.startsWith("+91") ? rawPhone : "+91" + rawPhone;
-            const res = await fetch("/api/auth/verify-otp", {
+            const data = await safeFetch("/api/auth/verify-otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone_number: phoneParam, otp: code }),
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Invalid OTP");
             
             setAuth(data.role || "citizen", data.user_id || 1);
             setPhone(phoneParam);

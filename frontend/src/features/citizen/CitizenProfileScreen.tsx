@@ -1,9 +1,10 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function CitizenProfileScreen() {
     const navigate = useNavigate();
@@ -31,11 +32,8 @@ export default function CitizenProfileScreen() {
     useEffect(() => {
         const loadReports = async () => {
             try {
-                const res = await fetch("/api/reports/my", { credentials: "include" });
-                if (res.ok) {
-                    const data = await res.json();
-                    setMyReports(Array.isArray(data) ? data : []);
-                }
+                const data = await safeFetch("/api/reports/my", { credentials: "include" });
+                setMyReports(Array.isArray(data) ? data : []);
             } catch (err) {
                 console.error("Failed to load user complaints:", err);
             } finally {
@@ -57,7 +55,7 @@ export default function CitizenProfileScreen() {
 
     const handleLogout = async () => {
         try {
-            await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+            await safeFetch("/api/auth/logout", { method: "POST", credentials: "include" });
         } catch (e) {
             console.error(e);
         }

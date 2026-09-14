@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function OfficialDashboard() {
     const [activeTab, setActiveTab] = useState("Reports");
@@ -35,15 +36,11 @@ export default function OfficialDashboard() {
         setError(null);
         try {
             if (activeTab === "Reports") {
-                const res = await fetch("/api/admin/reports");
-                if (!res.ok) throw new Error("Failed to fetch reports");
-                const data = await res.json();
-                setReports(data || []);
+                const data = await safeFetch("/api/admin/reports");
+                setReports(Array.isArray(data) ? data : []);
             } else {
-                const res = await fetch("/api/admin/submissions");
-                if (!res.ok) throw new Error("Failed to fetch student submissions");
-                const data = await res.json();
-                setSubmissions(data || []);
+                const data = await safeFetch("/api/admin/submissions");
+                setSubmissions(Array.isArray(data) ? data : []);
             }
         } catch (e: any) {
             console.error(e);
@@ -57,7 +54,7 @@ export default function OfficialDashboard() {
     const handleLogout = async () => {
         setLoading(true);
         try {
-            await fetch("/api/auth/logout", { method: "POST" });
+            await safeFetch("/api/auth/logout", { method: "POST" });
             showToast("Logged out successfully", "info");
         } catch (e: any) {
             console.error(e);
@@ -74,17 +71,14 @@ export default function OfficialDashboard() {
         setMutatingId(id);
         setSubmitting(true);
         try {
-            const res = await fetch(`/api/admin/reports/${id}/status`, {
+            await safeFetch(`/api/admin/reports/${id}/status`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status })
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to update report status");
-            }
             showToast(`Report #${id} status updated to ${status.replace("_", " ")}`, "success");
-            await fetchData();
+            // update local state immediately
+            setReports(prev => prev.map(r => r.id === id ? { ...r, status } : r));
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Status update failed");
@@ -100,20 +94,16 @@ export default function OfficialDashboard() {
         if (!selectedReportId) return;
         setSubmitting(true);
         try {
-            const res = await fetch(`/api/admin/reports/${selectedReportId}/assign`, {
+            await safeFetch(`/api/admin/reports/${selectedReportId}/assign`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ university_id: parseInt(universityId), department })
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to assign university");
-            }
             showToast(`Report #${selectedReportId} assigned to University #${universityId} (${department})`, "success");
+            setReports(prev => prev.map(r => r.id === selectedReportId ? { ...r, status: "assigned", assigned_university_id: parseInt(universityId), assigned_department: department } : r));
             setShowAssignModal(false);
-            setUniversityId("");
-            setDepartment("");
-            await fetchData();
+            setUniversityId("1");
+            setDepartment("Computer Science & Engineering (AI/Software)");
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Assignment failed");
@@ -127,17 +117,13 @@ export default function OfficialDashboard() {
         setMutatingId(id);
         setSubmitting(true);
         try {
-            const res = await fetch(`/api/admin/submissions/${id}/review`, {
+            await safeFetch(`/api/admin/submissions/${id}/review`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action, comments: "Reviewed via official portal" })
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || `Failed to ${action} submission`);
-            }
             showToast(`Submission #${id} ${action === 'approve' ? 'approved' : 'rejected'} successfully`, "success");
-            await fetchData();
+            setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status: action === 'approve' ? 'accepted' : 'draft' } : s));
         } catch (e: any) {
             console.error(e);
             setError(e.message || `Failed to ${action} submission`);
@@ -152,15 +138,11 @@ export default function OfficialDashboard() {
         setMutatingId(id);
         setSubmitting(true);
         try {
-            const res = await fetch(`/api/admin/submissions/${id}/implement`, {
+            await safeFetch(`/api/admin/submissions/${id}/implement`, {
                 method: "POST"
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to mark as implemented");
-            }
             showToast(`Project #${id} successfully marked as implemented!`, "success");
-            await fetchData();
+            setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status: 'completed' } : s));
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Implementation update failed");

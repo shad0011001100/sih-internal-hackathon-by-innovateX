@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
+import { safeFetch } from "../../services/api";
 
 export default function LoginScreen() {
     const [phone, setPhone] = useState("");
@@ -26,15 +27,13 @@ export default function LoginScreen() {
         setError(null);
         try {
             const phoneParam = "+91" + trimmedPhone;
-            const res = await fetch("/api/auth/send-otp", {
+            const data = await safeFetch("/api/auth/send-otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone_number: phoneParam }),
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Failed to send OTP");
             setStorePhone(phoneParam);
-            showToast("OTP sent to your mobile number", "info");
+            showToast("OTP sent to your mobile number (Demo Code: 123456)", "info");
             navigate("/otp", { state: { phone: phoneParam } });
         } catch (err: any) {
             setError(err.message);
