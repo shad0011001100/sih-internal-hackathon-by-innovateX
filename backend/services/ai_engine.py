@@ -13,7 +13,7 @@ if api_key:
     genai.configure(api_key=api_key)
 
 # NVIDIA NIM setup (Nemotron for text intelligence)
-NVIDIA_API_KEY = "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"
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 nv_client = OpenAI(
   base_url = "https://integrate.api.nvidia.com/v1",
   api_key = NVIDIA_API_KEY,
