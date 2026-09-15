@@ -61,13 +61,42 @@ def create_report(req: ReportCreate, user: models.User = Depends(get_current_use
                 detail="Image payload too large. Maximum supported photo upload is 10MB."
             )
 
+    # Locality GPS Fallback for Jharkhand / Ranchi (when device GPS is disabled/blocked)
+    final_lat = req.gps_lat
+    final_lon = req.gps_lon
+    if final_lat is None or final_lon is None:
+        LOCALITY_COORDINATES = {
+            "harmu": (23.3540, 85.3120),
+            "morabadi": (23.3910, 85.3280),
+            "doranda": (23.3320, 85.3250),
+            "kanke": (23.4280, 85.3180),
+            "lalpur": (23.3710, 85.3360),
+            "bariatu": (23.3980, 85.3560),
+            "ratu": (23.3850, 85.2650),
+            "hinoo": (23.3210, 85.3200),
+            "namkum": (23.3420, 85.3850),
+            "kishoreganj": (23.3670, 85.3110),
+            "chutia": (23.3550, 85.3400),
+            "kokar": (23.3800, 85.3500),
+            "main road": (23.3600, 85.3250),
+            "dhwa": (23.3100, 85.3050),
+        }
+        search_text = (req.description + " " + (req.title or "")).lower()
+        for loc_name, (lat, lon) in LOCALITY_COORDINATES.items():
+            if loc_name in search_text:
+                final_lat = lat
+                final_lon = lon
+                break
+
     # Run AI Triage if photo provided
     spam_score = 0.0
+    requires_manual_review = False
     if req.photo_base64 and req.photo_base64 != "dummy":
         ai_eval = verify_image_authenticity(req.photo_base64)
-        if not ai_eval.get("is_genuine", True):
+        if not ai_eval.get("is_genuine", True) and not ai_eval.get("requires_manual_review", False):
             raise HTTPException(status_code=400, detail=f"AI Triage Rejected: {ai_eval.get('reason', 'Image flagged as spam/irrelevant.')}")
         spam_score = ai_eval.get("confidence", 0.5)
+        requires_manual_review = ai_eval.get("requires_manual_review", False)
 
     # Analyze and route problem (including student suitability & text spam detection)
     routing_data = analyze_and_route_problem(req.description, req.category, req.photo_base64)
@@ -80,28 +109,39 @@ def create_report(req: ReportCreate, user: models.User = Depends(get_current_use
     cluster_parent_id = None
 
     import re
-    new_words = set(re.findall(r'\b\w{4,}\b', (req.description + " " + (req.title or "")).lower()))
+    CIVIC_STOPWORDS = {
+        "broken", "issue", "problem", "please", "help", "here", "near", "road", 
+        "area", "very", "ward", "colony", "ranchi", "jharkhand", "urgent", "bad",
+        "the", "and", "this", "that", "with", "from", "have", "been", "there",
+        "kharab", "karo", "hai", "hain", "kripya", "bahut", "wala", "wali"
+    }
+    raw_tokens = set(re.findall(r'\b\w{4,}\b', (req.description + " " + (req.title or "")).lower()))
+    new_words = {w for w in raw_tokens if w not in CIVIC_STOPWORDS} or raw_tokens
     recent_reports = db.query(models.Report).order_by(models.Report.created_at.desc()).limit(100).all()
     
     for existing in recent_reports:
         # Check GPS proximity (within ~1.5km = 0.015 degrees)
         geo_close = False
-        if req.gps_lat and req.gps_lon and existing.gps_lat and existing.gps_lon:
-            d_lat = abs(req.gps_lat - existing.gps_lat)
-            d_lon = abs(req.gps_lon - existing.gps_lon)
+        if final_lat and final_lon and existing.gps_lat and existing.gps_lon:
+            d_lat = abs(final_lat - existing.gps_lat)
+            d_lon = abs(final_lon - existing.gps_lon)
             if d_lat < 0.015 and d_lon < 0.015:
                 geo_close = True
 
-        # Check text keyword token similarity
+        # Check text keyword token similarity with stopword pruning
         existing_text = ((existing.challenge_summary or "") + " " + (existing.description or "")).lower()
-        existing_words = set(re.findall(r'\b\w{4,}\b', existing_text))
+        existing_raw = set(re.findall(r'\b\w{4,}\b', existing_text))
+        existing_words = {w for w in existing_raw if w not in CIVIC_STOPWORDS} or existing_raw
         
         if new_words and existing_words:
-            overlap = len(new_words.intersection(existing_words))
-            union = len(new_words.union(existing_words))
-            jaccard = overlap / union if union > 0 else 0
+            overlap = new_words.intersection(existing_words)
+            union = new_words.union(existing_words)
+            jaccard = len(overlap) / len(union) if union else 0
             
-            if jaccard > 0.55 or (geo_close and jaccard > 0.35) or (existing.category == req.category and geo_close and jaccard > 0.25):
+            is_same_cat = (existing.category or "").lower() == (req.category or "").lower()
+            if (jaccard > 0.70 and len(overlap) >= 2) or \
+               (geo_close and is_same_cat and jaccard > 0.40 and len(overlap) >= 2) or \
+               (geo_close and jaccard > 0.60):
                 is_duplicate = True
                 cluster_parent_id = existing.id
                 duplicate_reason = f"Duplicate cluster of Ticket #{existing.id} ({existing.category}): '{existing.challenge_summary or existing.description[:45]}...' reported nearby."
@@ -114,8 +154,8 @@ def create_report(req: ReportCreate, user: models.User = Depends(get_current_use
         citizen_id=user.id,
         category=req.category,
         description=req.description,
-        gps_lat=req.gps_lat,
-        gps_lon=req.gps_lon,
+        gps_lat=final_lat,
+        gps_lon=final_lon,
         photo_url=photo_url,
         is_verified=False,
         ai_spam_score=spam_score,

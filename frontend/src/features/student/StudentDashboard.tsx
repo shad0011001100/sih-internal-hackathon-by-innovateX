@@ -47,10 +47,19 @@ export default function StudentDashboard() {
     const logout = useAuthStore(state => state.logout);
     const { showToast, showComingSoon } = useToast();
 
-    const handleSaveSocials = () => {
+    const handleSaveSocials = async () => {
         localStorage.setItem("student_linkedin", linkedinUrl);
         localStorage.setItem("student_github", githubUrl);
         setUserData((prev: any) => ({ ...prev, linkedin_url: linkedinUrl, github_url: githubUrl }));
+        try {
+            await safeFetch("/api/student/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ linkedin_url: linkedinUrl, github_url: githubUrl })
+            });
+        } catch (err) {
+            // Silently persist in local storage if backend offline
+        }
         showToast("Profile links saved! Visible to Officials & Corporate Partners.", "success");
     };
 
@@ -68,7 +77,15 @@ export default function StudentDashboard() {
                 safeFetch("/api/student/problems")
             ]);
 
-            setUserData(dashData?.user || { name: 'Aravind Kumar', institution: 'BIT Mesra' });
+            const user = dashData?.user || { name: 'Aravind Kumar', institution: 'BIT Mesra' };
+            setUserData(user);
+            if (user.linkedin_url && !localStorage.getItem("student_linkedin")) {
+                setLinkedinUrl(user.linkedin_url);
+            }
+            if (user.github_url && !localStorage.getItem("student_github")) {
+                setGithubUrl(user.github_url);
+            }
+
             setProjects(Array.isArray(dashData?.projects) ? dashData.projects : []);
             setSkills(Array.isArray(skillsData) ? skillsData : []);
             setOpenIssues(Array.isArray(probData) ? probData : []);

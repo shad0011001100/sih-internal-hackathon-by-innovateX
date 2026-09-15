@@ -60,10 +60,15 @@ def safe_parse_json(raw_text: str) -> dict:
 def verify_image_authenticity(base64_data: str) -> dict:
     """
     Passes the base64 image to Gemini 1.5 Flash to verify if it is a genuine civic issue.
-    Returns: {"is_genuine": bool, "confidence": float, "reason": str}
+    Returns: {"is_genuine": bool, "confidence": float, "requires_manual_review": bool, "reason": str}
     """
     if not api_key:
-        return {"is_genuine": True, "confidence": 0.99, "reason": "Bypassed AI triage (No API key found)"}
+        return {
+            "is_genuine": True, 
+            "confidence": 0.50, 
+            "requires_manual_review": True, 
+            "reason": "Automated vision triage key unconfigured (routed for official manual verification)"
+        }
     
     try:
         if "," in base64_data:
@@ -88,14 +93,21 @@ def verify_image_authenticity(base64_data: str) -> dict:
         ])
         
         response_text = response.text.strip()
-        return safe_parse_json(response_text)
+        parsed = safe_parse_json(response_text)
+        parsed["requires_manual_review"] = not parsed.get("is_genuine", True) or parsed.get("confidence", 0.0) < 0.75
+        return parsed
     except Exception as e:
         print(f"AI Engine Error: {e}")
-        return {"is_genuine": True, "confidence": 0.5, "reason": f"AI error fallback: {str(e)}"}
+        return {
+            "is_genuine": True, 
+            "confidence": 0.50, 
+            "requires_manual_review": True, 
+            "reason": f"AI vision verification fallback: {str(e)}"
+        }
 
 def is_spam_content(text: str) -> tuple[bool, float, str]:
     """
-    Evaluates text for spam, gibberish, abusive, or non-civic input.
+    Evaluates text for spam, gibberish, abusive, or non-civic input (English + Hindi/Hinglish).
     Returns (is_spam, spam_score, reason)
     """
     clean_text = text.lower().strip()
@@ -108,7 +120,8 @@ def is_spam_content(text: str) -> tuple[bool, float, str]:
         
     spam_indicators = [
         "free crypto", "buy followers", "casino", "viagra", "cheap loans", 
-        "earn money fast", "telegram bot", "whatsapp spam", "asdfgh", "test test test"
+        "earn money fast", "telegram bot", "whatsapp spam", "asdfgh", "test test test",
+        "paisa kamao", "ghar baithe kamao", "lottery", "rummy", "online game", "call girl"
     ]
     for sp in spam_indicators:
         if sp in clean_text:
@@ -119,17 +132,32 @@ def is_spam_content(text: str) -> tuple[bool, float, str]:
 def evaluate_student_suitability(description: str, category: str) -> tuple[bool, str]:
     """
     Checks if a civic problem is suitable for University Students (IoT, AI, Software, GIS, Water purification capstones)
-    versus routine physical manual municipal labor (e.g. pothole filling, asphalt road repair, manual construction)
-    that students cannot do.
+    versus routine physical manual municipal labor (pothole filling, asphalt road repair, manual ditch digging)
+    that students cannot do. Supports English and Hindi/Hinglish vocabulary.
     """
-    import re
     desc_lower = description.lower()
     
-    # Manual physical municipal labor keywords
-    manual_labor_patterns = r'\b(potholes?|patch\s+road|tar\s+road|asphalt|fill\s+road|ditch\s+digging|heavy\s+construction|masonry|brick\s+laying|road\s+digging|gutter\s+desilt|sewer\s+desilt|garbage\s+dump|bulldoze|excavat\w+|fix\s+pothole)\b'
+    # Manual physical municipal labor keywords (English + Hindi/Hinglish)
+    manual_labor_patterns = (
+        r'\b('
+        r'potholes?|patch\s+road|tar\s+road|asphalt|fill\s+road|ditch\s+digging|heavy\s+construction|'
+        r'masonry|brick\s+laying|road\s+digging|gutter\s+desilt|sewer\s+desilt|garbage\s+dump|'
+        r'bulldoze|excavat\w+|fix\s+pothole|broken\s+pipe\s+digging|'
+        r'gaddha|gaddhe|gadha|gadhha|khadda|khadde|kachra|koora|kuda|safai|naali|nali|'
+        r'drain\s+saaf|sadak\s+khod|sadak\s+toot|mitti|malba|marammat|jhadu|kachre\s+ka\s+dher|'
+        r'nala\s+jam|manhole\s+dhakkan|kachre\s+ki\s+safai|sadak\s+banwao'
+        r')\b'
+    )
     
-    # Check if user mentioned technical research / sensor / monitoring
-    tech_patterns = r'\b(ai|iot|sensors?|smart|algorithm|machine\s+learning|deep\s+learning|gis|mapping|solar|purif\w+|filter\w*|telemedicine|software|dashboard|computer\s+vision|water\s+testing|predictive)\b'
+    # Technical research / sensor / monitoring patterns
+    tech_patterns = (
+        r'\b('
+        r'ai|iot|sensors?|smart|algorithm|machine\s+learning|deep\s+learning|gis|mapping|'
+        r'solar|purif\w+|filter\w*|telemedicine|software|dashboard|computer\s+vision|'
+        r'water\s+testing|predictive|app|portal|cctv|camera|automation|automated|'
+        r'embedded|drone|scada|telemetry|microcontroller|arduino|esp32|raspberry\s+pi'
+        r')\b'
+    )
     
     labor_match = re.search(manual_labor_patterns, desc_lower)
     tech_match = re.search(tech_patterns, desc_lower)
