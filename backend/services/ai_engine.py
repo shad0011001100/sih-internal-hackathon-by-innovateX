@@ -1,6 +1,8 @@
 import os
 import json
 import base64
+import re
+import ast
 import google.generativeai as genai
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -20,6 +22,40 @@ nv_client = OpenAI(
   api_key = NVIDIA_API_KEY,
   timeout = 12.0
 )
+
+def safe_parse_json(raw_text: str) -> dict:
+    """
+    Resilient JSON extractor and healer:
+    1. Extracts outermost {...} block ignoring markdown or conversational preambles/postambles
+    2. Removes trailing commas before closing braces/brackets
+    3. Handles literal evaluation for single-quoted Python dict representations
+    """
+    clean_text = raw_text.strip()
+    if "```" in clean_text:
+        match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', clean_text)
+        if match:
+            clean_text = match.group(1).strip()
+
+    json_match = re.search(r'(\{[\s\S]*\})', clean_text)
+    if json_match:
+        clean_text = json_match.group(1).strip()
+
+    # Strip trailing commas
+    clean_text = re.sub(r',\s*([\}\]])', r'\1', clean_text)
+
+    try:
+        return json.loads(clean_text)
+    except Exception:
+        pass
+
+    try:
+        eval_result = ast.literal_eval(clean_text)
+        if isinstance(eval_result, dict):
+            return eval_result
+    except Exception:
+        pass
+
+    raise ValueError(f"Could not parse valid JSON from output: {raw_text[:80]}...")
 
 def verify_image_authenticity(base64_data: str) -> dict:
     """
@@ -52,10 +88,7 @@ def verify_image_authenticity(base64_data: str) -> dict:
         ])
         
         response_text = response.text.strip()
-        if response_text.startswith("```json"):
-            response_text = response_text.replace("```json", "").replace("```", "").strip()
-            
-        return json.loads(response_text)
+        return safe_parse_json(response_text)
     except Exception as e:
         print(f"AI Engine Error: {e}")
         return {"is_genuine": True, "confidence": 0.5, "reason": f"AI error fallback: {str(e)}"}
@@ -163,14 +196,7 @@ def analyze_and_route_problem(description: str, category: str, photo_base64: str
         )
         
         response_text = completion.choices[0].message.content.strip()
-        
-        # Clean up JSON if necessary
-        if response_text.startswith("```json"):
-            response_text = response_text.replace("```json", "").replace("```", "").strip()
-        elif response_text.startswith("```"):
-            response_text = response_text.replace("```", "").strip()
-            
-        data = json.loads(response_text)
+        data = safe_parse_json(response_text)
         
         # If heuristics flagged manual labor / pothole, enforce it
         if not heuristic_suitable:

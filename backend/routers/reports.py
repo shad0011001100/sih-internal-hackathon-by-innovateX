@@ -52,6 +52,15 @@ class ReportCreate(BaseModel):
 
 @router.post("")
 def create_report(req: ReportCreate, user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Guard against unbounded base64 payload memory exhaustion / DoS (10MB limit)
+    MAX_IMAGE_PAYLOAD_CHARS = 14 * 1024 * 1024  # ~10.5 MB in base64
+    if req.photo_base64 and req.photo_base64 != "dummy":
+        if len(req.photo_base64) > MAX_IMAGE_PAYLOAD_CHARS:
+            raise HTTPException(
+                status_code=413, 
+                detail="Image payload too large. Maximum supported photo upload is 10MB."
+            )
+
     # Run AI Triage if photo provided
     spam_score = 0.0
     if req.photo_base64 and req.photo_base64 != "dummy":
