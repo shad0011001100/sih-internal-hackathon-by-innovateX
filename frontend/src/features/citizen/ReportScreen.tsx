@@ -14,12 +14,29 @@ const CATEGORIES = [
     { label: "Health", icon: "local_hospital" },
 ];
 
+const RANCHI_WARDS = [
+    { name: "Ward 4: Doranda (South Zone)", lat: 23.3297, lon: 85.3262 },
+    { name: "Ward 1: Morabadi & Tagore Hill", lat: 23.3910, lon: 85.3280 },
+    { name: "Ward 9: Harmu Housing Colony", lat: 23.3540, lon: 85.3120 },
+    { name: "Ward 12: Kishoreganj & Sukhdeonagar", lat: 23.3670, lon: 85.3110 },
+    { name: "Ward 7: Lalpur & Circular Road", lat: 23.3710, lon: 85.3360 },
+    { name: "Ward 2: Kanke Road & Rock Garden", lat: 23.4280, lon: 85.3180 },
+    { name: "Ward 8: Bariatu & RIMS Medical Zone", lat: 23.3980, lon: 85.3560 },
+    { name: "Ward 14: Ratu Road & Pandra Market", lat: 23.3850, lon: 85.2650 },
+    { name: "Ward 5: Hinoo & Birsa Munda Airport", lat: 23.3210, lon: 85.3200 },
+    { name: "Ward 11: Namkum & Industrial Belt", lat: 23.3420, lon: 85.3850 },
+    { name: "Ward 10: RMC Central Hub (Main Road)", lat: 23.3600, lon: 85.3250 },
+    { name: "Ward 3: Kokar Industrial Area", lat: 23.3800, lon: 85.3500 },
+    { name: "Ward 6: Chutia & Ranchi Railway Station", lat: 23.3550, lon: 85.3400 }
+];
+
 export default function ReportScreen() {
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("Water Supply");
     const [description, setDescription] = useState("");
+    const [selectedWard, setSelectedWard] = useState(RANCHI_WARDS[0].name);
     const [gps, setGps] = useState<{ lat: number; lon: number } | null>({ lat: 23.3297, lon: 85.3262 });
-    const [gpsStatus, setGpsStatus] = useState<string>("Ward 4, Doranda, Ranchi (23.3297° N, 85.3262° E)");
+    const [gpsStatus, setGpsStatus] = useState<string>("Ward 4: Doranda (23.3297° N, 85.3262° E)");
     const [isLocating, setIsLocating] = useState(false);
     const [photo, setPhoto] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -28,6 +45,16 @@ export default function ReportScreen() {
 
     const navigate = useNavigate();
     const { showToast, showComingSoon } = useToast();
+
+    const handleWardSelect = (wardName: string) => {
+        const ward = RANCHI_WARDS.find(w => w.name === wardName);
+        if (ward) {
+            setSelectedWard(ward.name);
+            setGps({ lat: ward.lat, lon: ward.lon });
+            setGpsStatus(`${ward.name} (${ward.lat.toFixed(4)}° N, ${ward.lon.toFixed(4)}° E)`);
+            showToast(`Location tagged to ${ward.name}`, "info");
+        }
+    };
 
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -310,17 +337,6 @@ export default function ReportScreen() {
 <p className="text-xs text-[#727972] mt-1 font-mono">
               Supports JPG, PNG, MP4, PDF, DOC (Max 25MB). Auto-extracts EXIF GPS coordinates.
             </p>
-{/*  Geotag Badge & Location Refresh Button  */}
-<div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-<button
-    type="button"
-    onClick={requestGps}
-    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c2edcb]/60 hover:bg-[#c2edcb] border border-[#3e644a]/30 text-xs font-semibold text-[#294e36] transition-colors cursor-pointer shadow-xs active:scale-95"
->
-    <span className="material-symbols-outlined text-[16px] text-[#3e644a]">my_location</span>
-    <span>{isLocating ? "Acquiring GPS..." : gps ? `GPS Tagged: ${gps.lat.toFixed(4)}° N, ${gps.lon.toFixed(4)}° E (Click to refresh)` : "Click to detect GPS Location"}</span>
-</button>
-</div>
 </label>
 {/*  Uploaded Thumbnail Preview Strip  */}
 {photo && (
@@ -337,6 +353,57 @@ export default function ReportScreen() {
 </div>
 </div>
 )}
+</div>
+
+{/*  5. LOCATION & WARD VERIFICATION (Eliminates Missing GPS Failure Point)  */}
+<div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
+    <div className="flex items-center justify-between mb-3">
+        <label className="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono">
+            5. Incident Location &amp; Ward Verification
+        </label>
+        <span className="text-xs text-[#3e644a] font-mono font-medium flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#3e644a] animate-pulse"></span>
+            Geo-Validated
+        </span>
+    </div>
+
+    <div className="p-4 bg-[#fbf8fc] rounded-xl border border-[#c1c8c0]/60 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#3e644a] text-xl">location_on</span>
+                <div>
+                    <p className="text-xs font-bold text-[#1b1b1e]">{gpsStatus}</p>
+                    <p className="text-[11px] text-[#727972]">Live GPS coordinate or manual administrative ward</p>
+                </div>
+            </div>
+            <button
+                type="button"
+                onClick={requestGps}
+                disabled={isLocating}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3e644a] hover:bg-[#294e36] text-white text-xs font-semibold cursor-pointer transition-colors shadow-xs"
+            >
+                <span className="material-symbols-outlined text-sm">my_location</span>
+                <span>{isLocating ? "Acquiring..." : "Detect GPS"}</span>
+            </button>
+        </div>
+
+        <div className="pt-2 border-t border-[#c1c8c0]/40">
+            <label className="block text-[11px] font-bold text-[#424942] uppercase tracking-wider mb-1.5 font-mono">
+                Select Ward / Locality manually (If GPS is blocked or reporting off-site):
+            </label>
+            <select
+                value={selectedWard}
+                onChange={(e) => handleWardSelect(e.target.value)}
+                className="w-full text-xs font-semibold px-3 py-2.5 rounded-xl bg-white border border-[#c1c8c0] text-[#1b1b1e] focus:border-[#3e644a] focus:ring-1 focus:ring-[#3e644a] outline-none cursor-pointer"
+            >
+                {RANCHI_WARDS.map((w) => (
+                    <option key={w.name} value={w.name}>
+                        {w.name}
+                    </option>
+                ))}
+            </select>
+        </div>
+    </div>
 </div>
 </div>
 {/*  RIGHT RAIL (col-span-12 lg:col-span-5 xl:col-span-4 sticky lg:top-24 space-y-5)  */}
