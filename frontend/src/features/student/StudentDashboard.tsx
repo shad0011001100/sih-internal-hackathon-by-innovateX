@@ -40,10 +40,19 @@ export default function StudentDashboard() {
     const [editProgress, setEditProgress] = useState(0);
     const [editDocsUrl, setEditDocsUrl] = useState("");
     const [editProtoUrl, setEditProtoUrl] = useState("");
+    const [linkedinUrl, setLinkedinUrl] = useState(localStorage.getItem("student_linkedin") || "https://linkedin.com/in/aravind-kumar-bit");
+    const [githubUrl, setGithubUrl] = useState(localStorage.getItem("student_github") || "https://github.com/aravind-kumar-tech");
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
     const { showToast, showComingSoon } = useToast();
+
+    const handleSaveSocials = () => {
+        localStorage.setItem("student_linkedin", linkedinUrl);
+        localStorage.setItem("student_github", githubUrl);
+        setUserData((prev: any) => ({ ...prev, linkedin_url: linkedinUrl, github_url: githubUrl }));
+        showToast("Profile links saved! Visible to Officials & Corporate Partners.", "success");
+    };
 
     useEffect(() => {
         fetchData();
@@ -289,10 +298,44 @@ export default function StudentDashboard() {
                 {/* Welcome Card */}
                 <motion.section variants={itemVariants} className="bg-surface-container-lowest rounded-3xl p-5 shadow-sm border border-outline-variant/30 flex items-center justify-between">
                     <div>
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container/20 text-primary font-semibold text-xs mb-2">
-                            <span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
-                            {userData?.institution || 'SocioSolve Student'}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container/20 text-primary font-semibold text-xs">
+                                <span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+                                {userData?.institution || 'SocioSolve Student'}
+                            </span>
+                            {linkedinUrl && (
+                                <a
+                                    href={linkedinUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0077b5]/10 text-[#0077b5] text-xs font-bold hover:bg-[#0077b5]/20 transition-colors"
+                                    title="View LinkedIn Profile"
+                                >
+                                    <span className="text-[11px] font-mono">in</span>
+                                    <span>LinkedIn</span>
+                                </a>
+                            )}
+                            {githubUrl && (
+                                <a
+                                    href={githubUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-container-highest transition-colors border border-outline-variant/30"
+                                    title="View GitHub Repos"
+                                >
+                                    <span className="material-symbols-outlined text-xs">code</span>
+                                    <span>GitHub</span>
+                                </a>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => setProfileModalOpen(true)}
+                                className="text-xs text-primary hover:underline font-semibold flex items-center gap-0.5 cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-xs">edit</span>
+                                <span>Edit Profile</span>
+                            </button>
+                        </div>
                         <h1 className="text-2xl font-bold font-heading text-on-surface">Your ideas solve real problems</h1>
                         <p className="text-on-surface-variant text-sm mt-1">Keep pushing boundaries, {userData?.name || 'Student Solver'}!</p>
                     </div>
@@ -873,20 +916,73 @@ export default function StudentDashboard() {
                             </div>
                         </div>
 
-                        {/* Social Links */}
-                        <div className="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-xs">
-                            <span className="text-on-surface-variant font-mono text-[11px]">Academic Year 2024-25</span>
-                            <div className="flex gap-2">
-                                <button type="button" onClick={() => showToast("GitHub synced with SocioSolve Sandbox", "info")} className="px-3 py-1.5 bg-surface-container rounded-lg font-semibold hover:bg-surface-container-high">GitHub</button>
-                                <button type="button" onClick={() => showToast("LinkedIn Verified Badge Active", "info")} className="px-3 py-1.5 bg-surface-container rounded-lg font-semibold hover:bg-surface-container-high">LinkedIn</button>
+                        {/* Professional Profiles: LinkedIn & GitHub */}
+                        <div className="mt-4 pt-3 border-t border-outline-variant/20 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface font-mono flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-sm text-primary">public</span>
+                                    Public Recruiter &amp; Partner Profiles
+                                </h4>
+                                <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-bold">
+                                    Visible to Officials &amp; Industry
+                                </span>
+                            </div>
+
+                            <div className="space-y-2">
+                                <div>
+                                    <label className="text-[11px] font-semibold text-on-surface-variant flex items-center justify-between mb-1">
+                                        <span>LinkedIn Profile URL</span>
+                                        {linkedinUrl && (
+                                            <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-[10px] flex items-center gap-0.5">
+                                                <span>View Profile</span>
+                                                <span className="material-symbols-outlined text-[10px]">open_in_new</span>
+                                            </a>
+                                        )}
+                                    </label>
+                                    <input
+                                        type="url"
+                                        value={linkedinUrl}
+                                        onChange={(e) => setLinkedinUrl(e.target.value)}
+                                        placeholder="https://linkedin.com/in/your-profile"
+                                        className="w-full text-xs p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:ring-2 focus:ring-primary outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-[11px] font-semibold text-on-surface-variant flex items-center justify-between mb-1">
+                                        <span>GitHub / Project Portfolio URL</span>
+                                        {githubUrl && (
+                                            <a href={githubUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-[10px] flex items-center gap-0.5">
+                                                <span>View Repos</span>
+                                                <span className="material-symbols-outlined text-[10px]">open_in_new</span>
+                                            </a>
+                                        )}
+                                    </label>
+                                    <input
+                                        type="url"
+                                        value={githubUrl}
+                                        onChange={(e) => setGithubUrl(e.target.value)}
+                                        placeholder="https://github.com/your-username"
+                                        className="w-full text-xs p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:ring-2 focus:ring-primary outline-none"
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="mt-5 flex justify-end">
+                        <div className="mt-5 flex items-center justify-between">
+                            <button
+                                type="button"
+                                onClick={handleSaveSocials}
+                                className="px-4 py-2 rounded-xl bg-secondary text-white text-xs font-bold hover:bg-secondary/90 transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-sm">save</span>
+                                <span>Save Profile URLs</span>
+                            </button>
+
                             <button 
                                 type="button" 
-                                onClick={() => setProfileModalOpen(false)} 
-                                className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-sm font-bold shadow-sm"
+                                onClick={() => { handleSaveSocials(); setProfileModalOpen(false); }} 
+                                className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold shadow-sm cursor-pointer"
                             >
                                 Done
                             </button>

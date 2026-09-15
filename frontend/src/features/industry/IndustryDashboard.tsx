@@ -253,6 +253,28 @@ export default function IndustryDashboard() {
                                         </div>
                                     </div>
                                 </div>
+                                {proj.student_lead && (
+                                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-outline-variant/20 text-xs">
+                                        <div className="flex items-center gap-1.5 text-on-surface-variant">
+                                            <span className="material-symbols-outlined text-sm text-secondary">school</span>
+                                            <span>Student Lead: <strong className="text-on-surface">{proj.student_lead}</strong> ({proj.university || "BIT Mesra"})</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {proj.linkedin_url && (
+                                                <a href={proj.linkedin_url} target="_blank" rel="noreferrer" className="text-[#0077b5] hover:underline flex items-center gap-0.5 text-[11px] font-bold">
+                                                    <span>LinkedIn</span>
+                                                    <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                                                </a>
+                                            )}
+                                            {proj.github_url && (
+                                                <a href={proj.github_url} target="_blank" rel="noreferrer" className="text-on-surface hover:underline flex items-center gap-0.5 text-[11px] font-bold">
+                                                    <span>GitHub</span>
+                                                    <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

@@ -20,6 +20,9 @@ export default function DashboardScreen() {
     const [upvoted, setUpvoted] = useState<Record<string | number, boolean>>({});
     const [selectedReport, setSelectedReport] = useState<any | null>(null);
     const [lang, setLang] = useState<"EN" | "HI">("EN");
+    const [showStudentSolversModal, setShowStudentSolversModal] = useState(false);
+    const [showHelplineModal, setShowHelplineModal] = useState(false);
+    const [showAiScoreInfoModal, setShowAiScoreInfoModal] = useState(false);
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -285,11 +288,11 @@ export default function DashboardScreen() {
 <span className="material-symbols-outlined text-lg" data-icon="assignment_add">assignment_add</span>
         {t.report}
       </button>
-<button onClick={() => { document.getElementById("student-solvers")?.scrollIntoView({ behavior: "smooth" }); showToast("Viewing active University Student Solvers", "info"); }} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+<button onClick={() => setShowStudentSolversModal(true)} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
 <span className="material-symbols-outlined text-lg" data-icon="diversity_3">diversity_3</span>
         {t.solvers}
       </button>
-<button onClick={() => { document.getElementById("hotline")?.scrollIntoView({ behavior: "smooth" }); showToast("Viewing 24x7 Helpline & Emergency Contacts", "info"); }} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+<button onClick={() => setShowHelplineModal(true)} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
 <span className="material-symbols-outlined text-lg" data-icon="phone_in_talk">phone_in_talk</span>
         {t.helpline}
       </button>
@@ -493,8 +496,8 @@ export default function DashboardScreen() {
 </li>
 <li className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
 <span className="flex items-center gap-2 text-on-surface-variant">
-<span className="material-symbols-outlined text-amber-500 text-base" data-icon="lightbulb">lightbulb</span>
-              Streetlights Functional
+<span className="material-symbols-outlined text-amber-500 text-base" data-icon="bolt">bolt</span>
+              Smart Grids Operational
             </span>
 <span className="font-mono font-bold text-on-surface">94% <span className="text-[10px] text-primary font-semibold">Normal</span></span>
 </li>
@@ -589,7 +592,7 @@ export default function DashboardScreen() {
 
         {intelligenceData.hotspots && intelligenceData.hotspots.length > 0 && (
             <div className="pt-2">
-                <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider block mb-2">Priority Panchayat &amp; Ward Hotspots:</span>
+                <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider block mb-2">Active Panchayat &amp; Ward Hotspots:</span>
                 <div className="space-y-1.5">
                     {intelligenceData.hotspots.slice(0, 3).map((h: any, idx: number) => (
                         <div key={idx} className="flex items-center justify-between text-xs p-2 rounded-xl bg-surface-container-low/40">
@@ -646,7 +649,7 @@ export default function DashboardScreen() {
 {showFilters && (
     <div className="pt-2 pb-1 border-t border-outline-variant/20 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider pl-1">Category:</span>
-        {["All", "Water", "Road", "Sanitation", "Streetlight", "Electricity"].map(cat => (
+        {["All", "Water", "Road", "Sanitation", "Electricity"].map(cat => (
             <button
                 key={cat}
                 type="button"
@@ -960,7 +963,7 @@ export default function DashboardScreen() {
 <div className="flex items-center justify-between text-[10px] text-on-surface-variant font-mono mt-2 pt-2 border-t border-outline-variant/20">
 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary-fixed"></span> Low</span>
 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-secondary-container"></span> Mod</span>
-<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-error"></span> High Priority</span>
+<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-error"></span> High Activity</span>
 </div>
 </div>
 </div>
@@ -1259,7 +1262,7 @@ export default function DashboardScreen() {
 </button>
 
 <button 
-    onClick={() => { document.getElementById("student-solvers")?.scrollIntoView({ behavior: "smooth" }); showToast("Active University Student Solvers", "info"); }} 
+    onClick={() => setShowStudentSolversModal(true)} 
     aria-label="Student Solvers" 
     className="flex flex-col items-center justify-center min-h-[44px] min-w-[54px] text-on-surface-variant px-2 py-1 hover:text-primary active:scale-90 transition-transform duration-150 cursor-pointer" 
     type="button"
@@ -1308,9 +1311,9 @@ export default function DashboardScreen() {
 <ul className="space-y-2 text-xs">
 <li><button type="button" onClick={() => { setActiveTab('All'); setSearchQuery('Water'); showToast("Filtered by Water & Sanitation", "info"); }} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Water &amp; Sanitation (Jal Jeevan)</button></li>
 <li><button type="button" onClick={() => { setActiveTab('All'); setSearchQuery('Road'); showToast("Filtered by Roads & Potholes", "info"); }} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Road Resurfacing &amp; Potholes</button></li>
-<li><button type="button" onClick={() => { setActiveTab('All'); setSearchQuery('Streetlight'); showToast("Filtered by Streetlights", "info"); }} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Streetlighting &amp; Clean Energy</button></li>
+<li><button type="button" onClick={() => { setActiveTab('All'); setSearchQuery('Electricity'); showToast("Filtered by Clean Energy", "info"); }} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Clean Energy &amp; Power Grid</button></li>
 <li><button type="button" onClick={() => { setActiveTab('All'); setSearchQuery('Waste'); showToast("Filtered by Solid Waste & Drainage", "info"); }} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Solid Waste &amp; Drainage Desiltation</button></li>
-<li><button type="button" onClick={() => showComingSoon("Ward Grievance Escalation Chart")} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Ward Grievance Escalation Chart</button></li>
+<li><button type="button" onClick={() => setShowHelplineModal(true)} className="hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-left text-xs">Ward Grievance Escalation &amp; Helplines</button></li>
 </ul>
 </div>
 {/*  Col 3: Youth & Academic Solvers  */}
@@ -1446,11 +1449,38 @@ export default function DashboardScreen() {
                         <span className="text-primary font-semibold">{selectedReport.assigned_department}</span>
                     </div>
                 )}
-                {selectedReport.priority_score && (
+                <div className="flex items-center justify-between py-2 border-b border-outline-variant/20">
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-on-surface-variant">Operational Urgency:</span>
+                        <button
+                            type="button"
+                            onClick={() => setShowAiScoreInfoModal(true)}
+                            className="text-primary hover:text-primary-dark transition-colors inline-flex items-center cursor-pointer"
+                            title="How is urgency calculated?"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">info</span>
+                        </button>
+                    </div>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                        (selectedReport.priority_score > 85 || selectedReport.urgency === "Urgent Attention")
+                            ? "bg-error/15 text-error"
+                            : (selectedReport.priority_score > 70 || selectedReport.urgency === "Standard Priority")
+                            ? "bg-amber-500/15 text-amber-700"
+                            : "bg-primary/15 text-primary"
+                    }`}>
+                        <span className="material-symbols-outlined text-[14px]">
+                            {(selectedReport.priority_score > 85 || selectedReport.urgency === "Urgent Attention") ? "warning" : "schedule"}
+                        </span>
+                        {selectedReport.urgency || ((selectedReport.priority_score > 85) ? "Urgent Attention" : (selectedReport.priority_score > 70) ? "Standard Priority" : "Routine")}
+                    </span>
+                </div>
+                {selectedReport.provider_deadline && (
                     <div className="flex justify-between py-1.5 border-b border-outline-variant/20">
-                        <span className="text-on-surface-variant">AI Priority Score:</span>
-                        <span className="font-mono font-bold text-amber-600">
-                            {selectedReport.priority_score <= 1.0 ? Math.round(selectedReport.priority_score * 100) : Math.round(selectedReport.priority_score)}/100 Priority
+                        <span className="text-on-surface-variant">Provider Target Deadline:</span>
+                        <span className="font-semibold text-on-surface flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs text-primary">event</span>
+                            {selectedReport.target_resolution_date || selectedReport.provider_deadline}
+                            {selectedReport.provider_name && <span className="text-[11px] text-on-surface-variant font-normal">({selectedReport.provider_name})</span>}
                         </span>
                     </div>
                 )}
@@ -1548,6 +1578,276 @@ export default function DashboardScreen() {
                     </div>
                 )}
             </div>
+        </div>
+    </div>
+)}
+
+{/*  STUDENT SOLVERS MODAL  */}
+{showStudentSolversModal && (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="bg-surface-container-lowest rounded-3xl max-w-lg w-full p-6 whisper-border ambient-shadow space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-tertiary/15 flex items-center justify-center text-tertiary">
+                        <span className="material-symbols-outlined text-2xl">school</span>
+                    </div>
+                    <div>
+                        <h3 className="font-headline-sm text-base font-bold text-on-surface">Student Solvers</h3>
+                        <p className="text-xs text-on-surface-variant">Collegiate teams building technical prototypes for Ranchi</p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowStudentSolversModal(false)}
+                    className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant cursor-pointer"
+                >
+                    <span className="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <div className="space-y-3">
+                <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-on-surface">BIT Mesra AquaTech Node</span>
+                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">Field Pilot</span>
+                    </div>
+                    <p className="text-xs text-on-surface-variant">IoT Sub-Surface Water Contamination Telemetry in Doranda (Ward 14).</p>
+                    <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
+                        <span>Lead: <strong>Aravind Kumar</strong> (3rd Yr CSE)</span>
+                        <a href="https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX" target="_blank" rel="noreferrer" className="text-primary hover:underline font-semibold flex items-center gap-1">
+                            <span>Code Repo</span>
+                            <span className="material-symbols-outlined text-xs">open_in_new</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-on-surface">BIT Mesra Transport Systems</span>
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 text-[10px] font-bold">Model Validated</span>
+                    </div>
+                    <p className="text-xs text-on-surface-variant">Computer Vision Pothole &amp; Pavement Roughness Scanner for Ratu Road corridor.</p>
+                    <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
+                        <span>Lead: <strong>Priya Sharma</strong> (Civil Engg)</span>
+                        <a href="https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX" target="_blank" rel="noreferrer" className="text-primary hover:underline font-semibold flex items-center gap-1">
+                            <span>Code Repo</span>
+                            <span className="material-symbols-outlined text-xs">open_in_new</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-on-surface">NIT Jamshedpur CleanGrid</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 text-[10px] font-bold">CSR Funded</span>
+                    </div>
+                    <p className="text-xs text-on-surface-variant">Decentralized Plastic Pyrolysis Micro-Unit with Tata Steel Foundation support.</p>
+                    <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
+                        <span>Lead: <strong>Rahul Sen</strong> (Env Science)</span>
+                        <span className="text-emerald-700 font-semibold font-mono">₹5,00,000 Grant</span>
+                    </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-on-surface">Ranchi University Tribal Tech</span>
+                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">Prototyping</span>
+                    </div>
+                    <p className="text-xs text-on-surface-variant">Low-cost solar water disinfection &amp; filtration for rural Anganwadis.</p>
+                    <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
+                        <span>Lead: <strong>Anita Toppo</strong> (Rural Dev)</span>
+                        <span className="text-primary font-semibold">4 Credits Earned</span>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                onClick={() => { setShowStudentSolversModal(false); navigate('/login/student'); }}
+                className="w-full py-2.5 rounded-xl bg-tertiary text-white font-bold text-xs flex items-center justify-center gap-1.5 hover:opacity-95 transition-all cursor-pointer shadow-xs"
+            >
+                <span className="material-symbols-outlined text-sm">badge</span>
+                <span>Are you a student? Access Innovation Hub</span>
+            </button>
+        </div>
+    </div>
+)}
+
+{/*  24x7 HELPLINE MODAL  */}
+{showHelplineModal && (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="bg-surface-container-lowest rounded-3xl max-w-lg w-full p-6 whisper-border ambient-shadow space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-secondary/15 flex items-center justify-center text-secondary">
+                        <span className="material-symbols-outlined text-2xl">support_agent</span>
+                    </div>
+                    <div>
+                        <h3 className="font-headline-sm text-base font-bold text-on-surface">24x7 Civic Helplines</h3>
+                        <p className="text-xs text-on-surface-variant">Direct toll-free numbers &amp; emergency escalation channels</p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowHelplineModal(false)}
+                    className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant cursor-pointer"
+                >
+                    <span className="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <a
+                    href="tel:1913"
+                    className="p-3.5 rounded-2xl bg-primary/10 border border-primary/25 flex flex-col gap-1 hover:bg-primary/15 transition-all group"
+                >
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">call</span>
+                        Ranchi Municipal Toll-Free
+                    </span>
+                    <span className="text-lg font-bold font-mono text-on-surface group-hover:text-primary">1913</span>
+                    <span className="text-[10px] text-on-surface-variant">24x7 Grievance Desk</span>
+                </a>
+
+                <a
+                    href="tel:112"
+                    className="p-3.5 rounded-2xl bg-error/10 border border-error/25 flex flex-col gap-1 hover:bg-error/15 transition-all group"
+                >
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-error flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">emergency</span>
+                        Emergency First Response
+                    </span>
+                    <span className="text-lg font-bold font-mono text-on-surface group-hover:text-error">112</span>
+                    <span className="text-[10px] text-on-surface-variant">Police / Fire / Medical</span>
+                </a>
+
+                <a
+                    href="tel:18003456524"
+                    className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1 hover:bg-surface-container transition-all group"
+                >
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">water_drop</span>
+                        PHED Water Supply
+                    </span>
+                    <span className="text-sm font-bold font-mono text-on-surface group-hover:text-primary">1800-345-6524</span>
+                    <span className="text-[10px] text-on-surface-variant">Pipeline &amp; Contamination</span>
+                </a>
+
+                <a
+                    href="tel:1912"
+                    className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1 hover:bg-surface-container transition-all group"
+                >
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">bolt</span>
+                        JBVNL Electricity Desk
+                    </span>
+                    <span className="text-lg font-bold font-mono text-on-surface group-hover:text-primary">1912</span>
+                    <span className="text-[10px] text-on-surface-variant">Power Outage &amp; Live Wires</span>
+                </a>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                    <span className="material-symbols-outlined text-emerald-600 text-2xl">chat</span>
+                    <div>
+                        <span className="text-xs font-bold text-emerald-900 block">SocioSolve WhatsApp Civic Bot</span>
+                        <span className="text-[11px] text-emerald-700">Send photo + location for instant AI grievance logging</span>
+                    </div>
+                </div>
+                <a
+                    href="https://wa.me/919431101913?text=Johar%2C%20I%20want%20to%20report%20a%20civic%20issue"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1"
+                >
+                    <span>Chat</span>
+                    <span className="material-symbols-outlined text-xs">open_in_new</span>
+                </a>
+            </div>
+
+            <div className="text-[11px] text-on-surface-variant text-center pt-1">
+                Headquarters: Ranchi Municipal Corporation, Kutchery Chowk, Ranchi - 834001
+            </div>
+        </div>
+    </div>
+)}
+
+{/*  HOW OPERATIONAL URGENCY IS CALCULATED MODAL  */}
+{showAiScoreInfoModal && (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="bg-surface-container-lowest rounded-3xl max-w-lg w-full p-6 whisper-border ambient-shadow space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined text-2xl">psychology</span>
+                    </div>
+                    <div>
+                        <h3 className="font-headline-sm text-base font-bold text-on-surface">Operational Urgency Logic</h3>
+                        <p className="text-xs text-on-surface-variant">How SocioSolve calculates grievance priority</p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowAiScoreInfoModal(false)}
+                    className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant cursor-pointer"
+                >
+                    <span className="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <p className="text-xs text-on-surface-variant leading-relaxed">
+                Rather than an arbitrary number, urgency is determined by a transparent 4-pillar evaluation model designed to eliminate bureaucratic delay:
+            </p>
+
+            <div className="space-y-2.5">
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-error text-xl shrink-0 mt-0.5">warning</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">1. Immediate Threat to Public Safety</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
+                            Exposed 11kV wires, contaminated tap water, or active road subsidence are immediately classified as <strong>Urgent Attention</strong> for immediate dispatch.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-blue-600 text-xl shrink-0 mt-0.5">domain</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">2. Domain Criticality</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
+                            Potable water, sewage overflows, and vector breeding are weighted higher than aesthetic road paint or signboards.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-secondary text-xl shrink-0 mt-0.5">groups</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">3. Population Density Impact</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
+                            Incidents near healthcare centers, hospitals, primary schools, and dense transit corridors (e.g. Bariatu, Doranda) receive priority escalation.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5">thumb_up</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">4. Community Upvote Escalation</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
+                            When multiple residents upvote an unresolved grievance, the system flags it directly onto the Municipal Commissioner's morning triage dashboard.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                onClick={() => setShowAiScoreInfoModal(false)}
+                className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+            >
+                <span>Understood</span>
+            </button>
         </div>
     </div>
 )}

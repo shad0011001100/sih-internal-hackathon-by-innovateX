@@ -30,13 +30,28 @@ const roleConfig = {
     },
     student: {
         icon: "school",
-        label: "Student / Institution Portal",
-        sublabel: "Login with APAAR ID or University Gmail",
+        label: "Student Innovator Portal",
+        sublabel: "Login with APAAR Student ID",
         color: "bg-tertiary",
-        loginType: "student_university",
-        fields: [],  // Dynamic based on tab
-        hint: "Students use APAAR ID. Universities use institutional Gmail.",
-        ctaLabel: "Login",
+        loginType: "apaar_id",
+        fields: [
+            {
+                id: "apaar_id",
+                label: "APAAR Student ID",
+                placeholder: "Enter your APAAR Student ID (e.g. APAAR-12345)",
+                type: "text",
+                icon: "badge",
+            },
+            {
+                id: "student_password",
+                label: "Student Password",
+                placeholder: "Enter your secure password",
+                type: "password",
+                icon: "lock",
+            }
+        ],
+        hint: "Enter your APAAR Student ID and password to access the Innovation Hub.",
+        ctaLabel: "Login with APAAR ID",
     },
     official: {
         icon: "account_balance",
@@ -155,8 +170,6 @@ export default function RoleLoginScreen() {
     const [otpSent, setOtpSent] = useState(false);
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
-    // Student/University tab toggle (only for the student role page)
-    const [activeTab, setActiveTab] = useState("student"); // "student" | "university"
 
     const handleOtpChange = (index, value) => {
         if (!/^[0-9]*$/.test(value)) return;
@@ -221,51 +234,27 @@ export default function RoleLoginScreen() {
                     }
                 }
 
-            } else if (cfg.loginType === "student_university") {
-                if (activeTab === "student") {
-                    // Student login with APAAR ID & Password
-                    try {
-                        setLoading(true);
-                        const apaarId = values["apaar_id"]?.trim();
-                        const password = values["student_password"]?.trim();
-                        if (!apaarId) throw new Error("Please enter your APAAR ID");
-                        if (!password) throw new Error("Please enter your portal password");
-                        const data = await safeFetch("/api/auth/student/login", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ apaar_id: apaarId, password: password }),
-                        });
-                        setAuth(data.role || "student", data.user_id || 2);
-                        showToast("Student login successful!", "success");
-                        navigate(ROLE_DASHBOARD[data.role] || "/student-dashboard");
-                    } catch (err) {
-                        setError(err.message);
-                        showToast(err.message, "error");
-                    } finally {
-                        setLoading(false);
-                    }
-                } else {
-                    // University login with Gmail + password
-                    try {
-                        setLoading(true);
-                        const email = values["uni_email"]?.trim();
-                        const password = values["uni_password"];
-                        if (!email) throw new Error("Please enter your institutional email");
-                        if (!password) throw new Error("Please enter a password");
-                        const data = await safeFetch("/api/auth/university/login", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ email, password }),
-                        });
-                        setAuth(data.role || "university", data.user_id || 3);
-                        showToast("Institutional login successful!", "success");
-                        navigate(ROLE_DASHBOARD[data.role] || "/university-dashboard");
-                    } catch (err) {
-                        setError(err.message);
-                        showToast(err.message, "error");
-                    } finally {
-                        setLoading(false);
-                    }
+            } else if (cfg.loginType === "apaar_id") {
+                // Student login with APAAR ID & Password
+                try {
+                    setLoading(true);
+                    const apaarId = values["apaar_id"]?.trim();
+                    const password = values["student_password"]?.trim();
+                    if (!apaarId) throw new Error("Please enter your APAAR ID");
+                    if (!password) throw new Error("Please enter your portal password");
+                    const data = await safeFetch("/api/auth/student/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ apaar_id: apaarId, password: password }),
+                    });
+                    setAuth(data.role || "student", data.user_id || 2);
+                    showToast("Student login successful!", "success");
+                    navigate(ROLE_DASHBOARD[data.role] || "/student-dashboard");
+                } catch (err: any) {
+                    setError(err.message);
+                    showToast(err.message, "error");
+                } finally {
+                    setLoading(false);
                 }
 
             } else if (cfg.loginType === "gov_id") {
@@ -348,7 +337,7 @@ export default function RoleLoginScreen() {
                 setPhone("+919876543210");
                 showToast("Demo Citizen verified! Entering dashboard...", "success");
                 navigate("/dashboard");
-            } else if (role === "student" && activeTab === "student") {
+            } else if (role === "student") {
                 setValues({ apaar_id: "APAAR-12345", student_password: "mypassword123" });
                 const data = await safeFetch("/api/auth/student/login", {
                     method: "POST",
@@ -358,7 +347,7 @@ export default function RoleLoginScreen() {
                 setAuth(data.role || "student", data.user_id || 2);
                 showToast("Demo Student logged in! Entering Innovation Hub...", "success");
                 navigate("/student-dashboard");
-            } else if (role === "university" || (role === "student" && activeTab === "university")) {
+            } else if (role === "university") {
                 setValues({ uni_email: "admin@bitmesra.ac.in", uni_password: "sanjha@2025" });
                 const data = await safeFetch("/api/auth/university/login", {
                     method: "POST",
@@ -397,62 +386,8 @@ export default function RoleLoginScreen() {
         }
     };
 
-    // Dynamic fields for student/university tab
-    const getFields = () => {
-        if (cfg.loginType === "student_university") {
-            if (activeTab === "student") {
-                return [
-                    {
-                        id: "apaar_id",
-                        label: "APAAR ID",
-                        prefix: null,
-                        placeholder: "Enter your APAAR Student ID",
-                        inputMode: "text",
-                        maxLength: 30,
-                        icon: "badge",
-                    },
-                    {
-                        id: "student_password",
-                        label: "Access Password",
-                        prefix: null,
-                        placeholder: "Create or enter your password",
-                        inputMode: "text",
-                        maxLength: 64,
-                        icon: "lock",
-                        type: "password",
-                    },
-                ];
-            } else {
-                return [
-                    {
-                        id: "uni_email",
-                        label: "Institutional Gmail",
-                        prefix: null,
-                        placeholder: "university@edu.in or gmail.com",
-                        inputMode: "email",
-                        maxLength: 100,
-                        icon: "mail",
-                    },
-                    {
-                        id: "uni_password",
-                        label: "Password",
-                        prefix: null,
-                        placeholder: "Create or enter password",
-                        inputMode: "text",
-                        maxLength: 64,
-                        icon: "lock",
-                        type: "password",
-                    },
-                ];
-            }
-        }
-        return cfg.fields;
-    };
-
-    const displayFields = getFields();
-    const ctaLabel = cfg.loginType === "student_university"
-        ? (activeTab === "student" ? "Login with APAAR ID" : "Login with Gmail")
-        : cfg.ctaLabel;
+    const displayFields = cfg.fields;
+    const ctaLabel = cfg.ctaLabel;
 
     return (
         <motion.div
@@ -492,36 +427,6 @@ export default function RoleLoginScreen() {
                 <form onSubmit={handleSubmit}>
                     <div className="bg-surface-container-lowest rounded-3xl shadow-xl border border-outline-variant/40 p-6 space-y-5">
 
-                        {/* Student/University Tab Toggle */}
-                        {cfg.loginType === "student_university" && (
-                            <div className="flex rounded-2xl bg-surface-container-low p-1 gap-1">
-                                <button
-                                    type="button"
-                                    onClick={() => { setActiveTab("student"); setError(null); }}
-                                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                                        activeTab === "student"
-                                            ? "bg-tertiary text-on-tertiary shadow-sm"
-                                            : "text-on-surface-variant hover:bg-surface-container"
-                                    }`}
-                                >
-                                    <span className="material-symbols-outlined text-lg">person</span>
-                                    Student
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => { setActiveTab("university"); setError(null); }}
-                                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                                        activeTab === "university"
-                                            ? "bg-tertiary text-on-tertiary shadow-sm"
-                                            : "text-on-surface-variant hover:bg-surface-container"
-                                    }`}
-                                >
-                                    <span className="material-symbols-outlined text-lg">apartment</span>
-                                    University
-                                </button>
-                            </div>
-                        )}
-
                         {/* 1-Click Demo Evaluation Login for Hackathon Judges */}
                         <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/25 flex flex-col gap-2">
                             <div className="flex items-center justify-between">
@@ -542,7 +447,7 @@ export default function RoleLoginScreen() {
                                 <span className="material-symbols-outlined text-base">bolt</span>
                                 <span>
                                     {role === "citizen" && "Auto-Fill & Verify Demo Citizen (+91 9876543210)"}
-                                    {role === "student" && (activeTab === "student" ? "Demo Login: Student Innovator (APAAR-12345)" : "Demo Login: BIT Mesra (admin@bitmesra.ac.in)")}
+                                    {role === "student" && "Demo Login: Student Innovator (APAAR-12345)"}
                                     {role === "university" && "Demo Login: BIT Mesra (admin@bitmesra.ac.in)"}
                                     {role === "official" && "Demo Login: IAS Municipal Commissioner (GOV-001)"}
                                     {role === "industry" && "Demo Login: Tata Steel CSR Foundation (IND-001)"}
@@ -555,12 +460,7 @@ export default function RoleLoginScreen() {
                                 {otpSent ? "Enter OTP" : "Or enter credentials manually"}
                             </h2>
                             <p className="text-xs text-on-surface-variant mt-0.5">
-                                {cfg.loginType === "student_university"
-                                    ? (activeTab === "student"
-                                        ? "Enter your APAAR Student ID and password. First login sets your secure password."
-                                        : "Login with your institutional Gmail and password. First login auto-registers your institution.")
-                                    : cfg.hint
-                                }
+                                {cfg.hint}
                             </p>
                         </div>
 

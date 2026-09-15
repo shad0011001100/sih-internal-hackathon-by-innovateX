@@ -1,15 +1,59 @@
 // @ts-nocheck
+export const MOCK_MY_REPORTS = [
+    {
+        id: 901,
+        category: "Sanitation & Solid Waste",
+        description: "Overflowing residential garbage bin & drain water logging near Harmu Housing Colony, Sector 2.",
+        challenge_summary: "Local garbage accumulation causing street obstruction and foul odor near Harmu playground.",
+        urgency: "Urgent Attention",
+        priority_score: 82,
+        gps_lat: 23.3541,
+        gps_lon: 85.3126,
+        ward_no: 26,
+        status: "assigned",
+        created_at: new Date(Date.now() - 3600000 * 30).toISOString(),
+        provider_name: "Citizen (You - Harmu Sector 2)",
+        provider_deadline: "2026-10-18",
+        target_resolution_date: "18 Oct 2026",
+        assigned_university_id: 1,
+        assigned_department: "Civil & Environmental Engineering"
+    },
+    {
+        id: 902,
+        category: "Smart Transportation & Infrastructure",
+        description: "Deep dangerous pothole near Kishoreganj Chowk crossing following pipeline trenching.",
+        challenge_summary: "Unrepaired utility trenching causing recurrent vehicular bottleneck and accident hazard.",
+        urgency: "Routine",
+        priority_score: 74,
+        gps_lat: 23.3645,
+        gps_lon: 85.3188,
+        ward_no: 22,
+        status: "reported",
+        created_at: new Date(Date.now() - 3600000 * 18).toISOString(),
+        provider_name: "Citizen (You - Kishoreganj)",
+        provider_deadline: "2026-10-28",
+        target_resolution_date: "28 Oct 2026",
+        assigned_university_id: null,
+        assigned_department: null
+    }
+];
+
 export const MOCK_REPORTS = [
     {
         id: 101,
         category: "Sanitation & Solid Waste",
         description: "Severe garbage dumping and choked stormwater drain near Morabadi Ground gate 3.",
         challenge_summary: "Unmanaged municipal solid waste accumulation blocking critical stormwater runoff channel.",
+        urgency: "Urgent Attention",
         priority_score: 92,
         gps_lat: 23.3854,
         gps_lon: 85.3341,
+        ward_no: 4,
         status: "reported",
         created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+        provider_name: "Morabadi Morning Walkers Association",
+        provider_deadline: "2026-10-20",
+        target_resolution_date: "20 Oct 2026",
         assigned_university_id: 1,
         assigned_department: "Civil & Environmental Engineering"
     },
@@ -18,11 +62,16 @@ export const MOCK_REPORTS = [
         category: "Water Supply & Quality",
         description: "Contaminated municipal tap water pipeline rupture behind Doranda Main Road Market.",
         challenge_summary: "High-turbidity water pipeline fracture threatening microbial contamination in dense urban settlement.",
+        urgency: "Urgent Attention",
         priority_score: 88,
         gps_lat: 23.3372,
         gps_lon: 85.3211,
+        ward_no: 14,
         status: "validated",
         created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+        provider_name: "Doranda Residents Welfare Society",
+        provider_deadline: "2026-10-22",
+        target_resolution_date: "22 Oct 2026",
         assigned_university_id: 1,
         assigned_department: "Civil & Environmental Engineering"
     },
@@ -31,11 +80,16 @@ export const MOCK_REPORTS = [
         category: "Smart Transportation & Infrastructure",
         description: "Critical arterial pavement structural subsidence and recurrent subgrade shear failure on Ratu Road corridor.",
         challenge_summary: "Recurrent subgrade subsidence requiring automated IoT vibration sensor telemetry and durable geo-polymer asphalt composite engineering.",
+        urgency: "Standard Priority",
         priority_score: 75,
         gps_lat: 23.3719,
         gps_lon: 85.2987,
+        ward_no: 7,
         status: "assigned",
         created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+        provider_name: "Ratu Road Traders & Transport Union",
+        provider_deadline: "2026-10-25",
+        target_resolution_date: "25 Oct 2026",
         assigned_university_id: 2,
         assigned_department: "Civil & Environmental Engineering"
     },
@@ -44,11 +98,16 @@ export const MOCK_REPORTS = [
         category: "Electricity & Smart Grid",
         description: "Exposed 11kV overhead wire dangling dangerously close to pedestrian pathway in Kokar.",
         challenge_summary: "High-voltage distribution cable sagging into pedestrian zone without ground insulation.",
+        urgency: "Urgent Attention",
         priority_score: 95,
         gps_lat: 23.3688,
         gps_lon: 85.3529,
+        ward_no: 11,
         status: "in_progress",
         created_at: new Date(Date.now() - 3600000 * 36).toISOString(),
+        provider_name: "Kokar Industrial Area Panchayat",
+        provider_deadline: "2026-10-19",
+        target_resolution_date: "19 Oct 2026",
         assigned_university_id: 4,
         assigned_department: "Electrical & Electronics Engineering"
     },
@@ -57,11 +116,16 @@ export const MOCK_REPORTS = [
         category: "Health & Vector Control",
         description: "Stagnant drainage pool leading to extreme mosquito breeding near Bariatu Medical Staff Quarters.",
         challenge_summary: "Dengue/malaria vector proliferation in stagnant urban basin adjacent to healthcare facilities.",
+        urgency: "Standard Priority",
         priority_score: 84,
         gps_lat: 23.3912,
         gps_lon: 85.3481,
+        ward_no: 3,
         status: "under_review",
         created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
+        provider_name: "Bariatu Healthcare Community Board",
+        provider_deadline: "2026-10-27",
+        target_resolution_date: "27 Oct 2026",
         assigned_university_id: 3,
         assigned_department: "Environmental Science & Public Health"
     },
@@ -70,11 +134,16 @@ export const MOCK_REPORTS = [
         category: "Public Infrastructure",
         description: "Automated solar LED streetlights non-functional along Ring Road Tupudana stretch.",
         challenge_summary: "Solar-battery charge controller fault on 2km highway stretch causing night-time safety hazard.",
+        urgency: "Routine",
         priority_score: 68,
         gps_lat: 23.3102,
         gps_lon: 85.3054,
+        ward_no: 32,
         status: "implemented",
         created_at: new Date(Date.now() - 3600000 * 72).toISOString(),
+        provider_name: "Tupudana Gram Panchayat",
+        provider_deadline: "2026-11-05",
+        target_resolution_date: "05 Nov 2026",
         assigned_university_id: 1,
         assigned_department: "Electrical & Electronics Engineering"
     }
@@ -88,7 +157,9 @@ export const MOCK_STUDENT_DASHBOARD = {
         department: "Computer Science & Engineering",
         year: "3rd Year B.Tech",
         credits_earned: 14,
-        rank: 1
+        rank: 1,
+        linkedin_url: "https://linkedin.com/in/aravind-kumar-bit",
+        github_url: "https://github.com/aravind-kumar-tech"
     },
     projects: [
         {
@@ -97,6 +168,7 @@ export const MOCK_STUDENT_DASHBOARD = {
             category: "Water Supply & Quality",
             status: "accepted",
             mentor_name: "Dr. B. K. Singh (BIT Mesra)",
+            provider_name: "Doranda Residents Welfare Society",
             deadline: "25 Oct 2026",
             progress_pct: 78,
             documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
@@ -109,6 +181,7 @@ export const MOCK_STUDENT_DASHBOARD = {
             category: "Smart Transportation & Infrastructure",
             status: "submitted",
             mentor_name: "Prof. S. Soren (BIT Mesra)",
+            provider_name: "Ratu Road Traders & Transport Union",
             deadline: "10 Nov 2026",
             progress_pct: 100,
             documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
@@ -133,6 +206,12 @@ export const MOCK_SUBMISSIONS = [
         description: "Solar-powered IoT sensor network monitoring pH, TDS, and turbidity in Ranchi Municipal tap lines with instant alert telemetry.",
         status: "submitted",
         team_id: 1,
+        student_name: "Aravind Kumar",
+        student_institution: "BIT Mesra",
+        linkedin_url: "https://linkedin.com/in/aravind-kumar-bit",
+        github_url: "https://github.com/aravind-kumar-tech",
+        provider_name: "Doranda Residents Welfare Society",
+        provider_deadline: "25 Oct 2026",
         documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
         prototype_url: "https://sociosolve-eight.vercel.app"
     },
@@ -142,6 +221,12 @@ export const MOCK_SUBMISSIONS = [
         description: "Ultrasonic fill-level radar with cloud dispatch routing for municipal waste pickup trucks in Morabadi.",
         status: "accepted",
         team_id: 2,
+        student_name: "Priya Sharma",
+        student_institution: "BIT Mesra",
+        linkedin_url: "https://linkedin.com/in/priya-sharma-bit",
+        github_url: "https://github.com/priya-sharma-iot",
+        provider_name: "Morabadi Morning Walkers Association",
+        provider_deadline: "30 Oct 2026",
         documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
         prototype_url: "https://sociosolve-eight.vercel.app"
     }
@@ -213,6 +298,9 @@ export const MOCK_INDUSTRY_DATA = {
                 status: "in_progress",
                 location: "Doranda, Ranchi",
                 university: "BIT Mesra",
+                student_lead: "Aravind Kumar",
+                linkedin_url: "https://linkedin.com/in/aravind-kumar-bit",
+                github_url: "https://github.com/aravind-kumar-tech",
                 progress: 75
             },
             {
@@ -223,6 +311,9 @@ export const MOCK_INDUSTRY_DATA = {
                 status: "completed",
                 location: "Jamshedpur Ward 3",
                 university: "NIT Jamshedpur",
+                student_lead: "Rahul Sen",
+                linkedin_url: "https://linkedin.com/in/rahul-sen-nit",
+                github_url: "https://github.com/rahul-sen-env",
                 progress: 100
             },
             {
@@ -233,6 +324,9 @@ export const MOCK_INDUSTRY_DATA = {
                 status: "in_progress",
                 location: "Khunti District",
                 university: "Ranchi University",
+                student_lead: "Anita Toppo",
+                linkedin_url: "https://linkedin.com/in/anita-toppo-ru",
+                github_url: "https://github.com/anita-toppo-tribal",
                 progress: 80
             }
         ]
@@ -308,7 +402,7 @@ function resolveMockResponse(url, options = {}) {
     }
 
     if (path.includes("/api/reports/my")) {
-        return MOCK_REPORTS.slice(0, 3);
+        return MOCK_MY_REPORTS;
     }
     if (path.includes("/api/reports") && method === "GET") {
         return MOCK_REPORTS;
@@ -321,12 +415,18 @@ function resolveMockResponse(url, options = {}) {
             category: body.category || "Sanitation & Solid Waste",
             description: body.description || "Reported grievance",
             challenge_summary: "Civic grievance registered under local ward authority.",
+            urgency: "Urgent Attention",
             priority_score: 85,
             gps_lat: body.gps_lat || 23.3441,
             gps_lon: body.gps_lon || 85.3096,
+            ward_no: body.ward_no || 14,
             status: "reported",
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            provider_name: "Citizen (You)",
+            provider_deadline: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
+            target_resolution_date: "In 7 Days"
         };
+        MOCK_MY_REPORTS.unshift(newReport);
         MOCK_REPORTS.unshift(newReport);
         return newReport;
     }
