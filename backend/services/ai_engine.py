@@ -6,6 +6,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 # Gemini setup (for vision tasks if needed)
 api_key = os.getenv("GEMINI_API_KEY", "")
@@ -17,7 +18,7 @@ NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 nv_client = OpenAI(
   base_url = "https://integrate.api.nvidia.com/v1",
   api_key = NVIDIA_API_KEY,
-  timeout = 4.0
+  timeout = 12.0
 )
 
 def verify_image_authenticity(base64_data: str) -> dict:
@@ -155,9 +156,9 @@ def analyze_and_route_problem(description: str, category: str, photo_base64: str
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
             top_p=0.95,
-            max_tokens=1024,
-            timeout=4.0,
-            extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":1024},
+            max_tokens=512,
+            timeout=10.0,
+            extra_body={"chat_template_kwargs":{"enable_thinking":False}},
             stream=False
         )
         
