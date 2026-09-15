@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 export const MOCK_REPORTS = [
     {
         id: 101,
@@ -28,9 +28,9 @@ export const MOCK_REPORTS = [
     },
     {
         id: 103,
-        category: "Roads & Traffic Hazards",
-        description: "Hazardous crater-sized pothole on Ratu Road near Pandra Market Chowk.",
-        challenge_summary: "Deep arterial pothole impeding heavy vehicular traffic and causing frequent collisions.",
+        category: "Smart Transportation & Infrastructure",
+        description: "Critical arterial pavement structural subsidence and recurrent subgrade shear failure on Ratu Road corridor.",
+        challenge_summary: "Recurrent subgrade subsidence requiring automated IoT vibration sensor telemetry and durable geo-polymer asphalt composite engineering.",
         priority_score: 75,
         gps_lat: 23.3719,
         gps_lon: 85.2987,
@@ -106,11 +106,11 @@ export const MOCK_STUDENT_DASHBOARD = {
         {
             id: 202,
             title: "Computer Vision Pothole & Road Roughness Scanner",
-            category: "Roads & Traffic Hazards",
+            category: "Smart Transportation & Infrastructure",
             status: "submitted",
             mentor_name: "Prof. S. Soren (BIT Mesra)",
             deadline: "10 Nov 2026",
-            progress_pct: 60,
+            progress_pct: 100,
             documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
             prototype_url: "https://sociosolve-eight.vercel.app",
             impact_report: "Edge-AI model running on mobile cameras to automatically detect and classify pavement distress."
@@ -153,12 +153,37 @@ export const MOCK_UNIVERSITY_DATA = {
         assigned_problems_count: 5,
         active_projects_count: 8,
         students_participating: 42,
+        credits_awarded: 16,
+        csr_grants_received: 1450000,
         departments: [
-            { name: "Computer Science & Engineering", student_count: 18, project_count: 4 },
-            { name: "Civil & Environmental Engineering", student_count: 14, project_count: 3 },
-            { name: "Electrical & Electronics Engineering", student_count: 10, project_count: 1 }
+            { name: "Computer Science & Engineering", student_count: 18, project_count: 4, faculty_head: "Dr. B. K. Singh" },
+            { name: "Civil & Environmental Engineering", student_count: 14, project_count: 3, faculty_head: "Prof. S. Soren" },
+            { name: "Electrical & Electronics Engineering", student_count: 10, project_count: 1, faculty_head: "Dr. R. K. Mishra" }
         ]
     },
+    settings: {
+        aishe_code: "U-0298",
+        accreditation: "NAAC A+ (CGPA 3.48)",
+        nodal_officer: "Dr. Ramesh Chandra (Dean R&D)",
+        nodal_email: "dean.rd@bitmesra.ac.in",
+        capstone_credits: 4,
+        min_team_size: 2,
+        max_team_size: 4,
+        require_field_pilot: true,
+        auto_csr_matching: true,
+        notify_new_civic_issues: true
+    },
+    faculty_mentors: [
+        { id: 1, name: "Dr. B. K. Singh", department: "Computer Science & Engineering", specialization: "IoT Sensor Firmware & LoRa Networks", active_projects: 3 },
+        { id: 2, name: "Prof. S. Soren", department: "Civil & Environmental Engineering", specialization: "GIS Ward Mapping & Water Treatment", active_projects: 2 },
+        { id: 3, name: "Dr. Ananya Mukherjee", department: "Biotechnology & Environmental Science", specialization: "Microbial Testing & Waste Management", active_projects: 2 },
+        { id: 4, name: "Dr. R. K. Mishra", department: "Electrical & Electronics Engineering", specialization: "Smart Grids & Solar Inverter Telemetry", active_projects: 1 }
+    ],
+    labs: [
+        { id: 1, name: "Center of Excellence in Water & GIS Telemetry", room: "Lab 204", head: "Prof. S. Soren", available_seats: 12 },
+        { id: 2, name: "Edge-AI & Computer Vision Prototyping Facility", room: "Lab 108", head: "Dr. B. K. Singh", available_seats: 8 },
+        { id: 3, name: "Clean Energy & Microgrid Simulation Cell", room: "Lab 312", head: "Dr. R. K. Mishra", available_seats: 15 }
+    ],
     ranking: [
         { rank: 1, name: "BIT Mesra", department: "Computer Science & Rural Tech", ranking_score: 95.5, project_count: 8, report_count: 12 },
         { rank: 2, name: "IIT (ISM) Dhanbad", department: "Mining & Environmental Science", ranking_score: 94.0, project_count: 7, report_count: 10 },
@@ -167,9 +192,9 @@ export const MOCK_UNIVERSITY_DATA = {
         { rank: 5, name: "Ranchi University", department: "Tribal Studies & Rural Dev", ranking_score: 86.0, project_count: 4, report_count: 6 }
     ],
     students: [
-        { id: 1, name: "Aravind Kumar", apaar_id: "APAAR-12345", project_count: 2, skill_count: 5, department: "Computer Science" },
-        { id: 2, name: "Priya Sharma", apaar_id: "APAAR-54321", project_count: 1, skill_count: 4, department: "Civil Engineering" },
-        { id: 3, name: "Rohan Mahto", apaar_id: "APAAR-67890", project_count: 1, skill_count: 3, department: "Electrical Engineering" }
+        { id: 1, name: "Aravind Kumar", apaar_id: "APAAR-12345", project_count: 2, skill_count: 5, department: "Computer Science & Engineering", verified_credits: 4 },
+        { id: 2, name: "Priya Sharma", apaar_id: "APAAR-54321", project_count: 1, skill_count: 4, department: "Civil & Environmental Engineering", verified_credits: 4 },
+        { id: 3, name: "Rohan Mahto", apaar_id: "APAAR-67890", project_count: 1, skill_count: 3, department: "Electrical & Electronics Engineering", verified_credits: 0 }
     ]
 };
 
@@ -338,8 +363,29 @@ function resolveMockResponse(url, options = {}) {
     if (path.includes("/api/university/dashboard")) {
         return MOCK_UNIVERSITY_DATA.dashboard;
     }
+    if (path.includes("/api/university/settings") && method === "GET") {
+        return MOCK_UNIVERSITY_DATA.settings;
+    }
+    if (path.includes("/api/university/settings") && (method === "PUT" || method === "POST")) {
+        let body = {};
+        try { body = JSON.parse(options.body || "{}"); } catch (e) {}
+        MOCK_UNIVERSITY_DATA.settings = { ...MOCK_UNIVERSITY_DATA.settings, ...body };
+        return { status: "ok", settings: MOCK_UNIVERSITY_DATA.settings };
+    }
+    if (path.includes("/api/university/faculty")) {
+        return MOCK_UNIVERSITY_DATA.faculty_mentors;
+    }
+    if (path.includes("/api/university/labs")) {
+        return MOCK_UNIVERSITY_DATA.labs;
+    }
+    if (path.includes("/api/university/problems") && path.includes("/assign-faculty")) {
+        return { status: "ok", message: "Faculty mentor assigned successfully" };
+    }
     if (path.includes("/api/university/problems")) {
         return MOCK_REPORTS.slice(0, 4);
+    }
+    if (path.includes("/api/university/projects") && path.includes("/approve-credits")) {
+        return { status: "ok", message: "Academic capstone credits approved successfully" };
     }
     if (path.includes("/api/university/ranking")) {
         return MOCK_UNIVERSITY_DATA.ranking;

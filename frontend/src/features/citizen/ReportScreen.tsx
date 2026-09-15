@@ -12,7 +12,6 @@ const CATEGORIES = [
     { label: "Infrastructure", icon: "construction" },
     { label: "Education", icon: "school" },
     { label: "Health", icon: "local_hospital" },
-    { label: "Street Lighting", icon: "lightbulb" },
 ];
 
 export default function ReportScreen() {
@@ -95,14 +94,18 @@ export default function ReportScreen() {
                 photo_base64: photo || undefined,
             };
 
-            await safeFetch("/api/reports", {
+            const res = await safeFetch("/api/reports", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify(payload),
             });
 
-            showToast("Grievance submitted successfully! Ticket token generated.", "success");
+            if (res.is_duplicate) {
+                showToast(`Similar issue detected! Clustered with existing grievance (${res.duplicate_reason || 'Nearby report'})`, "info");
+            } else {
+                showToast(`Grievance #${res.report_id || ''} submitted successfully! Priority score: ${Math.round((res.routing?.priority_score || 0.8) * 100)}%`, "success");
+            }
             navigate("/dashboard");
         } catch (err: any) {
             const errorMsg = err.message || "Failed to submit report. Please check your connection.";
@@ -289,23 +292,23 @@ export default function ReportScreen() {
 </div>
 {/*  Dropzone Container  */}
 <label htmlFor="media-upload" className="bg-[#fbf8fc] rounded-2xl p-6 border-2 border-dashed border-[#c1c8c0] hover:border-[#3e644a] transition-all cursor-pointer group text-center flex flex-col items-center justify-center">
-<input type="file" id="media-upload" accept="image/*,video/*" className="hidden" onChange={handleFile} />
+<input type="file" id="media-upload" accept="image/*,video/*,.pdf,.doc,.docx" className="hidden" onChange={handleFile} />
 <div className="flex items-center justify-center gap-3 text-[#4d6055] mb-2.5 group-hover:text-[#3e644a] transition-colors">
-<div className="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+<div className="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform" title="Photos">
 <span className="material-symbols-outlined text-[24px]">photo_camera</span>
 </div>
-<div className="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+<div className="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform" title="Video Clip">
 <span className="material-symbols-outlined text-[24px]">videocam</span>
 </div>
-<div className="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-<span className="material-symbols-outlined text-[24px]">add_photo_alternate</span>
+<div className="w-11 h-11 rounded-xl bg-white border border-[#c1c8c0]/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform" title="Official Documents / PDF">
+<span className="material-symbols-outlined text-[24px]">description</span>
 </div>
 </div>
 <p className="text-sm font-semibold text-[#1b1b1e] group-hover:text-[#3e644a] transition-colors">
-              Drag and drop photos or videos, or <span className="text-[#3e644a] underline decoration-2">browse files</span>
+              Drag and drop photos, videos or documents, or <span className="text-[#3e644a] underline decoration-2">browse files</span>
 </p>
 <p className="text-xs text-[#727972] mt-1 font-mono">
-              Supports JPG, PNG, MP4 (Max 25MB). Auto-extracts EXIF GPS coordinates.
+              Supports JPG, PNG, MP4, PDF, DOC (Max 25MB). Auto-extracts EXIF GPS coordinates.
             </p>
 {/*  Geotag Badge & Location Refresh Button  */}
 <div className="mt-4 flex flex-wrap items-center justify-center gap-2">

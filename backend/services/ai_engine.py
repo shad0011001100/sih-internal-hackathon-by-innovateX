@@ -16,7 +16,8 @@ if api_key:
 NVIDIA_API_KEY = "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"
 nv_client = OpenAI(
   base_url = "https://integrate.api.nvidia.com/v1",
-  api_key = NVIDIA_API_KEY
+  api_key = NVIDIA_API_KEY,
+  timeout = 4.0
 )
 
 def verify_image_authenticity(base64_data: str) -> dict:
@@ -155,6 +156,7 @@ def analyze_and_route_problem(description: str, category: str, photo_base64: str
             temperature=0.2,
             top_p=0.95,
             max_tokens=1024,
+            timeout=4.0,
             extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":1024},
             stream=False
         )
@@ -180,14 +182,49 @@ def analyze_and_route_problem(description: str, category: str, photo_base64: str
             
         return data
     except Exception as e:
-        print(f"NVIDIA Routing AI Error / Fallback: {e}")
+        print(f"NVIDIA Routing AI Fallback ({e})")
+        # Intelligent Jharkhand civic rule-based classification fallback
+        cat_lower = (category or "").lower()
+        desc_lower = (description or "").lower()
+
+        if any(k in cat_lower or k in desc_lower for k in ["water", "jal", "pipe", "borewell", "tank"]):
+            techs = ["IoT Flow Sensors", "Water Quality Telemetry (TDS/pH)", "Solar Pump Controllers"]
+            depts = ["Civil & Environmental Engineering", "Water Resources Department"]
+            industry = ["Tata Steel Foundation (Clean Water Initiative)", "PHED Water Contractors"]
+            priority = 0.85
+            severity = "high"
+        elif any(k in cat_lower or k in desc_lower for k in ["light", "street", "solar", "power", "electric"]):
+            techs = ["Smart Mesh Light Controllers", "Solar PV Microgrid", "IoT Fault Detection"]
+            depts = ["Electrical & Electronics Engineering", "Energy & Power Systems"]
+            industry = ["Jindal Steel & Power (Clean Energy)", "JBVNL Smart Grid Partners"]
+            priority = 0.70
+            severity = "medium"
+        elif any(k in cat_lower or k in desc_lower for k in ["waste", "sanitation", "garbage", "drain", "sewer"]):
+            techs = ["GIS Waste Route Optimization", "Smart Bin Fill Sensors", "Drainage Flow Monitors"]
+            depts = ["Environmental Science & Rural Tech", "Municipal Solid Waste Management"]
+            industry = ["Central Coalfields Limited (CCL CSR)", "RMC Sanitation Tech"]
+            priority = 0.80
+            severity = "high"
+        elif any(k in cat_lower or k in desc_lower for k in ["health", "clinic", "hospital", "medicine"]):
+            techs = ["Telemedicine Diagnostic Kiosks", "Cold-Chain Vaccine Monitors", "Health Record GIS"]
+            depts = ["Biomedical Engineering", "Public Health & Data Science"]
+            industry = ["Apollo Clinics Jharkhand", "Tata Trust Rural Health"]
+            priority = 0.90
+            severity = "critical"
+        else:
+            techs = ["IoT Sensors", "GIS Ward Spatial Mapping", "Computer Vision Triage"]
+            depts = ["Computer Science & Rural Technology", "Civil Engineering"]
+            industry = ["Jharkhand State IT Mission", "Civic Tech CSR Partners"]
+            priority = 0.65
+            severity = "medium"
+
         return {
-            "challenge_summary": description.split('\n')[0][:80] if description else "Civic issue report",
-            "severity": "medium",
-            "priority_score": 0.6,
-            "possible_technologies": ["IoT Sensors", "GIS Mapping", "Mobile Analytics"] if heuristic_suitable else [],
-            "relevant_departments": ["Computer Science", "Environmental Engineering"] if heuristic_suitable else ["Municipal Road Works"],
-            "potential_industry": ["Civic Tech", "Clean Energy Partners"],
+            "challenge_summary": description.split('\n')[0][:80] if description else f"{category} Issue",
+            "severity": severity,
+            "priority_score": priority,
+            "possible_technologies": techs if heuristic_suitable else [],
+            "relevant_departments": depts if heuristic_suitable else ["Municipal Maintenance Crews"],
+            "potential_industry": industry,
             "is_spam": spam_flag,
             "is_student_suitable": heuristic_suitable,
             "student_suitability_reason": heuristic_reason,

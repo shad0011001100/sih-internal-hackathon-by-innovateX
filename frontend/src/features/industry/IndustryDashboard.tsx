@@ -14,6 +14,12 @@ export default function IndustryDashboard() {
     const [fundingId, setFundingId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [activeNav, setActiveNav] = useState("Dashboard");
+    const [supportModalOpen, setSupportModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<any | null>(null);
+    const [selectedTrack, setSelectedTrack] = useState<"funding" | "mentorship" | "lab_sponsorship">("funding");
+    const [pledgeAmount, setPledgeAmount] = useState(50000);
+    const [mentorDetails, setMentorDetails] = useState("Senior IoT Systems Engineer (Tata Steel R&D)");
+    const [labDetails, setLabDetails] = useState("Turbidity & Flow Sensors IoT Prototyping Kit (5 Units)");
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -42,25 +48,38 @@ export default function IndustryDashboard() {
         }
     };
 
-    const handleFund = async (projectId: number, amount: number) => {
+    const handleSupportSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedItem) return;
+        const projectId = selectedItem.id;
         setFundingId(projectId);
         setSubmitting(true);
         try {
+            const desc = selectedTrack === 'funding' 
+                ? `CSR Financial Grant of ${formatINR(pledgeAmount)}`
+                : selectedTrack === 'mentorship'
+                ? `Industry Mentorship: ${mentorDetails}`
+                : `Hardware & Lab Sponsorship: ${labDetails}`;
+
             await safeFetch("/api/industry/fund", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     project_id: projectId,
-                    amount: Number(amount),
-                    offer_type: "funding"
+                    amount: selectedTrack === 'funding' ? Number(pledgeAmount) : 0,
+                    offer_type: selectedTrack,
+                    description: desc
                 })
             });
-            showToast(`Funding pledge of ${formatINR(amount)} initiated successfully!`, "success");
+
+            const trackLabel = selectedTrack === 'funding' ? `CSR Grant of ${formatINR(pledgeAmount)}` : selectedTrack === 'mentorship' ? 'Technical Mentorship' : 'Hardware Lab Sponsorship';
+            showToast(`${trackLabel} pledged successfully!`, "success");
             setMarketplace(prev => prev.filter(m => m.id !== projectId));
+            setSupportModalOpen(false);
         } catch (e: any) {
             console.error(e);
-            setError(e.message || "Failed to pledge funding");
-            showToast(e.message || "Failed to initiate funding pledge", "error");
+            setError(e.message || "Failed to pledge CSR support");
+            showToast(e.message || "Failed to pledge CSR support", "error");
         } finally {
             setFundingId(null);
             setSubmitting(false);
@@ -231,22 +250,121 @@ export default function IndustryDashboard() {
                                 </div>
                                 <button 
                                     type="button"
-                                    disabled={fundingId === item.id || submitting}
-                                    onClick={() => handleFund(item.id, item.estCost || item.estimated_cost || 50000)} 
-                                    className="px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary rounded-full text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+                                    onClick={() => {
+                                        setSelectedItem(item);
+                                        setPledgeAmount(item.estCost || item.estimated_cost || 50000);
+                                        setSupportModalOpen(true);
+                                    }} 
+                                    className="px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary rounded-full text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
                                 >
-                                    {fundingId === item.id ? (
-                                        <span className="material-symbols-outlined animate-spin text-[18px]">refresh</span>
-                                    ) : (
-                                        <span className="material-symbols-outlined text-[18px]" data-icon="payments">payments</span>
-                                    )}
-                                    {fundingId === item.id ? "Pledging..." : "Fund This"}
+                                    <span className="material-symbols-outlined text-[18px]">handshake</span>
+                                    Sponsor / Mentor
                                 </button>
                             </div>
                         </div>
                     ))}
                 </motion.section>
 
+                {/* CSR 3-Track Support Modal (Point 6) */}
+                {supportModalOpen && selectedItem && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/60 backdrop-blur-md">
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-outline-variant/30 space-y-4">
+                            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+                                <div>
+                                    <span className="text-[10px] font-mono uppercase font-bold text-secondary tracking-widest">Industry &amp; CSR Matching (Point 6)</span>
+                                    <h3 className="text-lg font-bold text-on-surface">Pledge Support for Student Capstone</h3>
+                                </div>
+                                <button type="button" onClick={() => setSupportModalOpen(false)} className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer">
+                                    <span className="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+
+                            <div className="p-3.5 bg-surface-container-low rounded-2xl border border-outline-variant/30">
+                                <h4 className="text-xs font-bold text-on-surface">{selectedItem.title}</h4>
+                                <p className="text-[11px] text-on-surface-variant mt-0.5 line-clamp-2">{selectedItem.desc || selectedItem.description}</p>
+                            </div>
+
+                            <form onSubmit={handleSupportSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Select CSR Support Track</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            { key: "funding", label: "CSR Grant", icon: "payments", desc: "Capital Funding" },
+                                            { key: "mentorship", label: "Mentorship", icon: "school", desc: "Expert Engineers" },
+                                            { key: "lab_sponsorship", label: "Lab Hardware", icon: "memory", desc: "Sensors & Kits" }
+                                        ].map(track => (
+                                            <button
+                                                key={track.key}
+                                                type="button"
+                                                onClick={() => setSelectedTrack(track.key as any)}
+                                                className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
+                                                    selectedTrack === track.key 
+                                                        ? 'bg-secondary/10 border-secondary text-secondary font-bold shadow-xs' 
+                                                        : 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant hover:border-outline'
+                                                }`}
+                                            >
+                                                <span className="material-symbols-outlined text-lg block mb-1">{track.icon}</span>
+                                                <p className="text-xs font-bold truncate">{track.label}</p>
+                                                <p className="text-[10px] opacity-75 truncate">{track.desc}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {selectedTrack === "funding" && (
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Grant Pledge Amount (INR ₹)</label>
+                                        <input
+                                            type="number"
+                                            required
+                                            min="5000"
+                                            step="5000"
+                                            value={pledgeAmount}
+                                            onChange={e => setPledgeAmount(Number(e.target.value))}
+                                            className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-secondary text-sm font-mono font-bold text-on-surface"
+                                        />
+                                    </div>
+                                )}
+
+                                {selectedTrack === "mentorship" && (
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Assigned Technical Mentor / Domain Expert</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={mentorDetails}
+                                            onChange={e => setMentorDetails(e.target.value)}
+                                            placeholder="e.g. Lead SCADA & IoT Architect (Tata Steel Automation)"
+                                            className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-secondary text-sm text-on-surface"
+                                        />
+                                    </div>
+                                )}
+
+                                {selectedTrack === "lab_sponsorship" && (
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Hardware / Lab Equipment Package</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={labDetails}
+                                            onChange={e => setLabDetails(e.target.value)}
+                                            placeholder="e.g. 10x ESP32 Turbidity & pH Sensor Kits + Cloud Gateway"
+                                            className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-secondary text-sm text-on-surface"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end gap-2 pt-3 border-t border-outline-variant/20">
+                                    <button type="button" onClick={() => setSupportModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-on-surface-variant cursor-pointer">Cancel</button>
+                                    <button type="submit" disabled={submitting} className="px-5 py-2.5 rounded-xl bg-secondary text-on-secondary text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
+                                        {submitting && <span className="material-symbols-outlined animate-spin text-sm">refresh</span>}
+                                        Confirm CSR Support
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
             </motion.main>
 
             {/* Bottom Nav */}

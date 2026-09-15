@@ -23,8 +23,8 @@ def submit_feedback(report_id: int, req: FeedbackCreate, user: models.User = Dep
     if report.citizen_id != user.id:
         raise HTTPException(status_code=403, detail="Only the citizen who filed the report can leave feedback")
         
-    if report.status != "implemented":
-        raise HTTPException(status_code=400, detail="Feedback can only be left for implemented reports")
+    if report.status not in ["implemented", "resolved"]:
+        raise HTTPException(status_code=400, detail="Feedback can only be left for implemented or resolved reports")
         
     existing = db.query(models.Feedback).filter(models.Feedback.report_id == report_id).first()
     if existing:

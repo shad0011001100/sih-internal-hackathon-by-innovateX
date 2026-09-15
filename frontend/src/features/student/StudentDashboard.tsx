@@ -26,6 +26,15 @@ export default function StudentDashboard() {
 
     // Project Details / Edit / Submit Modal state
     const [projectModalOpen, setProjectModalOpen] = useState(false);
+    const [teamModalOpen, setTeamModalOpen] = useState(false);
+    const [teamMembers, setTeamMembers] = useState<any[]>([
+        { name: "Aravind Kumar", role: "Team Lead & IoT Architect", apaar_id: "APAAR-JH-9821", initials: "AK" },
+        { name: "Priya Kumari", role: "GIS & Remote Sensing Analyst", apaar_id: "APAAR-JH-4412", initials: "PK" },
+        { name: "Rohit Soren", role: "Hydraulic Modeling & Systems", apaar_id: "APAAR-JH-7730", initials: "RS" }
+    ]);
+    const [newMemberName, setNewMemberName] = useState("");
+    const [newMemberApaar, setNewMemberApaar] = useState("");
+    const [newMemberRole, setNewMemberRole] = useState("Hardware / IoT Engineer");
     const [profileModalOpen, setProfileModalOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState<any | null>(null);
     const [editProgress, setEditProgress] = useState(0);
@@ -160,13 +169,33 @@ export default function StudentDashboard() {
     };
 
     const handleSubmitProject = async (projectId: number) => {
+        if (Number(editProgress) < 100) {
+            showToast(`Project milestone progress must be 100% (currently ${editProgress}%) to submit for review.`, "warning");
+            return;
+        }
         setSubmitting(true);
         try {
+            // Persist the 100% progress along with documentation and prototype URLs
+            await safeFetch(`/api/student/projects/${projectId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    progress_pct: 100,
+                    documentation_url: editDocsUrl || undefined,
+                    prototype_url: editProtoUrl || undefined
+                })
+            });
             await safeFetch(`/api/student/projects/${projectId}/submit`, {
                 method: "POST"
             });
-            setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'submitted' } : p));
-            showToast("Project solution submitted for mentor & academic review!", "success");
+            setProjects(prev => prev.map(p => p.id === projectId ? { 
+                ...p, 
+                progress_pct: 100, 
+                documentation_url: editDocsUrl, 
+                prototype_url: editProtoUrl, 
+                status: 'submitted' 
+            } : p));
+            showToast("Project completed at 100% and submitted for mentor & academic review!", "success");
             setProjectModalOpen(false);
         } catch (e: any) {
             console.error(e);
@@ -327,6 +356,45 @@ export default function StudentDashboard() {
                     )}
                 </motion.section>
 
+                {/* Student Innovation Team (Point 5) */}
+                <motion.section variants={itemVariants} className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-lg font-bold font-heading text-on-surface flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+                                Student Capstone Team ({teamMembers.length} Members)
+                            </h2>
+                            <p className="text-xs text-on-surface-variant">Interdisciplinary student engineering team authenticated via APAAR Digital ID</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setTeamModalOpen(true)}
+                            className="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-bold hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                        >
+                            <span className="material-symbols-outlined text-sm">person_add</span>
+                            Add Teammate
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {teamMembers.map((m, idx) => (
+                            <div key={idx} className="bg-surface-container-lowest rounded-2xl p-3.5 whisper-border ambient-shadow flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs font-mono ring-1 ring-primary/20">
+                                    {m.initials || m.name.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-xs font-bold text-on-surface truncate">{m.name}</p>
+                                        <span className="text-[9px] font-mono text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full font-semibold">Verified</span>
+                                    </div>
+                                    <p className="text-[11px] text-on-surface-variant truncate">{m.role}</p>
+                                    <span className="text-[10px] font-mono text-outline block">{m.apaar_id}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.section>
+
                 {/* My Skills */}
                 <motion.section variants={itemVariants} className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -417,10 +485,18 @@ export default function StudentDashboard() {
                                             Tech Capstone
                                         </span>
                                     </div>
-                                    <span className={`text-[10px] px-2 py-0.5 rounded flex items-center gap-1 ${issue.priority_score > 70 || issue.priority === 'High' ? 'bg-error-container text-on-error-container' : 'bg-secondary-container text-on-secondary-container'}`}>
-                                        <span className="material-symbols-outlined text-[12px]" data-icon="flag">flag</span>
-                                        {issue.priority_score ? `${issue.priority_score}% Priority` : (issue.priority || 'Normal')}
-                                    </span>
+                                    {(() => {
+                                        const normScore = issue.priority_score != null 
+                                            ? (issue.priority_score <= 1.0 ? Math.round(issue.priority_score * 100) : Math.round(issue.priority_score)) 
+                                            : null;
+                                        const isHigh = (normScore != null && normScore > 70) || issue.priority === 'High';
+                                        return (
+                                            <span className={`text-[10px] px-2 py-0.5 rounded flex items-center gap-1 ${isHigh ? 'bg-error-container text-on-error-container font-semibold' : 'bg-secondary-container text-on-secondary-container'}`}>
+                                                <span className="material-symbols-outlined text-[12px]" data-icon="flag">flag</span>
+                                                {normScore != null ? `${normScore > 70 ? 'High Priority' : 'Priority'} (${normScore}/100)` : (issue.priority || 'Normal')}
+                                            </span>
+                                        );
+                                    })()}
                                 </div>
                                 <h3 className="font-bold text-on-surface text-base mb-1">{issue.title || issue.description?.slice(0, 50)}</h3>
                                 <p className="text-xs text-on-surface-variant mb-2 line-clamp-2">{issue.challenge_summary || issue.description}</p>
@@ -550,18 +626,48 @@ export default function StudentDashboard() {
 
                         <form onSubmit={handleUpdateProject} className="space-y-4">
                             <div>
-                                <div className="flex justify-between items-center mb-1">
-                                    <label className="text-xs font-semibold text-on-surface-variant">Progress Percentage</label>
-                                    <span className="text-xs font-mono font-bold text-primary">{editProgress}%</span>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">4-Phase Solution Milestones (Point 7)</label>
+                                        <span className="text-xs font-mono font-bold text-primary">{editProgress}% Completed</span>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        {[
+                                            { pct: 25, label: "Phase 1: Architecture", desc: "Formulation & Sensor Specs" },
+                                            { pct: 50, label: "Phase 2: Prototype", desc: "Working Lab Hardware/App" },
+                                            { pct: 75, label: "Phase 3: Field Pilot", desc: "On-site Ward Testing" },
+                                            { pct: 100, label: "Phase 4: Deployment", desc: "Govt Handover Complete" }
+                                        ].map(phase => (
+                                            <button
+                                                key={phase.pct}
+                                                type="button"
+                                                onClick={() => setEditProgress(phase.pct)}
+                                                className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
+                                                    editProgress >= phase.pct 
+                                                        ? 'bg-primary/10 border-primary text-primary font-semibold' 
+                                                        : 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant hover:border-outline'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between text-[11px] mb-1">
+                                                    <span className="font-bold font-mono">{phase.pct}%</span>
+                                                    {editProgress >= phase.pct && <span className="material-symbols-outlined text-sm text-primary">check_circle</span>}
+                                                </div>
+                                                <p className="text-[11px] font-bold truncate">{phase.label}</p>
+                                                <p className="text-[10px] opacity-75 truncate">{phase.desc}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="100" 
+                                        value={editProgress} 
+                                        onChange={e => setEditProgress(Number(e.target.value))} 
+                                        className="w-full accent-primary mt-1" 
+                                    />
                                 </div>
-                                <input 
-                                    type="range" 
-                                    min="0" 
-                                    max="100" 
-                                    value={editProgress} 
-                                    onChange={e => setEditProgress(Number(e.target.value))} 
-                                    className="w-full accent-primary" 
-                                />
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-on-surface-variant mb-1">Documentation URL</label>
@@ -586,15 +692,25 @@ export default function StudentDashboard() {
 
                             <div className="flex items-center justify-between pt-3 border-t border-outline-variant/20">
                                 {selectedProject.status !== 'submitted' && (
-                                    <button 
-                                        type="button" 
-                                        disabled={submitting} 
-                                        onClick={() => handleSubmitProject(selectedProject.id)}
-                                        className="px-4 py-2 bg-secondary text-on-secondary rounded-xl text-xs font-bold active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50"
-                                    >
-                                        <span className="material-symbols-outlined text-sm" data-icon="assignment_turned_in">assignment_turned_in</span>
-                                        Submit for Review
-                                    </button>
+                                    Number(editProgress) >= 100 ? (
+                                        <button 
+                                            type="button" 
+                                            disabled={submitting} 
+                                            onClick={() => handleSubmitProject(selectedProject.id)}
+                                            className="px-4 py-2 bg-secondary text-on-secondary rounded-xl text-xs font-bold active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs"
+                                        >
+                                            <span className="material-symbols-outlined text-sm" data-icon="assignment_turned_in">assignment_turned_in</span>
+                                            Submit for Review
+                                        </button>
+                                    ) : (
+                                        <div 
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container-high border border-outline-variant/30 text-on-surface-variant text-[11px] font-medium select-none"
+                                            title="Milestone progress must reach 100% (Ground Deployment) to submit for mentor review"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px] text-outline">lock</span>
+                                            <span>Reach 100% to Submit ({editProgress}%)</span>
+                                        </div>
+                                    )
                                 )}
                                 <div className="flex gap-2 ml-auto">
                                     <button type="button" disabled={submitting} onClick={() => setProjectModalOpen(false)} className="px-3 py-2 text-sm font-semibold text-on-surface-variant">Cancel</button>
@@ -607,6 +723,89 @@ export default function StudentDashboard() {
                                         Save Progress
                                     </button>
                                 </div>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Add Teammate Modal (Point 5) */}
+            {teamModalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-md">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30">
+                        <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+                            <div>
+                                <span className="text-[10px] font-mono uppercase font-bold text-primary tracking-widest">Student Team-Up</span>
+                                <h3 className="text-lg font-bold text-on-surface flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-primary">person_add</span>
+                                    Add Interdisciplinary Teammate
+                                </h3>
+                            </div>
+                            <button type="button" onClick={() => setTeamModalOpen(false)} className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer">
+                                <span className="material-symbols-outlined text-lg">close</span>
+                            </button>
+                        </div>
+
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            if (!newMemberName.trim()) return;
+                            const initials = newMemberName.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+                            const newM = {
+                                name: newMemberName.trim(),
+                                role: newMemberRole,
+                                apaar_id: newMemberApaar.trim() || `APAAR-JH-${Math.floor(1000 + Math.random() * 9000)}`,
+                                initials
+                            };
+                            setTeamMembers(prev => [...prev, newM]);
+                            showToast(`Teammate ${newMemberName} added to project team!`, "success");
+                            setNewMemberName("");
+                            setNewMemberApaar("");
+                            setTeamModalOpen(false);
+                        }} className="space-y-4 mt-4">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Student Full Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={newMemberName}
+                                    onChange={e => setNewMemberName(e.target.value)}
+                                    placeholder="e.g. Sneha Murmu"
+                                    className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-primary text-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">APAAR Digital ID (Ministry of Education)</label>
+                                <input
+                                    type="text"
+                                    value={newMemberApaar}
+                                    onChange={e => setNewMemberApaar(e.target.value)}
+                                    placeholder="e.g. APAAR-JH-5521"
+                                    className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-primary text-sm font-mono"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Role / Domain Focus</label>
+                                <select
+                                    value={newMemberRole}
+                                    onChange={e => setNewMemberRole(e.target.value)}
+                                    className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-primary text-sm"
+                                >
+                                    <option value="Hardware &amp; IoT Engineer">Hardware &amp; IoT Engineer</option>
+                                    <option value="Fullstack &amp; Mobile Developer">Fullstack &amp; Mobile Developer</option>
+                                    <option value="GIS &amp; Remote Sensing Analyst">GIS &amp; Remote Sensing Analyst</option>
+                                    <option value="Civil &amp; Environmental Specialist">Civil &amp; Environmental Specialist</option>
+                                    <option value="AI &amp; Data Pipeline Engineer">AI &amp; Data Pipeline Engineer</option>
+                                </select>
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-3 border-t border-outline-variant/20">
+                                <button type="button" onClick={() => setTeamModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-on-surface-variant cursor-pointer">Cancel</button>
+                                <button type="submit" className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1 cursor-pointer">
+                                    <span className="material-symbols-outlined text-sm">check</span>
+                                    Add to Team
+                                </button>
                             </div>
                         </form>
                     </motion.div>

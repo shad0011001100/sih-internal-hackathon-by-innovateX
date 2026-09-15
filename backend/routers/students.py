@@ -254,6 +254,11 @@ def submit_project(project_id: int, user: models.User = Depends(get_student_user
     project = db.query(models.Project).filter(models.Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    if (project.progress_pct or 0) < 100:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Project must reach 100% milestone progress before submitting for review (current: {project.progress_pct or 0}%)."
+        )
     project.status = 'submitted'
     db.commit()
-    return {"status": "ok"}
+    return {"status": "ok", "message": "Project submitted for mentor review."}

@@ -24,6 +24,7 @@ class StatusUpdate(BaseModel):
 class AssignReportRequest(BaseModel):
     university_id: int
     department: str
+    faculty_mentor: Optional[str] = None
 
 class ReviewSubmissionRequest(BaseModel):
     action: str  # 'approve' | 'reject'
@@ -75,7 +76,10 @@ def assign_report(
         raise HTTPException(status_code=404, detail="Report not found")
 
     report.assigned_university_id = req.university_id
-    report.assigned_department = req.department
+    dept_str = req.department
+    if req.faculty_mentor:
+        dept_str = f"{req.department} (Lead Mentor: {req.faculty_mentor})"
+    report.assigned_department = dept_str
     report.status = "assigned"
 
     db.commit()
@@ -87,6 +91,7 @@ def assign_report(
         "report_id": report.id,
         "assigned_university_id": report.assigned_university_id,
         "assigned_department": report.assigned_department,
+        "faculty_mentor": req.faculty_mentor,
         "new_status": report.status
     }
 

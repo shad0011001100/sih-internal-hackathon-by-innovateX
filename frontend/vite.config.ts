@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+import { reticle } from '@reticlehq/vite-plugin';
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
+  plugins: [reticle(),
     react(),
     tailwindcss(),
   ],
@@ -12,7 +13,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8003',
+        target: 'http://localhost:8004',
         changeOrigin: true,
       },
     }

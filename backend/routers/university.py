@@ -77,3 +77,68 @@ def get_students(user: models.User = Depends(get_university_user), db: Session =
             "skill_count": skill_count
         })
     return results
+
+class UniversitySettingsUpdate(BaseModel):
+    aishe_code: str | None = None
+    nodal_officer: str | None = None
+    nodal_email: str | None = None
+    capstone_credits: int | None = 4
+    min_team_size: int | None = 2
+    max_team_size: int | None = 4
+    require_field_pilot: bool | None = True
+    auto_csr_matching: bool | None = True
+    notify_new_civic_issues: bool | None = True
+
+class FacultyAssignRequest(BaseModel):
+    faculty_mentor: str
+    department: str | None = None
+    lab_allocation: str | None = None
+
+UNIVERSITY_SETTINGS_CACHE = {
+    "aishe_code": "U-0298",
+    "accreditation": "NAAC A+ (CGPA 3.48)",
+    "nodal_officer": "Dr. Ramesh Chandra (Dean R&D)",
+    "nodal_email": "dean.rd@bitmesra.ac.in",
+    "capstone_credits": 4,
+    "min_team_size": 2,
+    "max_team_size": 4,
+    "require_field_pilot": True,
+    "auto_csr_matching": True,
+    "notify_new_civic_issues": True
+}
+
+@router.get("/settings")
+def get_settings(user: models.User = Depends(get_university_user)):
+    return UNIVERSITY_SETTINGS_CACHE
+
+@router.put("/settings")
+def update_settings(req: UniversitySettingsUpdate, user: models.User = Depends(get_university_user)):
+    data = req.model_dump(exclude_unset=True) if hasattr(req, 'model_dump') else req.dict(exclude_unset=True)
+    for k, v in data.items():
+        UNIVERSITY_SETTINGS_CACHE[k] = v
+    return {"status": "ok", "settings": UNIVERSITY_SETTINGS_CACHE}
+
+@router.post("/problems/{report_id}/assign-faculty")
+def assign_faculty(report_id: int, req: FacultyAssignRequest, user: models.User = Depends(get_university_user), db: Session = Depends(get_db)):
+    report = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    if req.department:
+        report.assigned_department = req.department
+    db.commit()
+    return {
+        "status": "ok", 
+        "message": f"Faculty mentor {req.faculty_mentor} assigned to Problem #{report_id}",
+        "faculty_mentor": req.faculty_mentor,
+        "lab_allocation": req.lab_allocation
+    }
+
+@router.post("/projects/{project_id}/approve-credits")
+def approve_credits(project_id: int, user: models.User = Depends(get_university_user), db: Session = Depends(get_db)):
+    project = db.query(models.Project).filter(models.Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    project.status = 'approved'
+    db.commit()
+    return {"status": "ok", "message": f"Academic capstone credits approved for Project '{project.title}'"}
+

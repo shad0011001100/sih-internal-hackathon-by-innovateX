@@ -22,6 +22,7 @@ export default function OfficialDashboard() {
     const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
     const [universityId, setUniversityId] = useState("1");
     const [department, setDepartment] = useState("Computer Science & Engineering (AI/Software)");
+    const [facultyMentor, setFacultyMentor] = useState("Dr. B. K. Singh (IoT & Civic Sensors, BIT Mesra)");
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -97,10 +98,20 @@ export default function OfficialDashboard() {
             await safeFetch(`/api/admin/reports/${selectedReportId}/assign`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ university_id: parseInt(universityId), department })
+                body: JSON.stringify({ 
+                    university_id: parseInt(universityId), 
+                    department,
+                    faculty_mentor: facultyMentor 
+                })
             });
-            showToast(`Report #${selectedReportId} assigned to University #${universityId} (${department})`, "success");
-            setReports(prev => prev.map(r => r.id === selectedReportId ? { ...r, status: "assigned", assigned_university_id: parseInt(universityId), assigned_department: department } : r));
+            showToast(`Report #${selectedReportId} assigned to University #${universityId} (${department}) with Faculty Mentor ${facultyMentor}`, "success");
+            setReports(prev => prev.map(r => r.id === selectedReportId ? { 
+                ...r, 
+                status: "assigned", 
+                assigned_university_id: parseInt(universityId), 
+                assigned_department: department,
+                faculty_mentor: facultyMentor 
+            } : r));
             setShowAssignModal(false);
             setUniversityId("1");
             setDepartment("Computer Science & Engineering (AI/Software)");
@@ -379,14 +390,17 @@ export default function OfficialDashboard() {
                                             )}
 
                                             <div className="flex flex-wrap gap-1.5 mb-3">
-                                                {report.priority_score && (
-                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                                                        report.priority_score > 80 ? 'bg-error-container text-on-error-container' : 
-                                                        report.priority_score > 50 ? 'bg-secondary-container text-on-secondary-container' : 'bg-primary-fixed text-on-primary-fixed'
-                                                    }`}>
-                                                        AI Score: {report.priority_score}%
-                                                    </span>
-                                                )}
+                                                {report.priority_score && (() => {
+                                                    const pScore = report.priority_score <= 1.0 ? Math.round(report.priority_score * 100) : Math.round(report.priority_score);
+                                                    return (
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                                                            pScore > 80 ? 'bg-error-container text-on-error-container' : 
+                                                            pScore > 50 ? 'bg-secondary-container text-on-secondary-container' : 'bg-primary-fixed text-on-primary-fixed'
+                                                        }`}>
+                                                            AI Score: {pScore}/100
+                                                        </span>
+                                                    );
+                                                })()}
                                                 <span className="text-[10px] font-mono bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full">
                                                     {report.gps_lat?.toFixed(4)}, {report.gps_lon?.toFixed(4)}
                                                 </span>
@@ -458,15 +472,30 @@ export default function OfficialDashboard() {
                                         </>
                                     )}
                                     {sub.status === 'accepted' && (
-                                        <button 
-                                            type="button"
-                                            disabled={mutatingId === sub.id} 
-                                            onClick={() => implementProject(sub.id)} 
-                                            className="px-4 py-1.5 bg-primary-container text-on-primary-container rounded-full text-xs font-bold active:scale-95 transition-all disabled:opacity-50 flex items-center gap-1"
-                                        >
-                                            {mutatingId === sub.id && <span className="material-symbols-outlined animate-spin text-[14px]">refresh</span>}
-                                            Mark Implemented
-                                        </button>
+                                        <div className="w-full flex items-center justify-between pt-1">
+                                            <div className="flex items-center gap-1 text-xs text-primary font-semibold">
+                                                <span className="material-symbols-outlined text-sm">engineering</span>
+                                                <span>Ground Crew Dispatched · Rollout Clearance</span>
+                                            </div>
+                                            <button 
+                                                type="button"
+                                                disabled={mutatingId === sub.id} 
+                                                onClick={() => implementProject(sub.id)} 
+                                                className="px-4 py-1.5 bg-primary text-on-primary rounded-full text-xs font-bold active:scale-95 transition-all disabled:opacity-50 flex items-center gap-1 cursor-pointer shadow-xs"
+                                            >
+                                                {mutatingId === sub.id && <span className="material-symbols-outlined animate-spin text-[14px]">refresh</span>}
+                                                <span className="material-symbols-outlined text-sm">verified</span>
+                                                Verify Ground Implementation
+                                            </button>
+                                        </div>
+                                    )}
+                                    {sub.status === 'completed' && (
+                                        <div className="w-full flex items-center justify-between pt-1">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
+                                                <span className="material-symbols-outlined text-sm">check_circle</span>
+                                                Ground Implementation Verified &amp; Handover Complete
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
                             </article>
@@ -518,15 +547,15 @@ export default function OfficialDashboard() {
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-primary text-xl">school</span>
-                                <h3 className="text-lg font-bold text-on-surface">Assign to Academic Institution</h3>
+                                <h3 className="text-lg font-bold text-on-surface">Assign to Academic Institution &amp; Faculty Guide</h3>
                             </div>
-                            <button type="button" onClick={() => setShowAssignModal(false)} className="text-on-surface-variant hover:text-on-surface">
+                            <button type="button" onClick={() => setShowAssignModal(false)} className="text-on-surface-variant hover:text-on-surface cursor-pointer">
                                 <span className="material-symbols-outlined text-xl">close</span>
                             </button>
                         </div>
                         
                         <p className="text-xs text-on-surface-variant mb-4">
-                            Route this grievance to a verified university department for student capstone solving or engineering field analysis.
+                            Route this grievance to a verified Jharkhand university and designated research faculty mentor for technical solving and student capstone team allocation.
                         </p>
 
                         <form onSubmit={assignReport} className="space-y-4">
@@ -560,9 +589,45 @@ export default function OfficialDashboard() {
                                     <option value="Rural Technology & Governance">Rural Technology & Governance</option>
                                 </select>
                             </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Faculty Mentor &amp; Research Guide</label>
+                                <select 
+                                    required 
+                                    value={facultyMentor} 
+                                    onChange={e => setFacultyMentor(e.target.value)} 
+                                    className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-primary text-sm font-medium text-on-surface"
+                                >
+                                    {universityId === "1" && (
+                                        <>
+                                            <option value="Dr. B. K. Singh (IoT & Civic Sensors, BIT Mesra)">Dr. B. K. Singh (IoT &amp; Civic Sensors, BIT Mesra)</option>
+                                            <option value="Dr. Vandana Bhattacharjee (AI & Smart Governance, BIT Mesra)">Dr. Vandana Bhattacharjee (AI &amp; Smart Governance)</option>
+                                            <option value="Dr. S. K. Chakraborty (Civil & Hydraulic Systems, BIT Mesra)">Dr. S. K. Chakraborty (Civil &amp; Hydraulic Systems)</option>
+                                        </>
+                                    )}
+                                    {universityId === "2" && (
+                                        <>
+                                            <option value="Dr. Arvind Kumar (Environmental Eng & Water Quality, NIT Jamshedpur)">Dr. Arvind Kumar (Water Quality &amp; Sanitation)</option>
+                                            <option value="Dr. D. K. Yadav (Computer Applications, NIT Jamshedpur)">Dr. D. K. Yadav (Distributed Systems)</option>
+                                            <option value="Dr. R. V. Sharma (Structural Safety & Roads, NIT Jamshedpur)">Dr. R. V. Sharma (Road Infrastructure)</option>
+                                        </>
+                                    )}
+                                    {universityId === "3" && (
+                                        <>
+                                            <option value="Prof. Sukumar Mishra (Clean Energy & Microgrids, IIT Dhanbad)">Prof. Sukumar Mishra (Clean Energy &amp; Microgrids)</option>
+                                            <option value="Prof. Srinivas Pasupuleti (Civil Infrastructure, IIT Dhanbad)">Prof. Srinivas Pasupuleti (Civil Infrastructure)</option>
+                                        </>
+                                    )}
+                                    {universityId === "4" && (
+                                        <option value="Dr. Rajiv Ranjan (Edge AI & Embedded Systems, IIIT Ranchi)">Dr. Rajiv Ranjan (Edge AI &amp; Embedded Systems)</option>
+                                    )}
+                                    {universityId === "5" && (
+                                        <option value="Dr. P. K. Verma (Geospatial & Urban Drainage, Ranchi University)">Dr. P. K. Verma (Geospatial &amp; Urban Drainage)</option>
+                                    )}
+                                </select>
+                            </div>
                             <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant/20">
-                                <button type="button" disabled={submitting} onClick={() => setShowAssignModal(false)} className="px-4 py-2 text-sm font-semibold text-on-surface-variant">Cancel</button>
-                                <button type="submit" disabled={submitting} className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50">
+                                <button type="button" disabled={submitting} onClick={() => setShowAssignModal(false)} className="px-4 py-2 text-sm font-semibold text-on-surface-variant cursor-pointer">Cancel</button>
+                                <button type="submit" disabled={submitting} className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
                                     {submitting && <span className="material-symbols-outlined animate-spin text-sm">refresh</span>}
                                     {submitting ? "Dispatching..." : "Confirm & Assign"}
                                 </button>
@@ -584,11 +649,11 @@ export default function OfficialDashboard() {
                                     Ranchi Municipal Corporation (RMC) Ward Heatmap
                                 </h3>
                             </div>
-                            <button type="button" onClick={() => setShowGisMap(false)} className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface">
+                            <button type="button" onClick={() => setShowGisMap(false)} className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer">
                                 <span className="material-symbols-outlined text-lg">close</span>
                             </button>
                         </div>
-
+                        
                         <div className="my-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
                             <div className="p-3 bg-surface-container-low rounded-2xl border border-outline-variant/30">
                                 <span className="text-[10px] text-on-surface-variant uppercase font-bold">Total Wards</span>
