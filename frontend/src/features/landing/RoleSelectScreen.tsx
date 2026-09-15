@@ -120,9 +120,9 @@ export default function RoleSelectScreen() {
 
                     {showMore && (
                         <motion.div
-                            initial={{ opacity: 0, y: -8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="show"
                             className="space-y-3 mt-3"
                         >
                             <RoleCard
