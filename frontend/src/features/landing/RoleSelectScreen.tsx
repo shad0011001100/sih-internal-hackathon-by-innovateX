@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const containerVariants = {
@@ -118,45 +118,42 @@ export default function RoleSelectScreen() {
                         </span>
                     </button>
 
-                    <AnimatePresence>
-                        {showMore && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                                animate={{ opacity: 1, height: "auto", marginTop: 12 }}
-                                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="space-y-3 overflow-hidden"
-                            >
-                                <RoleCard
-                                    icon="assured_workload"
-                                    label="Government Official"
-                                    credential={{ icon: "key", label: "Gov Employee ID + Password" }}
-                                    color="bg-secondary"
-                                    textOnColor="text-white"
-                                    bordered={false}
-                                    onClick={() => navigate("/login/official")}
-                                />
-                                <RoleCard
-                                    icon="account_balance"
-                                    label="University & Higher Education"
-                                    credential={{ icon: "mail", label: "Institutional Email" }}
-                                    color="bg-[#526070]"
-                                    textOnColor="text-white"
-                                    bordered={false}
-                                    onClick={() => navigate("/login/university")}
-                                />
-                                <RoleCard
-                                    icon="business"
-                                    label="Industry & CSR Partner"
-                                    credential={{ icon: "corporate_fare", label: "Partner ID + Password" }}
-                                    color="bg-surface-container-lowest"
-                                    textOnColor="text-on-surface"
-                                    bordered={true}
-                                    onClick={() => navigate("/login/industry")}
-                                />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    {showMore && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="space-y-3 mt-3"
+                        >
+                            <RoleCard
+                                icon="assured_workload"
+                                label="Government Official"
+                                credential={{ icon: "key", label: "Gov Employee ID + Password" }}
+                                color="bg-secondary"
+                                textOnColor="text-white"
+                                bordered={false}
+                                onClick={() => navigate("/login/official")}
+                            />
+                            <RoleCard
+                                icon="account_balance"
+                                label="University & Higher Education"
+                                credential={{ icon: "mail", label: "Institutional Email" }}
+                                color="bg-[#526070]"
+                                textOnColor="text-white"
+                                bordered={false}
+                                onClick={() => navigate("/login/university")}
+                            />
+                            <RoleCard
+                                icon="business"
+                                label="Industry & CSR Partner"
+                                credential={{ icon: "corporate_fare", label: "Partner ID + Password" }}
+                                color="bg-surface-container-lowest"
+                                textOnColor="text-on-surface"
+                                bordered={true}
+                                onClick={() => navigate("/login/industry")}
+                            />
+                        </motion.div>
+                    )}
                 </div>
             </motion.div>
 
