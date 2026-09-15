@@ -23,6 +23,24 @@ export default function OfficialDashboard() {
     const [universityId, setUniversityId] = useState("1");
     const [department, setDepartment] = useState("Computer Science & Engineering (AI/Software)");
     const [facultyMentor, setFacultyMentor] = useState("Dr. B. K. Singh (IoT & Civic Sensors, BIT Mesra)");
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+    const [officialSettings, setOfficialSettings] = useState({
+        officerName: "Er. Rameshwar Mahto",
+        department: "Ranchi Municipal Corporation (Civil & Sanitation)",
+        wardZone: "Zone 3 (Wards 1-12)",
+        slaThresholdHours: 48,
+        autoEscalation: true,
+        smsAlertsCritical: true,
+        aiTriageConfidence: 80,
+        emergencyHotline: "+91 651 220 8555",
+        nodalEmail: "nodal.rmc@jharkhand.gov.in"
+    });
+
+    const handleSaveOfficialSettings = (e: React.FormEvent) => {
+        e.preventDefault();
+        showToast("Municipal Department settings & SLA thresholds updated successfully!", "success");
+        setSettingsModalOpen(false);
+    };
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -271,14 +289,25 @@ export default function OfficialDashboard() {
                             <p className="text-[11px] text-on-secondary/80 font-medium">Jharkhand Government — Verified Access</p>
                         </div>
                     </div>
-                    <button 
-                        type="button" 
-                        onClick={handleLogout} 
-                        className="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer active:scale-95 transition-all"
-                        aria-label="Logout"
-                    >
-                        <span className="material-symbols-outlined text-sm" data-icon="logout">logout</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setSettingsModalOpen(true)}
+                            className="px-3 py-1.5 rounded-xl bg-surface-container-lowest/20 hover:bg-surface-container-lowest/30 text-on-secondary text-xs font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all border border-white/10"
+                            title="Municipal Department & Official Settings"
+                        >
+                            <span className="material-symbols-outlined text-sm">settings</span>
+                            <span className="hidden sm:inline">Settings</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={handleLogout} 
+                            className="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer active:scale-95 transition-all"
+                            aria-label="Logout"
+                        >
+                            <span className="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -532,8 +561,8 @@ export default function OfficialDashboard() {
                 </button>
                 <button 
                     type="button" 
-                    onClick={() => showComingSoon("Official Portal Settings")} 
-                    className="flex flex-col items-center min-w-[44px] text-on-surface-variant hover:text-primary transition-colors"
+                    onClick={() => setSettingsModalOpen(true)} 
+                    className="flex flex-col items-center min-w-[44px] text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
                 >
                     <span className="material-symbols-outlined text-[22px]" data-icon="settings">settings</span>
                     <span className="text-[10px] font-bold mt-0.5">Settings</span>
@@ -719,6 +748,169 @@ export default function OfficialDashboard() {
                                 Back to Grievance Records
                             </button>
                         </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Official Settings & Policy Modal */}
+            {settingsModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-sm animate-fade-in">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto"
+                    >
+                        <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-lg">settings</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold font-headline-sm text-on-surface">Municipal Official &amp; Policy Settings</h3>
+                                    <p className="text-[11px] text-on-surface-variant">Configure ward jurisdictional routing, escalation SLAs &amp; triage thresholds</p>
+                                </div>
+                            </div>
+                            <button type="button" onClick={() => setSettingsModalOpen(false)} className="p-1 rounded-full text-on-surface-variant hover:bg-surface-container cursor-pointer">
+                                <span className="material-symbols-outlined text-lg">close</span>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSaveOfficialSettings} className="space-y-4 pt-4">
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">badge</span>
+                                    Officer &amp; Jurisdiction Profile
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Nodal Officer Name</label>
+                                        <input 
+                                            type="text"
+                                            value={officialSettings.officerName}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, officerName: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-secondary text-on-surface outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Department</label>
+                                        <select 
+                                            value={officialSettings.department}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, department: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-secondary text-on-surface outline-none cursor-pointer"
+                                        >
+                                            <option value="Ranchi Municipal Corporation (Civil & Sanitation)">RMC (Civil &amp; Sanitation)</option>
+                                            <option value="Drinking Water & Sanitation Dept (PHED)">Drinking Water (PHED)</option>
+                                            <option value="Jharkhand Bijli Vitran Nigam (JBVNL)">Power Distribution (JBVNL)</option>
+                                            <option value="Road Construction Dept (RCD)">Road Construction (RCD)</option>
+                                            <option value="Health & Vector Control Cell">Health &amp; Vector Control</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Assigned Ward Zone</label>
+                                        <input 
+                                            type="text"
+                                            value={officialSettings.wardZone}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, wardZone: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-secondary text-on-surface outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Nodal Official Email</label>
+                                        <input 
+                                            type="email"
+                                            value={officialSettings.nodalEmail}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, nodalEmail: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-secondary text-on-surface outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 pt-2 border-t border-outline-variant/20">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">tune</span>
+                                    Grievance SLAs &amp; Automated Escalation
+                                </h4>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">SLA Resolution Breach Window</label>
+                                        <select 
+                                            value={officialSettings.slaThresholdHours}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, slaThresholdHours: Number(e.target.value) })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-secondary text-on-surface outline-none cursor-pointer"
+                                        >
+                                            <option value={24}>24 Hours (Urgent)</option>
+                                            <option value={48}>48 Hours (Standard)</option>
+                                            <option value={72}>72 Hours (Extended)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">AI Triage Severity Cutoff</label>
+                                        <div className="flex items-center gap-2 pt-1">
+                                            <input 
+                                                type="range"
+                                                min={50}
+                                                max={95}
+                                                step={5}
+                                                value={officialSettings.aiTriageConfidence}
+                                                onChange={e => setOfficialSettings({ ...officialSettings, aiTriageConfidence: Number(e.target.value) })}
+                                                className="w-full accent-secondary cursor-pointer"
+                                            />
+                                            <span className="text-xs font-mono font-bold text-secondary min-w-[35px]">{officialSettings.aiTriageConfidence}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2 pt-1">
+                                    <label className="flex items-start gap-2.5 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+                                        <input 
+                                            type="checkbox"
+                                            checked={officialSettings.autoEscalation}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, autoEscalation: e.target.checked })}
+                                            className="mt-0.5 rounded text-secondary focus:ring-secondary cursor-pointer"
+                                        />
+                                        <div>
+                                            <span className="text-xs font-bold text-on-surface block">Auto-Escalate SLA Breaches to District Commissioner</span>
+                                            <span className="text-[10px] text-on-surface-variant">Automatically marks overdue grievances as High Urgency and notifies administrative leadership</span>
+                                        </div>
+                                    </label>
+
+                                    <label className="flex items-start gap-2.5 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+                                        <input 
+                                            type="checkbox"
+                                            checked={officialSettings.smsAlertsCritical}
+                                            onChange={e => setOfficialSettings({ ...officialSettings, smsAlertsCritical: e.target.checked })}
+                                            className="mt-0.5 rounded text-secondary focus:ring-secondary cursor-pointer"
+                                        />
+                                        <div>
+                                            <span className="text-xs font-bold text-on-surface block">Instant SMS / WhatsApp Dispatch for Critical Safety Hazards</span>
+                                            <span className="text-[10px] text-on-surface-variant">Dispatches instant alert to municipal quick-response team whenever AI score &gt; 80</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 pt-4 border-t border-outline-variant/20">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setSettingsModalOpen(false)}
+                                    className="px-4 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container rounded-xl cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    className="px-5 py-2 text-xs font-bold bg-secondary text-on-secondary rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined text-sm">save</span>
+                                    Save Official Settings
+                                </button>
+                            </div>
+                        </form>
                     </motion.div>
                 </div>
             )}

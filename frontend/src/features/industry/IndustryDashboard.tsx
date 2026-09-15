@@ -20,6 +20,24 @@ export default function IndustryDashboard() {
     const [pledgeAmount, setPledgeAmount] = useState(50000);
     const [mentorDetails, setMentorDetails] = useState("Senior IoT Systems Engineer (Tata Steel R&D)");
     const [labDetails, setLabDetails] = useState("Turbidity & Flow Sensors IoT Prototyping Kit (5 Units)");
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+    const [partnerSettings, setPartnerSettings] = useState({
+        companyName: "Tata Steel CSR Foundation",
+        cinNumber: "L27100MH1907PLC000260",
+        csrRegistrationNo: "CSR00018942",
+        annualBudget: "₹ 50,00,000",
+        focusSdgs: "SDG 6 (Clean Water), SDG 11 (Sustainable Cities), SDG 9 (Infrastructure)",
+        nodalPocName: "Siddharth Roy (Head - Urban CSR)",
+        nodalEmail: "csr.jharkhand@tatasteel.com",
+        autoMatching: true,
+        quarterlyAuditReport: true
+    });
+
+    const handleSavePartnerSettings = (e: React.FormEvent) => {
+        e.preventDefault();
+        showToast("CSR Partner Profile & Capital Allocation settings updated successfully!", "success");
+        setSettingsModalOpen(false);
+    };
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -141,14 +159,25 @@ export default function IndustryDashboard() {
                             <span className="material-symbols-outlined text-primary-fixed text-sm" data-icon="verified">verified</span>
                         </div>
                     </div>
-                    <button 
-                        type="button" 
-                        onClick={handleLogout} 
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors" 
-                        aria-label="Logout"
-                    >
-                        <span className="material-symbols-outlined text-xl" data-icon="logout">logout</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button 
+                            type="button" 
+                            onClick={() => setSettingsModalOpen(true)} 
+                            className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-inverse-on-surface text-xs font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all border border-white/10"
+                            title="CSR Partner Settings &amp; Allocation"
+                        >
+                            <span className="material-symbols-outlined text-sm">settings</span>
+                            <span className="hidden sm:inline">Settings</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={handleLogout} 
+                            className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer" 
+                            aria-label="Logout"
+                        >
+                            <span className="material-symbols-outlined text-xl" data-icon="logout">logout</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -190,7 +219,7 @@ export default function IndustryDashboard() {
                 </motion.section>
 
                 {/* Funded Projects Feed */}
-                <motion.section variants={itemVariants} className="space-y-4">
+                <motion.section variants={itemVariants} id="funded-projects" className="space-y-4">
                     <h2 className="text-lg font-bold font-heading text-on-surface border-b border-outline-variant/30 pb-2">Your Funded Projects</h2>
                     <div className="space-y-3">
                         {fundedProjects.length === 0 ? (
@@ -230,7 +259,7 @@ export default function IndustryDashboard() {
                 </motion.section>
 
                 {/* CSR Marketplace */}
-                <motion.section variants={itemVariants} className="space-y-4">
+                <motion.section variants={itemVariants} id="marketplace-section" className="space-y-4">
                     <h2 className="text-lg font-bold font-heading text-on-surface flex items-center gap-2">
                         <span className="material-symbols-outlined text-secondary" data-icon="volunteer_activism">volunteer_activism</span>
                         Fund a New Problem
@@ -371,21 +400,180 @@ export default function IndustryDashboard() {
             <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-inverse-surface/95 backdrop-blur-md shadow-lg border-t border-inverse-surface">
                 {[
                     { label: 'Dashboard', icon: 'grid_view', action: () => { window.scrollTo({ top: 0, behavior: 'smooth' }); setActiveNav('Dashboard'); } },
-                    { label: 'Portfolio', icon: 'account_balance_wallet', action: () => { showComingSoon("Portfolio Tracker"); setActiveNav('Portfolio'); } },
-                    { label: 'Impact', icon: 'monitoring', action: () => { showComingSoon("Impact Analytics"); setActiveNav('Impact'); } },
-                    { label: 'Settings', icon: 'settings', action: () => { showComingSoon("Partner Settings"); setActiveNav('Settings'); } }
+                    { label: 'Portfolio', icon: 'account_balance_wallet', action: () => { document.getElementById('funded-projects')?.scrollIntoView({ behavior: 'smooth' }); setActiveNav('Portfolio'); } },
+                    { label: 'Marketplace', icon: 'volunteer_activism', action: () => { document.getElementById('marketplace-section')?.scrollIntoView({ behavior: 'smooth' }); setActiveNav('Marketplace'); } },
+                    { label: 'Settings', icon: 'settings', action: () => { setSettingsModalOpen(true); setActiveNav('Settings'); } }
                 ].map(nav => (
                     <button 
                         key={nav.label} 
                         type="button"
                         onClick={nav.action}
-                        className={`flex flex-col items-center justify-center min-w-[64px] px-2 py-1.5 rounded-xl transition-all ${activeNav === nav.label ? 'text-primary-fixed font-bold' : 'text-inverse-on-surface/60 hover:text-inverse-on-surface'}`}
+                        className={`flex flex-col items-center justify-center min-w-[64px] px-2 py-1.5 rounded-xl transition-all cursor-pointer ${activeNav === nav.label ? 'text-primary-fixed font-bold' : 'text-inverse-on-surface/60 hover:text-inverse-on-surface'}`}
                     >
                         <span className={`material-symbols-outlined text-xl ${activeNav === nav.label ? 'fill-1' : ''}`} data-icon={nav.icon}>{nav.icon}</span>
                         <span className="text-[10px] mt-1 font-semibold">{nav.label}</span>
                     </button>
                 ))}
             </nav>
+
+            {/* CSR Partner Settings & Allocation Modal */}
+            {settingsModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/60 backdrop-blur-sm animate-fade-in">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto text-on-surface"
+                    >
+                        <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-xl bg-inverse-surface text-primary-fixed flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-lg">settings</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold font-headline-sm text-on-surface">CSR Partner Profile &amp; Policies</h3>
+                                    <p className="text-[11px] text-on-surface-variant">Manage corporate entity credentials, allocation pool &amp; SDG focus</p>
+                                </div>
+                            </div>
+                            <button type="button" onClick={() => setSettingsModalOpen(false)} className="p-1 rounded-full text-on-surface-variant hover:bg-surface-container cursor-pointer">
+                                <span className="material-symbols-outlined text-lg">close</span>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSavePartnerSettings} className="space-y-4 pt-4">
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">domain</span>
+                                    Corporate Entity Credentials
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Company / Entity Name</label>
+                                        <input 
+                                            type="text"
+                                            value={partnerSettings.companyName}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, companyName: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">MCA CSR Registration No.</label>
+                                        <input 
+                                            type="text"
+                                            value={partnerSettings.csrRegistrationNo}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, csrRegistrationNo: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none font-mono"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Corporate CIN</label>
+                                        <input 
+                                            type="text"
+                                            value={partnerSettings.cinNumber}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, cinNumber: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none font-mono"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Annual CSR Allocation Pool</label>
+                                        <input 
+                                            type="text"
+                                            value={partnerSettings.annualBudget}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, annualBudget: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none font-semibold text-primary"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 pt-2 border-t border-outline-variant/20">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">contact_mail</span>
+                                    Nodal CSR Point of Contact
+                                </h4>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">POC Name &amp; Designation</label>
+                                        <input 
+                                            type="text"
+                                            value={partnerSettings.nodalPocName}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, nodalPocName: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Nodal Official Email</label>
+                                        <input 
+                                            type="email"
+                                            value={partnerSettings.nodalEmail}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, nodalEmail: e.target.value })}
+                                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Priority UN Sustainable Development Goals (SDGs)</label>
+                                    <input 
+                                        type="text"
+                                        value={partnerSettings.focusSdgs}
+                                        onChange={e => setPartnerSettings({ ...partnerSettings, focusSdgs: e.target.value })}
+                                        className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 pt-2 border-t border-outline-variant/20">
+                                <label className="flex items-start gap-2.5 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+                                    <input 
+                                        type="checkbox"
+                                        checked={partnerSettings.autoMatching}
+                                        onChange={e => setPartnerSettings({ ...partnerSettings, autoMatching: e.target.checked })}
+                                        className="mt-0.5 rounded text-primary focus:ring-primary cursor-pointer"
+                                    />
+                                    <div>
+                                        <span className="text-xs font-bold text-on-surface block">Automated State Innovation Grant Co-Matching</span>
+                                        <span className="text-[10px] text-on-surface-variant">Enable Jharkhand Innovation Council 1:1 matching on approved CSR student capstone funding</span>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-start gap-2.5 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+                                    <input 
+                                        type="checkbox"
+                                        checked={partnerSettings.quarterlyAuditReport}
+                                        onChange={e => setPartnerSettings({ ...partnerSettings, quarterlyAuditReport: e.target.checked })}
+                                        className="mt-0.5 rounded text-primary focus:ring-primary cursor-pointer"
+                                    />
+                                    <div>
+                                        <span className="text-xs font-bold text-on-surface block">Quarterly Impact &amp; 80G Tax Utilization Audit Delivery</span>
+                                        <span className="text-[10px] text-on-surface-variant">Receive automated certified fund utilization certificates verified by university nodal officers</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 pt-4 border-t border-outline-variant/20">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setSettingsModalOpen(false)}
+                                    className="px-4 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container rounded-xl cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    className="px-5 py-2 text-xs font-bold bg-inverse-surface text-primary-fixed rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined text-sm">save</span>
+                                    Save Partner Settings
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }
