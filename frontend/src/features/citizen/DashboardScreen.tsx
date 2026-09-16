@@ -1614,10 +1614,10 @@ export default function DashboardScreen() {
                     <p className="text-xs text-on-surface-variant">IoT Sub-Surface Water Contamination Telemetry in Doranda (Ward 14).</p>
                     <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
                         <span>Lead: <strong>Aravind Kumar</strong> (3rd Yr CSE)</span>
-                        <a href="https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX" target="_blank" rel="noreferrer" className="text-primary hover:underline font-semibold flex items-center gap-1">
-                            <span>Code Repo</span>
-                            <span className="material-symbols-outlined text-xs">open_in_new</span>
-                        </a>
+                        <span className="text-primary font-semibold flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs">biotech</span>
+                            <span>Live Prototype</span>
+                        </span>
                     </div>
                 </div>
 
@@ -1629,10 +1629,10 @@ export default function DashboardScreen() {
                     <p className="text-xs text-on-surface-variant">Computer Vision Pothole &amp; Pavement Roughness Scanner for Ratu Road corridor.</p>
                     <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
                         <span>Lead: <strong>Priya Sharma</strong> (Civil Engg)</span>
-                        <a href="https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX" target="_blank" rel="noreferrer" className="text-primary hover:underline font-semibold flex items-center gap-1">
-                            <span>Code Repo</span>
-                            <span className="material-symbols-outlined text-xs">open_in_new</span>
-                        </a>
+                        <span className="text-amber-700 font-semibold flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs">smart_toy</span>
+                            <span>Project Demo Ready</span>
+                        </span>
                     </div>
                 </div>
 
