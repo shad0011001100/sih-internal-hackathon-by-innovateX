@@ -140,6 +140,9 @@ def get_problems(user: models.User = Depends(get_student_user), db: Session = De
             "suggested_technologies": techs if isinstance(techs, list) else [], 
             "relevant_departments": departments if isinstance(departments, list) else [],
             "student_suitability_reason": getattr(r, 'student_suitability_reason', None) or reason,
+            "gps_lat": r.gps_lat,
+            "gps_lon": r.gps_lon,
+            "photo_url": r.photo_url,
             "created_at": r.created_at
         })
         

@@ -47,6 +47,42 @@ export default function StudentDashboard() {
     const logout = useAuthStore(state => state.logout);
     const { showToast, showComingSoon } = useToast();
 
+    const getHumanLocation = (issue: any): { name: string; landmark: string } => {
+        if (!issue) return { name: "Ranchi Municipal Area", landmark: "Jharkhand Urban Development Zone" };
+        const text = `${issue.title || ''} ${issue.description || ''} ${issue.challenge_summary || ''}`.toLowerCase();
+        
+        if (text.includes("morabadi")) return { name: "Morabadi, Ward 4", landmark: "Oxygen Park & Stadium Zone, Ranchi" };
+        if (text.includes("doranda")) return { name: "Doranda, Ward 4", landmark: "Near Tribal Welfare Hostel & High Court roundabout" };
+        if (text.includes("harmu")) return { name: "Harmu Housing Colony", landmark: "Harmu Bypass Road & Housing Sector, Ranchi" };
+        if (text.includes("bariatu")) return { name: "Bariatu, Ranchi", landmark: "Near Primary Health Sub-Centre & RIMS Road" };
+        if (text.includes("lalpur")) return { name: "Lalpur Chowk", landmark: "Commercial Vegetable Market & Circular Road, Ranchi" };
+        if (text.includes("kanke")) return { name: "Kanke Road", landmark: "Kanke Dam & Agricultural University Belt, Ranchi" };
+        if (text.includes("kishoreganj") || text.includes("sukhdeonagar")) return { name: "Kishoreganj", landmark: "Harmu Road Junction, Sukhdeo Nagar, Ranchi" };
+        if (text.includes("kokar")) return { name: "Kokar, Ward 3", landmark: "Industrial Area & Sadar Hospital Zone" };
+        if (text.includes("chutia")) return { name: "Chutia, Ward 6", landmark: "Station Road & Swarnarekha River Basin" };
+        if (text.includes("hinoo")) return { name: "Hinoo, Ward 5", landmark: "Birsa Munda Airport Corridor, Ranchi" };
+        if (text.includes("namkum")) return { name: "Namkum, Ward 9", landmark: "Namkum Industrial & Railway Crossing Area" };
+        if (text.includes("ratu")) return { name: "Ratu Road", landmark: "Pandra Market & National Highway 75 corridor" };
+        if (text.includes("main road")) return { name: "Main Road, Central Ranchi", landmark: "Overbridge & Commercial Market Corridor" };
+        
+        if (issue.gps_lat && issue.gps_lon) {
+            const lat = Number(issue.gps_lat);
+            const lon = Number(issue.gps_lon);
+            if (Math.abs(lat - 23.35) < 0.02 && Math.abs(lon - 85.31) < 0.02) {
+                return { name: "Harmu / Doranda", landmark: "South Ranchi Municipal Zone" };
+            }
+            if (Math.abs(lat - 23.39) < 0.02 && Math.abs(lon - 85.33) < 0.02) {
+                return { name: "Morabadi", landmark: "North Ranchi Central Zone" };
+            }
+            return { 
+                name: "Ranchi Municipal Area", 
+                landmark: `Ranchi Urban Zone (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)` 
+            };
+        }
+        
+        return { name: "Ranchi Municipal Area", landmark: "Ranchi Municipal Corporation jurisdiction" };
+    };
+
     const handleSaveSocials = async () => {
         localStorage.setItem("student_linkedin", linkedinUrl);
         localStorage.setItem("student_github", githubUrl);
@@ -559,7 +595,16 @@ export default function StudentDashboard() {
                                     })()}
                                 </div>
                                 <h3 className="font-bold text-on-surface text-base mb-1">{issue.title || issue.description?.slice(0, 50)}</h3>
-                                <p className="text-xs text-on-surface-variant mb-2 line-clamp-2">{issue.challenge_summary || issue.description}</p>
+                                {(() => {
+                                    const loc = getHumanLocation(issue);
+                                    return (
+                                        <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-2">
+                                            <span className="material-symbols-outlined text-[15px] text-primary">location_on</span>
+                                            <span><strong>{loc.name}</strong> • {loc.landmark}</span>
+                                        </div>
+                                    );
+                                })()}
+                                <p className="text-xs text-on-surface-variant mb-2 line-clamp-3 leading-relaxed">{issue.description || issue.challenge_summary}</p>
                                 
                                 {issue.student_suitability_reason && (
                                     <p className="text-[11px] text-[#3e644a] font-medium mb-3 flex items-center gap-1 bg-[#c2edcb]/30 px-2.5 py-1 rounded-lg">
@@ -580,7 +625,7 @@ export default function StudentDashboard() {
                                     <button 
                                         type="button" 
                                         onClick={() => openAdoptModal(issue)}
-                                        className="px-4 py-1.5 bg-primary text-on-primary rounded-full text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
+                                        className="px-4 py-1.5 bg-primary text-on-primary rounded-full text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                                     >
                                         <span className="material-symbols-outlined text-[14px]" data-icon="add_task">add_task</span>
                                         Adopt Problem
@@ -613,62 +658,150 @@ export default function StudentDashboard() {
             </nav>
 
             {/* Adopt Problem Modal */}
-            {adoptModalOpen && selectedIssue && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/40 backdrop-blur-sm">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-xl">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold text-on-surface">Adopt Problem Statement</h3>
-                            <button type="button" onClick={() => setAdoptModalOpen(false)} className="text-on-surface-variant hover:text-on-surface">
-                                <span className="material-symbols-outlined text-xl" data-icon="close">close</span>
-                            </button>
-                        </div>
-                        <form onSubmit={handleAdoptProblem} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-semibold text-on-surface-variant mb-1">Project Title</label>
-                                <input 
-                                    type="text" 
-                                    required 
-                                    value={projectTitle} 
-                                    onChange={e => setProjectTitle(e.target.value)} 
-                                    className="w-full px-3 py-2 bg-surface-container-low rounded-xl border-0 focus:ring-2 focus:ring-primary text-sm" 
-                                    placeholder="Enter capstone title" 
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-on-surface-variant mb-1">Proposed Solution / Approach</label>
-                                <textarea 
-                                    rows={3}
-                                    value={projectDesc} 
-                                    onChange={e => setProjectDesc(e.target.value)} 
-                                    className="w-full px-3 py-2 bg-surface-container-low rounded-xl border-0 focus:ring-2 focus:ring-primary text-sm" 
-                                    placeholder="Describe your technical methodology" 
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-on-surface-variant mb-1">Faculty Mentor (Optional)</label>
-                                <input 
-                                    type="text" 
-                                    value={mentorName} 
-                                    onChange={e => setMentorName(e.target.value)} 
-                                    className="w-full px-3 py-2 bg-surface-container-low rounded-xl border-0 focus:ring-2 focus:ring-primary text-sm" 
-                                    placeholder="e.g. Dr. A. Kumar" 
-                                />
-                            </div>
-                            <div className="flex justify-end gap-2 pt-2">
-                                <button type="button" disabled={submitting} onClick={() => setAdoptModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-on-surface-variant">Cancel</button>
+            {adoptModalOpen && selectedIssue && (() => {
+                const loc = getHumanLocation(selectedIssue);
+                return (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-sm overflow-y-auto">
+                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-outline-variant/30 my-8 space-y-4">
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between gap-3 border-b border-outline-variant/20 pb-3">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[11px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                                            {selectedIssue.category || "Civic Problem"}
+                                        </span>
+                                        <span className="text-[11px] font-mono text-outline">
+                                            #{String(selectedIssue.id).padStart(4, '0')}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-on-surface leading-snug">
+                                        {selectedIssue.title || selectedIssue.challenge_summary || `Civic Grievance #${selectedIssue.id}`}
+                                    </h3>
+                                </div>
                                 <button 
-                                    type="submit" 
-                                    disabled={submitting} 
-                                    className="px-5 py-2 rounded-xl bg-primary text-on-primary text-sm font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50"
+                                    type="button" 
+                                    onClick={() => setAdoptModalOpen(false)} 
+                                    className="p-1 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+                                    aria-label="Close"
                                 >
-                                    {submitting && <span className="material-symbols-outlined animate-spin text-sm">refresh</span>}
-                                    {submitting ? "Adopting..." : "Confirm & Form Team"}
+                                    <span className="material-symbols-outlined text-xl" data-icon="close">close</span>
                                 </button>
                             </div>
-                        </form>
-                    </motion.div>
-                </div>
-            )}
+
+                            {/* Civic Problem Ground Truth Briefing in Human Language */}
+                            <div className="bg-surface-container-low/70 rounded-2xl p-4 border border-outline-variant/20 space-y-3.5">
+                                {/* Where It Is (Location in Human Language) */}
+                                <div>
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-primary mb-1">
+                                        <span className="material-symbols-outlined text-sm text-primary">location_on</span>
+                                        <span>Where It Is (Ground Location)</span>
+                                    </div>
+                                    <div className="bg-surface-container-lowest rounded-xl p-3 border border-outline-variant/20 flex items-start justify-between gap-2">
+                                        <div>
+                                            <p className="text-sm font-bold text-on-surface">{loc.name}</p>
+                                            <p className="text-xs text-on-surface-variant leading-relaxed mt-0.5">{loc.landmark}</p>
+                                        </div>
+                                        {selectedIssue.gps_lat && selectedIssue.gps_lon && (
+                                            <a
+                                                href={`https://www.google.com/maps/search/?api=1&query=${selectedIssue.gps_lat},${selectedIssue.gps_lon}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-primary hover:bg-primary hover:text-on-primary text-[11px] font-semibold transition-colors"
+                                                title="Open in Google Maps"
+                                            >
+                                                <span>View on Map</span>
+                                                <span className="material-symbols-outlined text-xs">open_in_new</span>
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Problem Description in Human Language */}
+                                <div>
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant mb-1">
+                                        <span className="material-symbols-outlined text-sm text-outline">description</span>
+                                        <span>Citizen Problem Description</span>
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-on-surface leading-relaxed bg-surface-container-lowest rounded-xl p-3 border border-outline-variant/20 whitespace-pre-line">
+                                        {selectedIssue.description || selectedIssue.challenge_summary || "No detailed description provided by citizen."}
+                                    </p>
+                                </div>
+
+                                {/* AI Engineering Guidance */}
+                                {selectedIssue.student_suitability_reason && (
+                                    <div className="flex items-start gap-2 bg-[#c2edcb]/30 border border-[#3e644a]/20 rounded-xl p-2.5 text-[11px] text-[#24422e]">
+                                        <span className="material-symbols-outlined text-[15px] text-[#3e644a] shrink-0 mt-0.5">psychology</span>
+                                        <div>
+                                            <span className="font-bold">AI Triage Note: </span>
+                                            <span>{selectedIssue.student_suitability_reason}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Adoption Form */}
+                            <form onSubmit={handleAdoptProblem} className="space-y-3.5 pt-1">
+                                <div>
+                                    <label className="block text-xs font-bold text-on-surface mb-1">
+                                        Capstone Project Title
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        required 
+                                        value={projectTitle} 
+                                        onChange={e => setProjectTitle(e.target.value)} 
+                                        className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-on-surface font-medium" 
+                                        placeholder="e.g. IoT Acoustic Leak Detector & Auto-Shutoff" 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-on-surface mb-1">
+                                        Proposed Engineering Solution / Approach
+                                    </label>
+                                    <textarea 
+                                        rows={3}
+                                        value={projectDesc} 
+                                        onChange={e => setProjectDesc(e.target.value)} 
+                                        className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-on-surface leading-relaxed" 
+                                        placeholder="Describe how your student team plans to solve this civic issue using IoT, AI, or engineering methods..." 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-on-surface mb-1">
+                                        Faculty Mentor Name (Optional)
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={mentorName} 
+                                        onChange={e => setMentorName(e.target.value)} 
+                                        className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-on-surface" 
+                                        placeholder="e.g. Dr. R. K. Sen (BIT Mesra)" 
+                                    />
+                                </div>
+                                <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-outline-variant/20">
+                                    <button 
+                                        type="button" 
+                                        disabled={submitting} 
+                                        onClick={() => setAdoptModalOpen(false)} 
+                                        className="px-4 py-2 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-xl hover:bg-surface-container transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={submitting} 
+                                        className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold shadow-md hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {submitting && <span className="material-symbols-outlined animate-spin text-sm">refresh</span>}
+                                        <span>{submitting ? "Adopting..." : "Confirm & Form Team"}</span>
+                                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                );
+            })()}
 
             {/* Project Details & Submission Modal */}
             {projectModalOpen && selectedProject && (
