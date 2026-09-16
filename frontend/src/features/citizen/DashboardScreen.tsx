@@ -575,50 +575,69 @@ export default function DashboardScreen() {
         Grievances submitted by citizens are AI-validated, assigned to premier Jharkhand engineering faculties (BIT Mesra, NIT Jamshedpur, IIT Dhanbad), funded by CSR partners, and verified on ground.
     </p>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 pt-3 border-t border-outline-variant/30 text-center">
+        {/* Step 1: Citizen Field Reporting */}
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-primary/40 transition-all group">
-            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=300&auto=format&fit=crop&q=80" 
-                    alt="Citizen Reporting" 
+                    src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400&auto=format&fit=crop&q=80" 
+                    alt="Citizen Field GPS Reporting" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                 />
+                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center shadow-xs">
+                    <span className="material-symbols-outlined text-[12px]">add_a_photo</span>
+                </span>
             </div>
             <span className="block text-primary font-bold text-xs">1. Report</span>
             <span className="text-[10px] text-on-surface-variant font-medium">Citizen + GPS</span>
         </div>
+
+        {/* Step 2: AI Triage & Analytics Scoring */}
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-secondary/40 transition-all group">
-            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&auto=format&fit=crop&q=80" 
-                    alt="AI Triage & Scoring" 
+                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&auto=format&fit=crop&q=80" 
+                    alt="AI Triage Analytics Dashboard" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                 />
+                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-secondary text-white flex items-center justify-center shadow-xs">
+                    <span className="material-symbols-outlined text-[12px]">psychology</span>
+                </span>
             </div>
             <span className="block text-secondary font-bold text-xs">2. Triage</span>
             <span className="text-[10px] text-on-surface-variant font-medium">AI Scoring</span>
         </div>
+
+        {/* Step 3: University Engineering Team */}
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-amber-500/40 transition-all group">
-            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=300&auto=format&fit=crop&q=80" 
-                    alt="Faculty & Student Solvers" 
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=80" 
+                    alt="Faculty and University Engineering Solvers" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                 />
+                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-xs">
+                    <span className="material-symbols-outlined text-[12px]">school</span>
+                </span>
             </div>
             <span className="block text-amber-600 font-bold text-xs">3. Solve</span>
             <span className="text-[10px] text-on-surface-variant font-medium">Faculty + Team</span>
         </div>
+
+        {/* Step 4: Govt Ground Infrastructure Impact */}
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-emerald-500/40 transition-all group">
-            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1590402494587-44b71d7772f6?w=300&auto=format&fit=crop&q=80" 
-                    alt="Govt Ground Impact" 
+                    src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&auto=format&fit=crop&q=80" 
+                    alt="Government Civic Rollout on Ground" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                 />
+                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                    <span className="material-symbols-outlined text-[12px]">verified</span>
+                </span>
             </div>
             <span className="block text-emerald-600 font-bold text-xs">4. Impact</span>
             <span className="text-[10px] text-on-surface-variant font-medium">Govt Rollout</span>
