@@ -151,6 +151,15 @@ export default function StudentDashboard() {
     };
 
     const openAdoptModal = (issue: any) => {
+        const activeCount = projects.filter(p => p.status !== 'completed').length;
+        if (activeCount >= 1) {
+            showToast("Active Capstone Limit Reached (1/1): Complete your ongoing project before adopting another.", "warning");
+            return;
+        }
+        if (issue.is_already_adopted) {
+            showToast("You or your team has already adopted this problem statement.", "warning");
+            return;
+        }
         setSelectedIssue(issue);
         const autoTitle = issue.title || (issue.description ? `Solution: ${issue.description.slice(0, 32)}...` : 'Civic Problem Solution');
         setProjectTitle(autoTitle);
@@ -185,6 +194,7 @@ export default function StudentDashboard() {
                 documentation_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX"
             };
             setProjects(prev => [newProj, ...prev]);
+            setOpenIssues(prev => prev.map(iss => iss.id === selectedIssue.id ? { ...iss, is_already_adopted: true } : iss));
             showToast("Problem adopted! Your capstone project has been created.", "success");
             setAdoptModalOpen(false);
         } catch (e: any) {
@@ -285,6 +295,10 @@ export default function StudentDashboard() {
         if (selectedCategory === "All") return true;
         return issue.category?.toLowerCase() === selectedCategory.toLowerCase();
     });
+
+    const activeProjects = projects.filter(p => p.status !== 'completed');
+    const maxActiveProjects = 1;
+    const canAdopt = activeProjects.length < maxActiveProjects;
 
     const calculateOverallProgress = () => {
         if (projects.length === 0) return 0;
@@ -550,6 +564,42 @@ export default function StudentDashboard() {
                             AI Innovation Filter Active
                         </span>
                     </div>
+                    {/* Active Capstone Quota Status Indicator */}
+                    {!canAdopt ? (
+                        <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
+                            <div className="flex items-start sm:items-center gap-2.5">
+                                <span className="material-symbols-outlined text-amber-600 text-2xl shrink-0 mt-0.5 sm:mt-0">lock</span>
+                                <div>
+                                    <p className="text-xs font-bold">Active Capstone Limit Reached (1/1 Active)</p>
+                                    <p className="text-[11px] opacity-85 mt-0.5 leading-relaxed">
+                                        You are currently leading <strong>"{activeProjects[0]?.title || 'Active Capstone'}"</strong>. To prevent project hoarding and ensure high quality delivery, students can lead 1 active project at a time. Advance your ongoing project to completion to adopt a new challenge.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById('my-projects')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="px-3.5 py-1.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-900 dark:text-amber-100 rounded-xl text-xs font-bold shrink-0 transition-colors self-start sm:self-center cursor-pointer"
+                            >
+                                View Ongoing Project →
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 text-on-surface">
+                            <div className="flex items-center gap-2.5">
+                                <span className="material-symbols-outlined text-primary text-xl">workspace_premium</span>
+                                <div>
+                                    <p className="text-xs font-bold text-on-surface">Capstone Adoption Quota: 0 / 1 Active</p>
+                                    <p className="text-[11px] text-on-surface-variant">You have 1 open capstone slot available. Choose any real-world civic problem below to adopt as your student project.</p>
+                                </div>
+                            </div>
+                            <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold shrink-0 flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[13px]">check_circle</span>
+                                Slot Available
+                            </span>
+                        </div>
+                    )}
+
                     <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                         {['All', 'Roads', 'Water', 'Sanitation', 'Health', 'Education'].map(cat => (
                             <button 
@@ -622,14 +672,36 @@ export default function StudentDashboard() {
                                             <span key={t} className="px-2 py-1 bg-surface-container-high text-on-surface text-[10px] rounded-md font-mono">{t}</span>
                                         ))}
                                     </div>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => openAdoptModal(issue)}
-                                        className="px-4 py-1.5 bg-primary text-on-primary rounded-full text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
-                                    >
-                                        <span className="material-symbols-outlined text-[14px]" data-icon="add_task">add_task</span>
-                                        Adopt Problem
-                                    </button>
+                                    {issue.is_already_adopted ? (
+                                        <button 
+                                            type="button" 
+                                            disabled
+                                            className="px-3.5 py-1.5 bg-secondary-container/70 text-on-secondary-container rounded-full text-xs font-semibold cursor-not-allowed flex items-center gap-1.5 opacity-85"
+                                            title="You or your team has already adopted this problem statement"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">task_alt</span>
+                                            Already Adopted
+                                        </button>
+                                    ) : !canAdopt ? (
+                                        <button 
+                                            type="button" 
+                                            disabled
+                                            className="px-3.5 py-1.5 bg-surface-container-high text-on-surface-variant/70 border border-outline-variant/30 rounded-full text-xs font-semibold cursor-not-allowed flex items-center gap-1.5"
+                                            title="Active Capstone Limit: Complete your existing project before adopting a new challenge"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">lock</span>
+                                            Quota Full (1/1)
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => openAdoptModal(issue)}
+                                            className="px-4 py-1.5 bg-primary text-on-primary rounded-full text-xs font-bold shadow-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]" data-icon="add_task">add_task</span>
+                                            Adopt Problem
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -737,6 +809,17 @@ export default function StudentDashboard() {
                                         </div>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Active Capstone Quota Notice */}
+                            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-3 flex items-start gap-2.5 text-xs text-on-surface">
+                                <span className="material-symbols-outlined text-primary text-lg shrink-0 mt-0.5">workspace_premium</span>
+                                <div>
+                                    <p className="font-bold text-on-surface">Academic Capstone Commitment (1/1 Quota)</p>
+                                    <p className="text-[11px] text-on-surface-variant leading-relaxed mt-0.5">
+                                        Adopting this civic challenge commits your active capstone slot. To maintain institutional accountability and prevent problem hoarding, students can lead 1 active project at a time until completion.
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Adoption Form */}

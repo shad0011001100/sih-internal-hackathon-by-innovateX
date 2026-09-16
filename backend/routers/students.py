@@ -62,6 +62,9 @@ def get_dashboard(user: models.User = Depends(get_student_user), db: Session = D
         if tm.team and tm.team.project:
             projects.append(tm.team.project)
             
+    active_projects = [p for p in projects if getattr(p, 'status', None) != 'completed']
+    can_adopt = len(active_projects) < 1
+
     # skill count
     skill_count = len(user.skill_profiles)
     
@@ -91,6 +94,9 @@ def get_dashboard(user: models.User = Depends(get_student_user), db: Session = D
     return {
         "user": user_info,
         "projects": projects,
+        "active_projects_count": len(active_projects),
+        "max_active_projects": 1,
+        "can_adopt": can_adopt,
         "skill_count": skill_count,
         "available_problems_count": problems_count
     }
@@ -103,6 +109,12 @@ def get_problems(user: models.User = Depends(get_student_user), db: Session = De
         models.Report.ai_spam_score < 0.6,
         models.Report.is_duplicate.is_(False)
     ).all()
+
+    # Track reports already adopted by this student or team
+    adopted_report_ids = set()
+    for tm in user.team_memberships:
+        if tm.team and tm.team.project and tm.team.project.report_id:
+            adopted_report_ids.add(tm.team.project.report_id)
     
     results = []
     for r in reports:
@@ -143,6 +155,7 @@ def get_problems(user: models.User = Depends(get_student_user), db: Session = De
             "gps_lat": r.gps_lat,
             "gps_lon": r.gps_lon,
             "photo_url": r.photo_url,
+            "is_already_adopted": r.id in adopted_report_ids,
             "created_at": r.created_at
         })
         
@@ -150,6 +163,43 @@ def get_problems(user: models.User = Depends(get_student_user), db: Session = De
 
 @router.post("/projects")
 def create_project(req: ProjectCreate, user: models.User = Depends(get_student_user), db: Session = Depends(get_db)):
+    MAX_ACTIVE_PROJECTS_PER_STUDENT = 1
+
+    # 1. Verify that the problem exists and is open
+    report = db.query(models.Report).filter(models.Report.id == req.report_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Civic problem report not found.")
+        
+    if report.status in ["implemented", "resolved"]:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Problem #{req.report_id} has already been {report.status} and is no longer open for adoption."
+        )
+
+    # 2. Check for duplicate adoption (has this student already adopted this report?)
+    user_projects = []
+    for tm in user.team_memberships:
+        if tm.team and tm.team.project:
+            user_projects.append(tm.team.project)
+            if tm.team.project.report_id == req.report_id:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"You or your team has already adopted this problem statement (Project #{tm.team.project.id}: '{tm.team.project.title}')."
+                )
+
+    # 3. Check active project quota limit
+    active_projects = [p for p in user_projects if getattr(p, 'status', None) != 'completed']
+    if len(active_projects) >= MAX_ACTIVE_PROJECTS_PER_STUDENT:
+        current_title = active_projects[0].title or f"Project #{active_projects[0].id}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Active Capstone Limit Reached: You already have {len(active_projects)} active project in progress ('{current_title}'). "
+                f"To maintain accountability and prevent problem hoarding, students can lead at most {MAX_ACTIVE_PROJECTS_PER_STUDENT} active civic capstone at a time. "
+                "Please reach 100% milestone progress and complete your existing project before adopting a new challenge."
+            )
+        )
+
     # create Team
     team = models.Team(
         name=f"Team for {req.title}",
