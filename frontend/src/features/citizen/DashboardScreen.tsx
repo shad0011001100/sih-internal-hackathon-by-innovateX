@@ -282,14 +282,6 @@ export default function DashboardScreen() {
 <span className="material-symbols-outlined text-lg" data-icon="feed">feed</span>
         {t.home}
       </button>
-<button onClick={() => { setActiveTab("My Reports"); window.scrollTo({ top: 0, behavior: "smooth" }); }} type="button" className={`px-3.5 py-2 rounded-full font-label-md text-sm font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${activeTab === 'My Reports' ? 'text-on-primary bg-primary-container/70' : 'text-primary-fixed hover:text-on-primary hover:bg-primary-container/30'}`}>
-<span className="material-symbols-outlined text-lg">folder_shared</span>
-        {t.myReportsTab} ({myReports.length})
-      </button>
-<button onClick={() => navigate('/report')} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
-<span className="material-symbols-outlined text-lg" data-icon="assignment_add">assignment_add</span>
-        {t.report}
-      </button>
 <button onClick={() => setShowStudentSolversModal(true)} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
 <span className="material-symbols-outlined text-lg" data-icon="diversity_3">diversity_3</span>
         {t.solvers}
@@ -297,10 +289,6 @@ export default function DashboardScreen() {
 <button onClick={() => setShowHelplineModal(true)} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
 <span className="material-symbols-outlined text-lg" data-icon="phone_in_talk">phone_in_talk</span>
         {t.helpline}
-      </button>
-<button onClick={() => navigate('/profile')} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
-<span className="material-symbols-outlined text-lg">account_circle</span>
-        {t.profile}
       </button>
 </nav>
 {/*  Right Controls: Language Switch & Report CTA  */}
