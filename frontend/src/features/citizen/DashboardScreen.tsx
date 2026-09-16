@@ -49,6 +49,7 @@ export default function DashboardScreen() {
             verified: "Verified Citizen",
             reputation: "Civic Reputation",
             activeCases: "My Active Cases",
+            avgResolution: "Avg. Resolution",
             communityWins: "Resolved Cases",
             myCasesSubtitle: "Tracked directly by you",
             searchPlaceholder: "Search civic issues by locality, handpump, road, ward...",
@@ -76,6 +77,7 @@ export default function DashboardScreen() {
             verified: "सत्यापित नागरिक",
             reputation: "नागरिक साख",
             activeCases: "मेरी सक्रिय शिकायतें",
+            avgResolution: "औसत समाधान",
             communityWins: "सुलझाए गए मामले",
             myCasesSubtitle: "आपके द्वारा दर्ज",
             searchPlaceholder: "वार्ड, हैंडपंप, सड़क या समस्या खोजें...",
@@ -360,18 +362,17 @@ export default function DashboardScreen() {
 <section className="lg:hidden px-4 -mt-7 relative z-20 mb-4">
 <div className="grid grid-cols-2 gap-3">
 <div 
-    onClick={() => { setActiveTab("My Reports"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-    className={`bg-surface-container-lowest rounded-2xl p-4 whisper-border ambient-shadow flex flex-col justify-between cursor-pointer transition-all ${activeTab === 'My Reports' ? 'ring-2 ring-primary' : ''}`}
+    className="bg-surface-container-lowest rounded-2xl p-4 whisper-border ambient-shadow flex flex-col justify-between"
 >
 <div className="flex items-center justify-between">
-<span className="text-on-surface-variant font-label-md text-xs">{t.activeCases}</span>
-<div className="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-primary">
-<span className="material-symbols-outlined text-base" data-icon="assignment">assignment</span>
+<span className="text-on-surface-variant font-label-md text-xs">{t.avgResolution}</span>
+<div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">
+<span className="material-symbols-outlined text-base">bolt</span>
 </div>
 </div>
-<div className="flex items-baseline gap-2 mt-2">
-<span className="text-2xl font-bold font-mono text-on-surface leading-none">{myReports.length}</span>
-<span className="text-[11px] text-on-surface-variant">{t.myCasesSubtitle}</span>
+<div className="flex items-baseline gap-1.5 mt-2">
+<span className="text-2xl font-bold font-mono text-on-surface leading-none">3.8</span>
+<span className="text-[11px] text-amber-700 font-semibold">{lang === 'HI' ? 'दिन (SLA)' : 'Days (SLA)'}</span>
 </div>
 </div>
 <div 
