@@ -251,6 +251,54 @@ export default function DashboardScreen() {
         return true;
     });
 
+    const getReportLocationName = (report: any): string => {
+        if (report.locality) return report.locality;
+        const text = `${report.title || ''} ${report.description || ''} ${report.challenge_summary || ''}`.toLowerCase();
+        if (text.includes("morabadi")) return "Morabadi, Ranchi";
+        if (text.includes("doranda")) return "Doranda, Ward 4";
+        if (text.includes("harmu")) return "Harmu Housing Colony";
+        if (text.includes("bariatu")) return "Bariatu, Ranchi";
+        if (text.includes("lalpur")) return "Lalpur, Ranchi";
+        if (text.includes("kanke")) return "Kanke Road, Ranchi";
+        if (text.includes("kishoreganj") || text.includes("sukhdeonagar")) return "Kishoreganj, Ranchi";
+        if (text.includes("kokar")) return "Kokar, Ward 3";
+        if (text.includes("chutia")) return "Chutia, Ward 6";
+        if (text.includes("hinoo")) return "Hinoo, Ward 5";
+        if (text.includes("namkum")) return "Namkum Industrial Belt";
+        if (text.includes("ratu")) return "Ratu Road, Ranchi";
+        if (report.ward) return `Ward ${report.ward}, Ranchi`;
+        return "Ranchi Municipal Area";
+    };
+
+    const getReportEvidenceImage = (report: any): string => {
+        if (report.photo_base64 && report.photo_base64.length > 50) {
+            return report.photo_base64;
+        }
+        if (report.photo_url && report.photo_url !== "dummy" && !report.photo_url.includes("via.placeholder")) {
+            return report.photo_url;
+        }
+        const text = `${report.category || ''} ${report.title || ''} ${report.description || ''}`.toLowerCase();
+        if (text.includes("waste") || text.includes("garbage") || text.includes("sanitation") || text.includes("sewer") || text.includes("drain")) {
+            return "https://images.unsplash.com/photo-1611288875628-9d4133465b79?w=500&auto=format&fit=crop&q=80";
+        }
+        if (text.includes("water") || text.includes("turbid") || text.includes("pipeline") || text.includes("pipe") || text.includes("leak")) {
+            return "https://images.unsplash.com/photo-1541888946425-d0fbb186f5f7?w=500&auto=format&fit=crop&q=80";
+        }
+        if (text.includes("road") || text.includes("pothole") || text.includes("subsidence") || text.includes("asphalt") || text.includes("transport")) {
+            return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=500&auto=format&fit=crop&q=80";
+        }
+        if (text.includes("light") || text.includes("solar") || text.includes("electricity") || text.includes("power") || text.includes("lamp")) {
+            return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80";
+        }
+        if (text.includes("school") || text.includes("education")) {
+            return "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop&q=80";
+        }
+        if (text.includes("health") || text.includes("hospital") || text.includes("clinic")) {
+            return "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=500&auto=format&fit=crop&q=80";
+        }
+        return "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80";
+    };
+
     return (
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -526,22 +574,54 @@ export default function DashboardScreen() {
     <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
         Grievances submitted by citizens are AI-validated, assigned to premier Jharkhand engineering faculties (BIT Mesra, NIT Jamshedpur, IIT Dhanbad), funded by CSR partners, and verified on ground.
     </p>
-    <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-outline-variant/30 text-center">
-        <div className="bg-surface-container-lowest/80 rounded-xl p-2">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 pt-3 border-t border-outline-variant/30 text-center">
+        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-primary/40 transition-all group">
+            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+                <img 
+                    src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=300&auto=format&fit=crop&q=80" 
+                    alt="Citizen Reporting" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                />
+            </div>
             <span className="block text-primary font-bold text-xs">1. Report</span>
-            <span className="text-[10px] text-on-surface-variant">Citizen + GPS</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">Citizen + GPS</span>
         </div>
-        <div className="bg-surface-container-lowest/80 rounded-xl p-2">
+        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-secondary/40 transition-all group">
+            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+                <img 
+                    src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&auto=format&fit=crop&q=80" 
+                    alt="AI Triage & Scoring" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                />
+            </div>
             <span className="block text-secondary font-bold text-xs">2. Triage</span>
-            <span className="text-[10px] text-on-surface-variant">AI Scoring</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">AI Scoring</span>
         </div>
-        <div className="bg-surface-container-lowest/80 rounded-xl p-2">
+        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-amber-500/40 transition-all group">
+            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+                <img 
+                    src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=300&auto=format&fit=crop&q=80" 
+                    alt="Faculty & Student Solvers" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                />
+            </div>
             <span className="block text-amber-600 font-bold text-xs">3. Solve</span>
-            <span className="text-[10px] text-on-surface-variant">Faculty + Team</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">Faculty + Team</span>
         </div>
-        <div className="bg-surface-container-lowest/80 rounded-xl p-2">
+        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-emerald-500/40 transition-all group">
+            <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-surface-container">
+                <img 
+                    src="https://images.unsplash.com/photo-1590402494587-44b71d7772f6?w=300&auto=format&fit=crop&q=80" 
+                    alt="Govt Ground Impact" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                />
+            </div>
             <span className="block text-emerald-600 font-bold text-xs">4. Impact</span>
-            <span className="text-[10px] text-on-surface-variant">Govt Rollout</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">Govt Rollout</span>
         </div>
     </div>
 </div>
@@ -790,6 +870,8 @@ export default function DashboardScreen() {
     const currentUpvotes = (report.priority_score ? Math.round(report.priority_score * 10) : 5) + (upvotes[reportId] || 0);
     const hasUpvoted = !!upvoted[reportId];
     const displayTitle = report.title || report.challenge_summary || (report.description ? report.description.split('\n')[0].slice(0, 60) : `Civic Grievance #${reportId}`);
+    const evidenceImg = getReportEvidenceImage(report);
+    const localityName = getReportLocationName(report);
 
     return (
         <article 
@@ -823,28 +905,37 @@ export default function DashboardScreen() {
                 </span>
             </div>
             
-            {/*  Issue Title / Description */}
-            <h4 
-                onClick={() => setSelectedReport(report)} 
-                className="text-headline-sm font-headline-sm text-on-surface font-bold text-lg hover:text-primary cursor-pointer transition-colors"
-            >
-                {displayTitle}
-            </h4>
-            <p className="text-body-md text-sm text-on-surface-variant leading-relaxed line-clamp-3">
-                {report.description}
-            </p>
+            {/*  Issue Content & Evidence Thumbnail Row  */}
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0 space-y-1.5">
+                    <h4 
+                        onClick={() => setSelectedReport(report)} 
+                        className="text-headline-sm font-headline-sm text-on-surface font-bold text-base sm:text-lg hover:text-primary cursor-pointer transition-colors leading-snug"
+                    >
+                        {displayTitle}
+                    </h4>
+                    <p className="text-body-md text-xs sm:text-sm text-on-surface-variant leading-relaxed line-clamp-3">
+                        {report.description}
+                    </p>
+                </div>
 
-            {/*  Attached Photo / Evidence  */}
-            {report.photo_url && report.photo_url !== "dummy" && (
+                {/* Evidence Photo Thumbnail */}
                 <div 
                     onClick={() => setSelectedReport(report)}
-                    className="rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-high relative max-h-56 cursor-pointer"
+                    className="w-24 h-20 sm:w-28 sm:h-24 md:w-32 md:h-24 rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-high relative shrink-0 cursor-pointer shadow-xs hover:ring-2 hover:ring-primary/40 transition-all group"
+                    title="Click to view full photo & redressal progress"
                 >
-                    <div className="aspect-video w-full bg-gradient-to-tr from-surface-container-highest via-surface-container to-surface-container-high flex flex-col items-center justify-center text-center overflow-hidden">
-                        <img src={report.photo_url} alt="Evidence" className="w-full h-full object-cover" />
+                    <img 
+                        src={evidenceImg} 
+                        alt="Civic evidence" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-end p-1.5">
+                        <span className="material-symbols-outlined text-white text-sm">zoom_in</span>
                     </div>
                 </div>
-            )}
+            </div>
 
             {/*  Interactive Bottom Action Row  */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-outline-variant/30">
@@ -853,40 +944,54 @@ export default function DashboardScreen() {
                         <span className="material-symbols-outlined text-sm text-outline" data-icon="calendar_today">calendar_today</span>
                         {report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Recent'}
                     </span>
-                    {report.gps_lat && report.gps_lon && (
-                        <span className="hidden sm:flex items-center gap-1 font-mono text-[11px]">
-                            <span className="material-symbols-outlined text-sm text-outline" data-icon="location_on">location_on</span>
-                            {Number(report.gps_lat).toFixed(3)}°, {Number(report.gps_lon).toFixed(3)}°
-                        </span>
-                    )}
+                    
+                    {/* Clean Location Tag (No raw GPS noise) */}
+                    <button 
+                        type="button"
+                        onClick={(e) => { 
+                            e.stopPropagation(); 
+                            if (report.gps_lat && report.gps_lon) {
+                                window.open(`https://www.google.com/maps/search/?api=1&query=${report.gps_lat},${report.gps_lon}`, '_blank');
+                            } else {
+                                showToast(`Locality: ${localityName}`, "info");
+                            }
+                        }}
+                        className="inline-flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-xs font-medium"
+                        title={report.gps_lat ? `GPS: ${Number(report.gps_lat).toFixed(4)}°, ${Number(report.gps_lon).toFixed(4)}° • Click to view on Google Maps` : 'View locality'}
+                    >
+                        <span className="material-symbols-outlined text-[15px] text-primary" data-icon="location_on">location_on</span>
+                        <span>{localityName}</span>
+                        <span className="material-symbols-outlined text-[12px] opacity-60">open_in_new</span>
+                    </button>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/*  Interactive Upvote Button or Resolved State  */}
+                    {/*  Interactive Endorsement / Support Button or Resolved State  */}
                     {['resolved', 'implemented'].includes(report.status) ? (
                         <span 
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
                             title="Issue resolved on ground"
                         >
                             <span className="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span>
                             <span>{report.status === 'implemented' ? 'Implemented' : 'Resolved'}</span>
-                            <span className="text-[10px] text-emerald-600/70 font-mono ml-0.5">({currentUpvotes})</span>
+                            <span className="text-[11px] text-emerald-800 font-bold ml-0.5">• ▲ {currentUpvotes} Supports</span>
                         </span>
                     ) : (
                         <button 
                             type="button"
                             onClick={(e) => handleUpvote(reportId, e)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                                 hasUpvoted 
-                                    ? 'bg-[#c2edcb] text-[#294e36] ring-1 ring-[#3e644a]/40 shadow-xs' 
+                                    ? 'bg-primary text-on-primary shadow-xs' 
                                     : 'bg-surface-container hover:bg-primary/10 text-on-surface hover:text-primary'
                             }`}
-                            title="Upvote grievance priority"
+                            title="Citizen Endorsement: Boost municipal priority score"
                         >
-                            <span className={`material-symbols-outlined text-[16px] ${hasUpvoted ? 'text-[#3e644a]' : 'text-outline'}`}>
-                                thumb_up
-                            </span>
+                            <span className="material-symbols-outlined text-base font-bold leading-none" data-icon="arrow_drop_up">arrow_drop_up</span>
                             <span>{currentUpvotes}</span>
+                            <span className="text-[11px] font-medium opacity-90">
+                                {lang === 'HI' ? (hasUpvoted ? 'समर्थित' : 'समर्थन') : (hasUpvoted ? 'Supported' : 'Supports')}
+                            </span>
                         </button>
                     )}
 
@@ -968,15 +1073,20 @@ export default function DashboardScreen() {
 <p className="text-xs text-on-surface-variant mb-3">Top University Chapters building engineering solutions for Ranchi grievances:</p>
 <ul className="space-y-2.5">
 <li className="p-3 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors">
-<div className="flex items-center justify-between">
-    <div className="flex items-center gap-2.5">
-        <span className="w-7 h-7 rounded-xl bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-xs font-mono">BM</span>
-        <div>
-            <p className="text-xs font-bold text-on-surface">BIT Mesra • Team AquaTech</p>
-            <p className="text-[10px] text-primary font-medium">IoT Handpump Flow &amp; Telemetry</p>
+<div className="flex items-center justify-between gap-2">
+    <div className="flex items-center gap-2.5 min-w-0">
+        <span className="w-7 h-7 rounded-xl bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-xs font-mono shrink-0">BM</span>
+        <div className="min-w-0">
+            <p className="text-xs font-bold text-on-surface truncate">BIT Mesra • Team AquaTech</p>
+            <p className="text-[10px] text-primary font-medium truncate">IoT Handpump Flow &amp; Telemetry</p>
         </div>
     </div>
-    <span className="text-xs font-mono font-bold text-primary">#1</span>
+    <img 
+        src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=160&auto=format&fit=crop&q=80" 
+        alt="Team AquaTech" 
+        className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
+        loading="lazy"
+    />
 </div>
 <div className="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[10px] text-on-surface-variant">
     <span>Ward 4 Adoption</span>
@@ -985,15 +1095,20 @@ export default function DashboardScreen() {
 </li>
 
 <li className="p-3 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors">
-<div className="flex items-center justify-between">
-    <div className="flex items-center gap-2.5">
-        <span className="w-7 h-7 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center font-bold text-xs font-mono">RU</span>
-        <div>
-            <p className="text-xs font-bold text-on-surface">Ranchi Univ • GreenCity</p>
-            <p className="text-[10px] text-primary font-medium">Drainage Desiltation AI Route</p>
+<div className="flex items-center justify-between gap-2">
+    <div className="flex items-center gap-2.5 min-w-0">
+        <span className="w-7 h-7 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center font-bold text-xs font-mono shrink-0">RU</span>
+        <div className="min-w-0">
+            <p className="text-xs font-bold text-on-surface truncate">Ranchi Univ • GreenCity</p>
+            <p className="text-[10px] text-primary font-medium truncate">Drainage Desiltation AI Route</p>
         </div>
     </div>
-    <span className="text-xs font-mono font-bold text-outline">#2</span>
+    <img 
+        src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=160&auto=format&fit=crop&q=80" 
+        alt="GreenCity Lab" 
+        className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
+        loading="lazy"
+    />
 </div>
 <div className="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[10px] text-on-surface-variant">
     <span>Ward 2 &amp; 3 Audits</span>
@@ -1002,15 +1117,20 @@ export default function DashboardScreen() {
 </li>
 
 <li className="p-3 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors">
-<div className="flex items-center justify-between">
-    <div className="flex items-center gap-2.5">
-        <span className="w-7 h-7 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs font-mono">IIM</span>
-        <div>
-            <p className="text-xs font-bold text-on-surface">IIM Ranchi • Civic Lab</p>
-            <p className="text-[10px] text-primary font-medium">Municipal SLA Bottleneck Audits</p>
+<div className="flex items-center justify-between gap-2">
+    <div className="flex items-center gap-2.5 min-w-0">
+        <span className="w-7 h-7 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs font-mono shrink-0">IIM</span>
+        <div className="min-w-0">
+            <p className="text-xs font-bold text-on-surface truncate">IIM Ranchi • Civic Lab</p>
+            <p className="text-[10px] text-primary font-medium truncate">Municipal SLA Bottleneck Audits</p>
         </div>
     </div>
-    <span className="text-xs font-mono font-bold text-outline">#3</span>
+    <img 
+        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=160&auto=format&fit=crop&q=80" 
+        alt="Civic Lab Team" 
+        className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
+        loading="lazy"
+    />
 </div>
 <div className="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[10px] text-on-surface-variant">
     <span>Urban Logistics Model</span>
@@ -1067,151 +1187,6 @@ export default function DashboardScreen() {
 </div>
 </div>
 
-{/*  Interactive Timeline / Detail Modal  */}
-<AnimatePresence>
-{selectedReport && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-        <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-3xl p-6 sm:p-7 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#3e644a]/20 space-y-5 text-[#1b1b1e]"
-        >
-            <div className="flex items-start justify-between pb-3 border-b border-[#c1c8c0]/40">
-                <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-[#c2edcb] text-[#294e36]">
-                            Ticket #{String(selectedReport.id).slice(0, 8).toUpperCase()}
-                        </span>
-                        <span className="text-xs text-[#727972] font-semibold">{selectedReport.category}</span>
-                    </div>
-                    <h3 className="text-lg font-bold text-[#1b1b1e]">
-                        {selectedReport.title || selectedReport.challenge_summary || "Civic Grievance Details"}
-                    </h3>
-                </div>
-                <button 
-                    type="button" 
-                    onClick={() => setSelectedReport(null)}
-                    aria-label="Close dialog"
-                    className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#727972] hover:text-[#1b1b1e] cursor-pointer"
-                >
-                    <span className="material-symbols-outlined text-xl">close</span>
-                </button>
-            </div>
-
-            <div className="space-y-3 text-xs sm:text-sm">
-                <div>
-                    <p className="font-semibold text-gray-500 uppercase tracking-wider text-[11px]">Description</p>
-                    <p className="text-[#424942] mt-0.5 leading-relaxed bg-[#fbf8fc] p-3 rounded-xl border border-[#c1c8c0]/40">
-                        {selectedReport.description}
-                    </p>
-                </div>
-
-                {selectedReport.photo_url && selectedReport.photo_url !== "dummy" && (
-                    <div>
-                        <p className="font-semibold text-gray-500 uppercase tracking-wider text-[11px] mb-1">Evidence Photo</p>
-                        <img src={selectedReport.photo_url} alt="Evidence" className="w-full max-h-48 object-cover rounded-xl border" />
-                    </div>
-                )}
-
-                {/*  Redressal Pipeline Timeline  */}
-                <div className="pt-2">
-                    <p className="font-bold text-[#1b1b1e] text-xs uppercase tracking-wider mb-3">6-Step Redressal Timeline</p>
-                    <div className="space-y-2.5 text-xs">
-                        <div className="flex items-center gap-3">
-                            <span className="material-symbols-outlined text-emerald-600 text-lg">check_circle</span>
-                            <div>
-                                <p className="font-bold text-[#1b1b1e]">1. Ticket Logged &amp; Geotagged</p>
-                                <p className="text-gray-500 text-[11px]">Recorded into Ranchi Municipal Database</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className="material-symbols-outlined text-emerald-600 text-lg">check_circle</span>
-                            <div>
-                                <p className="font-bold text-[#1b1b1e]">2. AI Triage &amp; Spam Screening</p>
-                                <p className="text-gray-500 text-[11px]">Verified genuine • Priority score computed</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`material-symbols-outlined text-lg ${selectedReport.status !== 'reported' ? 'text-emerald-600' : 'text-amber-500 animate-pulse'}`}>
-                                {selectedReport.status !== 'reported' ? 'check_circle' : 'pending'}
-                            </span>
-                            <div>
-                                <p className="font-bold text-[#1b1b1e]">3. Department Allocation</p>
-                                <p className="text-gray-500 text-[11px]">
-                                    {selectedReport.assigned_department || selectedReport.department || "PHED & RMC Ward 4 Cell"}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`material-symbols-outlined text-lg ${['assigned', 'in_progress', 'under_review', 'implemented', 'resolved'].includes(selectedReport.status) ? 'text-emerald-600' : 'text-gray-300'}`}>
-                                {['assigned', 'in_progress', 'under_review', 'implemented', 'resolved'].includes(selectedReport.status) ? 'check_circle' : 'radio_button_unchecked'}
-                            </span>
-                            <div>
-                                <p className="font-bold text-[#1b1b1e]">
-                                    {selectedReport.is_student_eligible !== false ? "4. Student Solver Adoption" : "4. Municipal Crew Dispatch"}
-                                </p>
-                                <p className="text-gray-500 text-[11px]">
-                                    {selectedReport.is_student_eligible !== false 
-                                        ? "BIT Mesra & University Engineering Chapters" 
-                                        : "RMC Engineering & Ward Maintenance Wing (Physical Labor)"}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`material-symbols-outlined text-lg ${['in_progress', 'under_review', 'implemented', 'resolved'].includes(selectedReport.status) ? 'text-emerald-600' : 'text-gray-300'}`}>
-                                {['in_progress', 'under_review', 'implemented', 'resolved'].includes(selectedReport.status) ? 'check_circle' : 'radio_button_unchecked'}
-                            </span>
-                            <div>
-                                <p className="font-bold text-[#1b1b1e]">5. Field Work &amp; Repair</p>
-                                <p className="text-gray-500 text-[11px]">Active engineering and inspection</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`material-symbols-outlined text-lg ${['implemented', 'resolved'].includes(selectedReport.status) ? 'text-emerald-600' : 'text-gray-300'}`}>
-                                {['implemented', 'resolved'].includes(selectedReport.status) ? 'check_circle' : 'radio_button_unchecked'}
-                            </span>
-                            <div>
-                                <p className="font-bold text-[#1b1b1e]">6. Citizen Verification &amp; Closeout</p>
-                                <p className="text-gray-500 text-[11px]">Feedback rating &amp; SLA compliance sign-off</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="pt-3 border-t border-[#c1c8c0]/40 flex items-center justify-between">
-                {['resolved', 'implemented'].includes(selectedReport.status) ? (
-                    <span className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm text-emerald-600">verified</span>
-                        <span>{selectedReport.status === 'implemented' ? 'Ground Implementation Complete' : 'Issue Resolved'}</span>
-                    </span>
-                ) : (
-                    <button 
-                        type="button" 
-                        onClick={(e) => handleUpvote(selectedReport.id, e)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                            upvoted[selectedReport.id]
-                                ? 'bg-[#c2edcb] text-[#294e36]'
-                                : 'bg-[#3e644a] text-white hover:bg-[#2e4c37]'
-                        }`}
-                    >
-                        <span className="material-symbols-outlined text-sm">thumb_up</span>
-                        <span>{upvoted[selectedReport.id] ? t.upvoted : t.upvote}</span>
-                    </button>
-                )}
-                <button 
-                    type="button" 
-                    onClick={() => setSelectedReport(null)}
-                    className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#1b1b1e] text-xs font-semibold cursor-pointer"
-                >
-                    Close
-                </button>
-            </div>
-        </motion.div>
-    </div>
-)}
-</AnimatePresence>
 
 {/*  Floating Action Button (FAB) for Reporting Civic Issues (Mobile Only)  */}
 <aside className="lg:hidden fixed bottom-20 right-5 z-40">
@@ -1360,6 +1335,15 @@ export default function DashboardScreen() {
                 </button>
             </div>
 
+            {/* Evidence Photo Preview */}
+            <div className="rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-high relative max-h-56 shadow-xs">
+                <img 
+                    src={getReportEvidenceImage(selectedReport)} 
+                    alt="Grievance Evidence" 
+                    className="w-full h-48 sm:h-56 object-cover" 
+                />
+            </div>
+
             {/*  5-Stage Grievance Progress Stepper (Point 9)  */}
             <div className="bg-surface-container-low/70 rounded-2xl p-4 border border-outline-variant/30 space-y-3">
                 <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider block">
@@ -1421,9 +1405,25 @@ export default function DashboardScreen() {
 
             {/*  Report Details Summary  */}
             <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-outline-variant/20">
-                    <span className="text-on-surface-variant">GPS Coordinates:</span>
-                    <span className="font-mono text-on-surface font-medium">{selectedReport.gps_lat?.toFixed(4)}, {selectedReport.gps_lon?.toFixed(4)}</span>
+                <div className="flex justify-between items-center py-1.5 border-b border-outline-variant/20">
+                    <span className="text-on-surface-variant">Location:</span>
+                    <div className="flex items-center gap-1.5">
+                        <span className="font-medium text-on-surface flex items-center gap-1">
+                            <span className="material-symbols-outlined text-sm text-primary">location_on</span>
+                            {getReportLocationName(selectedReport)}
+                        </span>
+                        {selectedReport.gps_lat && selectedReport.gps_lon && (
+                            <button
+                                type="button"
+                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${selectedReport.gps_lat},${selectedReport.gps_lon}`, '_blank')}
+                                className="text-[11px] text-primary hover:underline font-semibold flex items-center gap-0.5 cursor-pointer ml-1"
+                                title={`GPS: ${selectedReport.gps_lat?.toFixed(4)}°, ${selectedReport.gps_lon?.toFixed(4)}° • Open in Google Maps`}
+                            >
+                                <span>View on Map</span>
+                                <span className="material-symbols-outlined text-xs">open_in_new</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
                 {selectedReport.assigned_department && (
                     <div className="flex justify-between py-1.5 border-b border-outline-variant/20">
