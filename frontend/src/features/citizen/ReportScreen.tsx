@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "../../context/ToastContext";
 import { safeFetch } from "../../services/api";
+import CivicMapPicker from "../../components/CivicMapPicker";
 
 const CATEGORIES = [
     { label: "Civic Issue", icon: "campaign" },
@@ -355,55 +356,29 @@ export default function ReportScreen() {
 )}
 </div>
 
-{/*  5. LOCATION & WARD VERIFICATION (Eliminates Missing GPS Failure Point)  */}
+{/*  5. LOCATION & WARD VERIFICATION (Interactive Map & Locality Picker)  */}
 <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#c1c8c0]/50 shadow-sm">
     <div className="flex items-center justify-between mb-3">
-        <label className="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono">
-            5. Incident Location &amp; Ward Verification
+        <label className="block text-xs font-bold uppercase tracking-wider text-[#1b1b1e] font-mono flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[#3e644a] text-base">map</span>
+            5. Incident Location &amp; Map Verification
         </label>
         <span className="text-xs text-[#3e644a] font-mono font-medium flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-[#3e644a] animate-pulse"></span>
-            Geo-Validated
+            GIS-Validated
         </span>
     </div>
 
-    <div className="p-4 bg-[#fbf8fc] rounded-xl border border-[#c1c8c0]/60 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#3e644a] text-xl">location_on</span>
-                <div>
-                    <p className="text-xs font-bold text-[#1b1b1e]">{gpsStatus}</p>
-                    <p className="text-[11px] text-[#727972]">Live GPS coordinate or manual administrative ward</p>
-                </div>
-            </div>
-            <button
-                type="button"
-                onClick={requestGps}
-                disabled={isLocating}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3e644a] hover:bg-[#294e36] text-white text-xs font-semibold cursor-pointer transition-colors shadow-xs"
-            >
-                <span className="material-symbols-outlined text-sm">my_location</span>
-                <span>{isLocating ? "Acquiring..." : "Detect GPS"}</span>
-            </button>
-        </div>
-
-        <div className="pt-2 border-t border-[#c1c8c0]/40">
-            <label className="block text-[11px] font-bold text-[#424942] uppercase tracking-wider mb-1.5 font-mono">
-                Select Ward / Locality manually (If GPS is blocked or reporting off-site):
-            </label>
-            <select
-                value={selectedWard}
-                onChange={(e) => handleWardSelect(e.target.value)}
-                className="w-full text-xs font-semibold px-3 py-2.5 rounded-xl bg-white border border-[#c1c8c0] text-[#1b1b1e] focus:border-[#3e644a] focus:ring-1 focus:ring-[#3e644a] outline-none cursor-pointer"
-            >
-                {RANCHI_WARDS.map((w) => (
-                    <option key={w.name} value={w.name}>
-                        {w.name}
-                    </option>
-                ))}
-            </select>
-        </div>
-    </div>
+    <CivicMapPicker
+        initialLat={gps?.lat ?? 23.3297}
+        initialLon={gps?.lon ?? 85.3262}
+        initialWard={selectedWard}
+        onLocationChange={(loc: any) => {
+            setGps({ lat: loc.lat, lon: loc.lon });
+            setSelectedWard(loc.wardName);
+            setGpsStatus(`${loc.localityName} (${loc.wardName.split(":")[0]})`);
+        }}
+    />
 </div>
 </div>
 {/*  RIGHT RAIL (col-span-12 lg:col-span-5 xl:col-span-4 sticky lg:top-24 space-y-5)  */}

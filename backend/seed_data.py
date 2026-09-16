@@ -112,7 +112,7 @@ def seed_database():
         (
             3, 8, 'Roads & Sanitation',
             'Massive open drainage overflow and road subsidence at Doranda Main Road Ward 7 near High Court roundabout.',
-            23.3320, 85.3210, 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600',
+            23.3320, 85.3210, '/assets/civic/case_road.jpg',
             1, 0.2, 'validated', 0.88,
             'Doranda Main Road Open Sewer Overflow & Road Subsidence',
             json.dumps(["Pre-cast Concrete Desiltation Channels", "Stormwater Level Monitors"]),
@@ -120,6 +120,42 @@ def seed_database():
             json.dumps(["Central Coalfields Limited (CCL CSR)"]),
             0, None, 1, "Suitable for stormwater modeling and civil analysis",
             1, "Civil Engineering"
+        ),
+        (
+            101, 8, 'Sanitation & Solid Waste',
+            'Severe garbage dumping and choked stormwater drain Ground gate 3.',
+            23.3050, 85.5340, '/assets/civic/case_waste.jpg',
+            1, 0.1, 'reported', 0.95,
+            'Unmanaged municipal solid waste accumulation blocking water runoff channel',
+            json.dumps(["Automated Trash Skimmers", "Solid Waste Segregation Sensors"]),
+            json.dumps(["Environmental Engineering", "Municipal Solid Waste"]),
+            json.dumps(["Tata Steel Foundation", "RMC Sanitation"]),
+            0, None, 1, "Direct student capstone feasibility for waste tracking",
+            1, "Department of Civil & Environmental Engineering"
+        ),
+        (
+            102, 8, 'Water Supply & Quality',
+            'Contaminated municipal tap water pipeline rupture behind Doranda Main Road Market.',
+            23.3370, 85.3210, '/assets/civic/case_water.jpg',
+            1, 0.1, 'validated', 0.92,
+            'High-turbidity water pipeline fracture threatening contamination in dense settlement',
+            json.dumps(["IoT Turbidity Sensors", "Acoustic Pipe Leak Detectors"]),
+            json.dumps(["Civil & Environmental Engineering", "Water Resources"]),
+            json.dumps(["Tata Steel Foundation (Clean Water Initiative)"]),
+            0, None, 1, "High capstone suitability for water engineering students",
+            1, "Department of Computer Science & Rural Technology (Lead Mentor: Dr. R. K. Sen)"
+        ),
+        (
+            103, 8, 'Smart Transportation & Infrastructure',
+            'Major asphalt crater and road subsidence on Harmu Bypass Road causing hazardous vehicle jams.',
+            23.3510, 85.3120, '/assets/civic/case_road.jpg',
+            1, 0.1, 'assigned', 0.88,
+            'Recurrent subgrade subsidence requiring IoT subgrade telemetry & road resurfacing',
+            json.dumps(["Ground Penetrating Radar", "Pre-cast Asphalt Geogrid"]),
+            json.dumps(["Civil Engineering", "Transportation Systems"]),
+            json.dumps(["Central Coalfields Limited (CCL CSR)"]),
+            0, None, 1, "Suitable for stormwater modeling and civil analysis",
+            2, "Department of Civil & Environmental Engineering (Lead Mentor: Dr. P. K. Singh)"
         )
     ]
 

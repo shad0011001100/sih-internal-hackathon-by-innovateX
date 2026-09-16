@@ -270,35 +270,51 @@ export default function DashboardScreen() {
         return "Ranchi Municipal Area";
     };
 
-    const FALLBACK_CIVIC_IMAGE = "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80";
+    const FALLBACK_CIVIC_IMAGE = "/assets/civic/case_waste.jpg";
 
     const getReportEvidenceImage = (report: any): string => {
         if (report.photo_base64 && report.photo_base64.length > 50) {
             return report.photo_base64;
         }
-        if (report.photo_url && report.photo_url !== "dummy" && !report.photo_url.includes("via.placeholder") && !report.photo_url.includes("541888946425")) {
+        if (report.photo_url && report.photo_url !== "dummy" && !report.photo_url.includes("via.placeholder") && !report.photo_url.includes("541888946425") && !report.photo_url.startsWith("http")) {
             return report.photo_url;
         }
-        const text = `${report.category || ''} ${report.title || ''} ${report.description || ''}`.toLowerCase();
-        if (text.includes("waste") || text.includes("garbage") || text.includes("sanitation") || text.includes("sewer") || text.includes("drain")) {
-            return "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=500&auto=format&fit=crop&q=80";
+
+        // Title and description inspection takes first precedence over generic category
+        const titleAndDesc = `${report.title || ''} ${report.challenge_summary || ''} ${report.description || ''}`.toLowerCase();
+        const fullText = `${titleAndDesc} ${report.category || ''}`.toLowerCase();
+
+        // 1. Street Lighting / Electrical / Solar
+        if (titleAndDesc.includes("light") || titleAndDesc.includes("solar") || titleAndDesc.includes("lamp") || titleAndDesc.includes("dark") || titleAndDesc.includes("electricity") || titleAndDesc.includes("wire")) {
+            return "/assets/civic/case_light.jpg";
         }
-        if (text.includes("water") || text.includes("turbid") || text.includes("pipeline") || text.includes("pipe") || text.includes("leak")) {
-            return "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500&auto=format&fit=crop&q=80";
+
+        // 2. Water Supply / Pipeline / Handpump / Contamination
+        if (fullText.includes("water") || fullText.includes("turbid") || fullText.includes("pipeline") || fullText.includes("pipe") || fullText.includes("handpump") || fullText.includes("tap") || fullText.includes("tube well") || fullText.includes("leak") || fullText.includes("purifier") || fullText.includes("drinking")) {
+            return "/assets/civic/case_water.jpg";
         }
-        if (text.includes("road") || text.includes("pothole") || text.includes("subsidence") || text.includes("asphalt") || text.includes("transport")) {
-            return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=500&auto=format&fit=crop&q=80";
+
+        // 3. Roads / Potholes / Subsidence / Asphalt
+        if (fullText.includes("road") || fullText.includes("pothole") || fullText.includes("subsidence") || fullText.includes("asphalt") || fullText.includes("crater") || fullText.includes("highway") || fullText.includes("street")) {
+            return "/assets/civic/case_road.jpg";
         }
-        if (text.includes("light") || text.includes("solar") || text.includes("electricity") || text.includes("power") || text.includes("lamp")) {
-            return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80";
+
+        // 4. Sanitation / Waste / Garbage / Sewer / Drain
+        if (fullText.includes("waste") || fullText.includes("garbage") || fullText.includes("dump") || fullText.includes("trash") || fullText.includes("solid waste") || fullText.includes("sanitation") || fullText.includes("sewer") || fullText.includes("drain") || fullText.includes("channel")) {
+            return "/assets/civic/case_waste.jpg";
         }
-        if (text.includes("school") || text.includes("education")) {
-            return "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop&q=80";
+
+        // 5. School / Education
+        if (fullText.includes("school") || fullText.includes("education") || fullText.includes("class")) {
+            return "/assets/civic/case_school.jpg";
         }
-        if (text.includes("health") || text.includes("hospital") || text.includes("clinic")) {
-            return "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=500&auto=format&fit=crop&q=80";
+
+        // 6. Health / Hospital / Medical
+        if (fullText.includes("health") || fullText.includes("hospital") || fullText.includes("clinic") || fullText.includes("medical")) {
+            return "/assets/civic/case_health.jpg";
         }
-        return FALLBACK_CIVIC_IMAGE;
+
+        return "/assets/civic/case_waste.jpg";
     };
 
     return (
@@ -581,7 +597,7 @@ export default function DashboardScreen() {
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-primary/40 transition-all group">
             <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400&auto=format&fit=crop&q=80" 
+                    src="/assets/civic/loop_report.png" 
                     alt="Citizen Field GPS Reporting" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
@@ -599,7 +615,7 @@ export default function DashboardScreen() {
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-secondary/40 transition-all group">
             <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&auto=format&fit=crop&q=80" 
+                    src="/assets/civic/loop_triage.png" 
                     alt="AI Triage Analytics Dashboard" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
@@ -617,7 +633,7 @@ export default function DashboardScreen() {
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-amber-500/40 transition-all group">
             <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=80" 
+                    src="/assets/civic/loop_solve.png" 
                     alt="Faculty and University Engineering Solvers" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
@@ -635,7 +651,7 @@ export default function DashboardScreen() {
         <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-emerald-500/40 transition-all group">
             <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
                 <img 
-                    src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&auto=format&fit=crop&q=80" 
+                    src="/assets/civic/loop_impact.png" 
                     alt="Government Civic Rollout on Ground" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
@@ -1108,7 +1124,7 @@ export default function DashboardScreen() {
         </div>
     </div>
     <img 
-        src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&auto=format&fit=crop&q=80" 
+        src="/assets/civic/solver_bit_mesra.jpg" 
         alt="Team AquaTech" 
         className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
         loading="lazy"
@@ -1131,7 +1147,7 @@ export default function DashboardScreen() {
         </div>
     </div>
     <img 
-        src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=160&auto=format&fit=crop&q=80" 
+        src="/assets/civic/solver_ranchi_univ.jpg" 
         alt="GreenCity Lab" 
         className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
         loading="lazy"
@@ -1154,7 +1170,7 @@ export default function DashboardScreen() {
         </div>
     </div>
     <img 
-        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=160&auto=format&fit=crop&q=80" 
+        src="/assets/civic/solver_iim_ranchi.jpg" 
         alt="Civic Lab Team" 
         className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
         loading="lazy"
