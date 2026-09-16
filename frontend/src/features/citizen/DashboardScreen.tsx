@@ -270,51 +270,64 @@ export default function DashboardScreen() {
         return "Ranchi Municipal Area";
     };
 
-    const FALLBACK_CIVIC_IMAGE = "/assets/civic/case_waste.jpg";
+    const FALLBACK_CIVIC_IMAGE = "/assets/civic/case_road.jpg";
 
     const getReportEvidenceImage = (report: any): string => {
+        // 1. If citizen uploaded an evidence photo (base64 data), use it directly
         if (report.photo_base64 && report.photo_base64.length > 50) {
             return report.photo_base64;
         }
-        if (report.photo_url && report.photo_url !== "dummy" && !report.photo_url.includes("via.placeholder") && !report.photo_url.includes("541888946425") && !report.photo_url.startsWith("http")) {
+
+        // 2. Read the complaint text: title, challenge summary, description, and category
+        const titleAndDesc = `${report.title || ''} ${report.challenge_summary || ''} ${report.description || ''}`.toLowerCase();
+        const category = (report.category || '').toLowerCase();
+        const fullText = `${titleAndDesc} ${category}`;
+
+        // Keywords for each civic domain
+        const waterKeywords = ['water', 'drinking', 'potable', 'tap', 'pipeline', 'pipe', 'burst', 'rupture', 'handpump', 'hand-pump', 'well', 'tube well', 'tubewell', 'turbid', 'turbidity', 'chlorin', 'filtration', 'purif', 'jal', 'paani'];
+        const roadKeywords = ['pothole', 'potholes', 'asphalt', 'crater', 'subsidence', 'subgrade', 'highway', 'bypass', 'road', 'street', 'bitumen', 'pavement', 'traffic', 'sadak', 'rasta'];
+        const wasteKeywords = ['waste', 'garbage', 'solid waste', 'dump', 'dumping', 'trash', 'litter', 'debris', 'culvert', 'stormwater', 'choke', 'choked', 'sewer', 'sewerage', 'overflow', 'blackwater', 'kachra', 'safai'];
+        const healthKeywords = ['health', 'hospital', 'clinic', 'dispensary', 'sub-centre', 'sub centre', 'medical', 'doctor', 'swasthya', 'mosquito', 'larva', 'dengue', 'malaria'];
+        const schoolKeywords = ['school', 'classroom', 'student', 'education', 'bench', 'blackboard', 'vidyalaya', 'college'];
+        const lightKeywords = ['streetlight', 'street light', 'streetlamp', 'high-mast', 'high mast', 'lamp pole', 'solar street', 'lighting'];
+
+        // Compute domain relevance scores from complaint text
+        let wScore = 0, rScore = 0, wasteScore = 0, hScore = 0, sScore = 0, lScore = 0;
+        waterKeywords.forEach(k => { if (fullText.includes(k)) wScore++; });
+        roadKeywords.forEach(k => { if (fullText.includes(k)) rScore++; });
+        wasteKeywords.forEach(k => { if (fullText.includes(k)) wasteScore++; });
+        healthKeywords.forEach(k => { if (fullText.includes(k)) hScore++; });
+        schoolKeywords.forEach(k => { if (fullText.includes(k)) sScore++; });
+        lightKeywords.forEach(k => { if (fullText.includes(k)) lScore++; });
+
+        const domainScores = [
+            { score: wScore, img: "/assets/civic/case_water.jpg" },
+            { score: rScore, img: "/assets/civic/case_road.jpg" },
+            { score: wasteScore, img: "/assets/civic/case_waste.jpg" },
+            { score: hScore, img: "/assets/civic/case_health.jpg" },
+            { score: sScore, img: "/assets/civic/case_school.jpg" },
+            { score: lScore, img: "/assets/civic/case_light.jpg" },
+        ];
+        domainScores.sort((a, b) => b.score - a.score);
+
+        // If complaint content strongly matches a civic domain, use that photo
+        if (domainScores[0].score > 0) {
+            return domainScores[0].img;
+        }
+
+        // 3. If no keywords matched, check if report has a valid local civic asset photo_url
+        if (report.photo_url && report.photo_url.startsWith("/assets/civic/") && !report.photo_url.includes("placeholder")) {
             return report.photo_url;
         }
 
-        // Title and description inspection takes first precedence over generic category
-        const titleAndDesc = `${report.title || ''} ${report.challenge_summary || ''} ${report.description || ''}`.toLowerCase();
-        const fullText = `${titleAndDesc} ${report.category || ''}`.toLowerCase();
+        // 4. Category-based fallback
+        if (category.includes("water")) return "/assets/civic/case_water.jpg";
+        if (category.includes("road") || category.includes("transport")) return "/assets/civic/case_road.jpg";
+        if (category.includes("waste") || category.includes("sanitat")) return "/assets/civic/case_waste.jpg";
+        if (category.includes("health")) return "/assets/civic/case_health.jpg";
+        if (category.includes("school") || category.includes("educat")) return "/assets/civic/case_school.jpg";
 
-        // 1. Street Lighting / Electrical / Solar
-        if (titleAndDesc.includes("light") || titleAndDesc.includes("solar") || titleAndDesc.includes("lamp") || titleAndDesc.includes("dark") || titleAndDesc.includes("electricity") || titleAndDesc.includes("wire")) {
-            return "/assets/civic/case_light.jpg";
-        }
-
-        // 2. Water Supply / Pipeline / Handpump / Contamination
-        if (fullText.includes("water") || fullText.includes("turbid") || fullText.includes("pipeline") || fullText.includes("pipe") || fullText.includes("handpump") || fullText.includes("tap") || fullText.includes("tube well") || fullText.includes("leak") || fullText.includes("purifier") || fullText.includes("drinking")) {
-            return "/assets/civic/case_water.jpg";
-        }
-
-        // 3. Roads / Potholes / Subsidence / Asphalt
-        if (fullText.includes("road") || fullText.includes("pothole") || fullText.includes("subsidence") || fullText.includes("asphalt") || fullText.includes("crater") || fullText.includes("highway") || fullText.includes("street")) {
-            return "/assets/civic/case_road.jpg";
-        }
-
-        // 4. Sanitation / Waste / Garbage / Sewer / Drain
-        if (fullText.includes("waste") || fullText.includes("garbage") || fullText.includes("dump") || fullText.includes("trash") || fullText.includes("solid waste") || fullText.includes("sanitation") || fullText.includes("sewer") || fullText.includes("drain") || fullText.includes("channel")) {
-            return "/assets/civic/case_waste.jpg";
-        }
-
-        // 5. School / Education
-        if (fullText.includes("school") || fullText.includes("education") || fullText.includes("class")) {
-            return "/assets/civic/case_school.jpg";
-        }
-
-        // 6. Health / Hospital / Medical
-        if (fullText.includes("health") || fullText.includes("hospital") || fullText.includes("clinic") || fullText.includes("medical")) {
-            return "/assets/civic/case_health.jpg";
-        }
-
-        return "/assets/civic/case_waste.jpg";
+        return FALLBACK_CIVIC_IMAGE;
     };
 
     return (

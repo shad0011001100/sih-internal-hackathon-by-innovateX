@@ -86,9 +86,9 @@ def seed_database():
     # 2. Ensure Sample Reports cover the full lifecycle
     reports_sample = [
         (
-            1, 8, 'Water Supply', 
+            1, 8, 'Water Supply & Quality', 
             'Severe water pipeline contamination near Harmu Housing Colony. Turbid brownish water supplied for 4 days affecting 200+ households.',
-            23.3512, 85.3120, 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=600',
+            23.3512, 85.3120, '/assets/civic/case_water.jpg',
             1, 0.1, 'implemented', 0.92,
             'Harmu Colony Water Pipeline Contamination & Bacterial Hazard',
             json.dumps(["IoT Turbidity Sensors", "UV Water Purifier Unit"]),
@@ -98,23 +98,23 @@ def seed_database():
             1, "Department of Computer Science & Rural Technology (Lead Mentor: Dr. R. K. Sen)"
         ),
         (
-            2, 8, 'Street Lighting',
-            'All 14 solar streetlights broken along Morabadi Oxygen Park Ring Road. Dark stretches at night pose safety hazards for female joggers and cyclists.',
-            23.3850, 85.3280, 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600',
+            2, 8, 'Water Supply & Quality',
+            'High sediment and bacterial turbidity in the central community drinking well near Morabadi Oxygen Park, requiring multi-stage water filtration and solar UV treatment.',
+            23.3850, 85.3280, '/assets/civic/case_water.jpg',
             1, 0.1, 'in_progress', 0.82,
-            'Morabadi Oxygen Park Solar Streetlight Circuit Failure',
-            json.dumps(["Mesh Solar LED Controllers", "LiFePO4 Smart Battery Management"]),
-            json.dumps(["Electrical Engineering", "Energy & Power Systems"]),
+            'Morabadi Community Well Water Filtration & Quality Monitoring',
+            json.dumps(["Multi-stage Carbon & Sand Filter", "Solar UV Purification Chamber"]),
+            json.dumps(["Civil & Environmental Engineering", "Water Resources"]),
             json.dumps(["Jindal Steel & Power CSR"]),
-            0, None, 1, "Ideal for student IoT and renewable energy projects",
+            0, None, 1, "Ideal for student water filtration capstone research",
             2, "Department of Civil & Environmental Engineering (Lead Mentor: Dr. P. K. Singh)"
         ),
         (
-            3, 8, 'Roads & Sanitation',
-            'Massive open drainage overflow and road subsidence at Doranda Main Road Ward 7 near High Court roundabout.',
+            3, 8, 'Road & Infrastructure',
+            'Dangerous deep potholes, asphalt cracking, and subgrade subsidence along Doranda Main Road near High Court roundabout posing severe accident risks.',
             23.3320, 85.3210, '/assets/civic/case_road.jpg',
             1, 0.2, 'validated', 0.88,
-            'Doranda Main Road Open Sewer Overflow & Road Subsidence',
+            'Doranda Main Road Deep Potholes & Road Subsidence',
             json.dumps(["Pre-cast Concrete Desiltation Channels", "Stormwater Level Monitors"]),
             json.dumps(["Civil Engineering", "Municipal Infrastructure"]),
             json.dumps(["Central Coalfields Limited (CCL CSR)"]),
@@ -126,7 +126,7 @@ def seed_database():
             'Severe garbage dumping and choked stormwater drain Ground gate 3.',
             23.3050, 85.5340, '/assets/civic/case_waste.jpg',
             1, 0.1, 'reported', 0.95,
-            'Unmanaged municipal solid waste accumulation blocking water runoff channel',
+            'Unmanaged Municipal Solid Waste Accumulation Blocking Water Runoff Channel',
             json.dumps(["Automated Trash Skimmers", "Solid Waste Segregation Sensors"]),
             json.dumps(["Environmental Engineering", "Municipal Solid Waste"]),
             json.dumps(["Tata Steel Foundation", "RMC Sanitation"]),
@@ -138,7 +138,7 @@ def seed_database():
             'Contaminated municipal tap water pipeline rupture behind Doranda Main Road Market.',
             23.3370, 85.3210, '/assets/civic/case_water.jpg',
             1, 0.1, 'validated', 0.92,
-            'High-turbidity water pipeline fracture threatening contamination in dense settlement',
+            'High-Turbidity Water Pipeline Fracture Threatening Contamination in Dense Settlement',
             json.dumps(["IoT Turbidity Sensors", "Acoustic Pipe Leak Detectors"]),
             json.dumps(["Civil & Environmental Engineering", "Water Resources"]),
             json.dumps(["Tata Steel Foundation (Clean Water Initiative)"]),
@@ -150,7 +150,7 @@ def seed_database():
             'Major asphalt crater and road subsidence on Harmu Bypass Road causing hazardous vehicle jams.',
             23.3510, 85.3120, '/assets/civic/case_road.jpg',
             1, 0.1, 'assigned', 0.88,
-            'Recurrent subgrade subsidence requiring IoT subgrade telemetry & road resurfacing',
+            'Recurrent Subgrade Subsidence Requiring IoT Subgrade Telemetry & Road Resurfacing',
             json.dumps(["Ground Penetrating Radar", "Pre-cast Asphalt Geogrid"]),
             json.dumps(["Civil Engineering", "Transportation Systems"]),
             json.dumps(["Central Coalfields Limited (CCL CSR)"]),
@@ -169,6 +169,9 @@ def seed_database():
                 assigned_university_id, assigned_department
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
+                category=excluded.category,
+                description=excluded.description,
+                photo_url=excluded.photo_url,
                 status=excluded.status,
                 priority_score=excluded.priority_score,
                 challenge_summary=excluded.challenge_summary,
