@@ -270,19 +270,21 @@ export default function DashboardScreen() {
         return "Ranchi Municipal Area";
     };
 
+    const FALLBACK_CIVIC_IMAGE = "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80";
+
     const getReportEvidenceImage = (report: any): string => {
         if (report.photo_base64 && report.photo_base64.length > 50) {
             return report.photo_base64;
         }
-        if (report.photo_url && report.photo_url !== "dummy" && !report.photo_url.includes("via.placeholder")) {
+        if (report.photo_url && report.photo_url !== "dummy" && !report.photo_url.includes("via.placeholder") && !report.photo_url.includes("541888946425")) {
             return report.photo_url;
         }
         const text = `${report.category || ''} ${report.title || ''} ${report.description || ''}`.toLowerCase();
         if (text.includes("waste") || text.includes("garbage") || text.includes("sanitation") || text.includes("sewer") || text.includes("drain")) {
-            return "https://images.unsplash.com/photo-1611288875628-9d4133465b79?w=500&auto=format&fit=crop&q=80";
+            return "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=500&auto=format&fit=crop&q=80";
         }
         if (text.includes("water") || text.includes("turbid") || text.includes("pipeline") || text.includes("pipe") || text.includes("leak")) {
-            return "https://images.unsplash.com/photo-1541888946425-d0fbb186f5f7?w=500&auto=format&fit=crop&q=80";
+            return "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500&auto=format&fit=crop&q=80";
         }
         if (text.includes("road") || text.includes("pothole") || text.includes("subsidence") || text.includes("asphalt") || text.includes("transport")) {
             return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=500&auto=format&fit=crop&q=80";
@@ -296,7 +298,7 @@ export default function DashboardScreen() {
         if (text.includes("health") || text.includes("hospital") || text.includes("clinic")) {
             return "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=500&auto=format&fit=crop&q=80";
         }
-        return "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80";
+        return FALLBACK_CIVIC_IMAGE;
     };
 
     return (
@@ -583,6 +585,7 @@ export default function DashboardScreen() {
                     alt="Citizen Field GPS Reporting" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
                 <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center shadow-xs">
                     <span className="material-symbols-outlined text-[12px]">add_a_photo</span>
@@ -600,6 +603,7 @@ export default function DashboardScreen() {
                     alt="AI Triage Analytics Dashboard" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
                 <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-secondary text-white flex items-center justify-center shadow-xs">
                     <span className="material-symbols-outlined text-[12px]">psychology</span>
@@ -617,6 +621,7 @@ export default function DashboardScreen() {
                     alt="Faculty and University Engineering Solvers" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
                 <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-xs">
                     <span className="material-symbols-outlined text-[12px]">school</span>
@@ -634,6 +639,7 @@ export default function DashboardScreen() {
                     alt="Government Civic Rollout on Ground" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
                 <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
                     <span className="material-symbols-outlined text-[12px]">verified</span>
@@ -949,6 +955,7 @@ export default function DashboardScreen() {
                         alt="Civic evidence" 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-end p-1.5">
                         <span className="material-symbols-outlined text-white text-sm">zoom_in</span>
@@ -1101,10 +1108,11 @@ export default function DashboardScreen() {
         </div>
     </div>
     <img 
-        src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=160&auto=format&fit=crop&q=80" 
+        src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&auto=format&fit=crop&q=80" 
         alt="Team AquaTech" 
         className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
         loading="lazy"
+        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
     />
 </div>
 <div className="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[10px] text-on-surface-variant">
@@ -1127,6 +1135,7 @@ export default function DashboardScreen() {
         alt="GreenCity Lab" 
         className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
         loading="lazy"
+        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
     />
 </div>
 <div className="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[10px] text-on-surface-variant">
@@ -1149,6 +1158,7 @@ export default function DashboardScreen() {
         alt="Civic Lab Team" 
         className="w-14 h-10 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0" 
         loading="lazy"
+        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
     />
 </div>
 <div className="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[10px] text-on-surface-variant">
@@ -1360,6 +1370,7 @@ export default function DashboardScreen() {
                     src={getReportEvidenceImage(selectedReport)} 
                     alt="Grievance Evidence" 
                     className="w-full h-48 sm:h-56 object-cover" 
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
             </div>
 
