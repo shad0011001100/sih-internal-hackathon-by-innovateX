@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# We will use a fallback local sqlite DB if DATABASE_URL is not provided (for quick testing)
-# But ideally this should be a Supabase Postgres URL
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sanjha.db")
+# Absolute path to backend/sanjha.db
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_SQLITE_PATH = os.path.join(BACKEND_DIR, "sanjha.db")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_SQLITE_PATH.replace(os.sep, '/')}")
 
 from sqlalchemy import event
 

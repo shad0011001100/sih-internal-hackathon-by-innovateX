@@ -3,7 +3,10 @@ import json
 import base64
 import re
 import ast
-import google.generativeai as genai
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -12,8 +15,11 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 # Gemini setup (for vision tasks if needed)
 api_key = os.getenv("GEMINI_API_KEY", "")
-if api_key:
-    genai.configure(api_key=api_key)
+if api_key and genai:
+    try:
+        genai.configure(api_key=api_key)
+    except Exception:
+        pass
 
 # NVIDIA NIM setup (Nemotron for text intelligence)
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")

