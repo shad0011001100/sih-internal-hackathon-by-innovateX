@@ -1223,31 +1223,14 @@ export default function DashboardScreen() {
 {/*  BottomNavBar (Mobile Only)  */}
 <nav aria-label="Primary Mobile Navigation" className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-2 bg-surface-container-low/95 backdrop-blur-md shadow-sm border-t border-outline-variant/30">
 <button 
-    onClick={() => { setActiveTab("All"); window.scrollTo({ top: 0, behavior: "smooth" }); }} 
-    aria-current={activeTab === "All" ? "page" : undefined} 
+    onClick={() => { setActiveTab("All"); setSelectedWard(null); setSelectedCategory("All"); setSearchQuery(""); window.scrollTo({ top: 0, behavior: "smooth" }); }} 
+    aria-current={activeTab === "All" && !selectedWard ? "page" : undefined} 
     aria-label="Feed" 
-    className={`flex flex-col items-center justify-center min-h-[44px] min-w-[54px] rounded-xl px-2 py-1 active:scale-90 transition-transform duration-150 cursor-pointer ${activeTab === 'All' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:text-primary'}`} 
+    className={`flex flex-col items-center justify-center min-h-[44px] min-w-[54px] rounded-xl px-2 py-1 active:scale-90 transition-transform duration-150 cursor-pointer ${activeTab === 'All' && !selectedWard ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:text-primary'}`} 
     type="button"
 >
     <span className="material-symbols-outlined text-[20px]" data-icon="feed">feed</span>
     <span className="text-[10px] mt-0.5">Feed</span>
-</button>
-
-<button 
-    onClick={() => { setActiveTab("My Reports"); window.scrollTo({ top: 0, behavior: "smooth" }); }} 
-    aria-label="My Reports" 
-    className={`flex flex-col items-center justify-center min-h-[44px] min-w-[54px] rounded-xl px-2 py-1 active:scale-90 transition-transform duration-150 cursor-pointer ${activeTab === 'My Reports' ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:text-primary'}`} 
-    type="button"
->
-    <div className="relative">
-        <span className="material-symbols-outlined text-[20px]" data-icon="assignment">assignment</span>
-        {myReports.length > 0 && (
-            <span className="absolute -top-1 -right-2 w-3.5 h-3.5 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                {myReports.length}
-            </span>
-        )}
-    </div>
-    <span className="text-[10px] mt-0.5">My Cases</span>
 </button>
 
 <button 
@@ -1258,6 +1241,16 @@ export default function DashboardScreen() {
 >
     <span className="material-symbols-outlined text-[20px]" data-icon="diversity_3">diversity_3</span>
     <span className="text-[10px] mt-0.5">Solvers</span>
+</button>
+
+<button 
+    onClick={() => setShowHelplineModal(true)} 
+    aria-label="Helpline" 
+    className="flex flex-col items-center justify-center min-h-[44px] min-w-[54px] text-on-surface-variant px-2 py-1 hover:text-primary active:scale-90 transition-transform duration-150 cursor-pointer" 
+    type="button"
+>
+    <span className="material-symbols-outlined text-[20px]" data-icon="phone_in_talk">phone_in_talk</span>
+    <span className="text-[10px] mt-0.5">{t.helpline}</span>
 </button>
 
 <button 
