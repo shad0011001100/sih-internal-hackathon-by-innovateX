@@ -199,6 +199,31 @@ export default function CitizenProfileScreen() {
                     </div>
                 </div>
 
+                {/* Quick Help: Replay "How to Use" Guide */}
+                <div className="bg-gradient-to-r from-amber-500/15 via-surface-container-lowest to-surface-container-lowest rounded-3xl p-5 border border-amber-400/30 flex items-center justify-between gap-4 shadow-xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center shrink-0 font-bold shadow-xs">
+                            <span className="material-symbols-outlined text-xl">help</span>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-sm text-on-surface">
+                                {lang === 'HI' ? 'ऐप कैसे इस्तेमाल करें?' : 'Need Help or Don\'t Know What to Do?'}
+                            </h4>
+                            <p className="text-xs text-on-surface-variant mt-0.5">
+                                {lang === 'HI' ? 'सोशियोसॉल्व की 20 सेकंड की आसान गाइड दोबारा देखें' : 'Replay the 20-second quick visual guide'}
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => navigate('/dashboard?guide=true')}
+                        className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0"
+                    >
+                        <span className="material-symbols-outlined text-base font-bold">play_circle</span>
+                        <span>{lang === 'HI' ? 'गाइड देखें' : 'How to Use'}</span>
+                    </button>
+                </div>
+
                 {/* Profile Edit & Ward Preferences Form */}
                 <div className="bg-surface-container-lowest rounded-3xl p-6 sm:p-7 whisper-border ambient-shadow space-y-5">
                     <div className="flex items-center gap-2.5 pb-3 border-b border-outline-variant/30">

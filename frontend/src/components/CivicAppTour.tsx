@@ -13,6 +13,7 @@ export interface TourStep {
 }
 
 const getVisibleElement = (selector: string): HTMLElement | null => {
+    if (!selector) return null;
     const elements = document.querySelectorAll<HTMLElement>(selector);
     for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
@@ -26,23 +27,36 @@ const getVisibleElement = (selector: string): HTMLElement | null => {
 
 const getTourSteps = (lang: "EN" | "HI"): TourStep[] => [
     {
+        id: "intro",
+        targetSelector: "",
+        stepNumber: 1,
+        totalSteps: 4,
+        badge: lang === "HI" ? "शुरुआत करें • 20 सेकंड गाइड" : "GET STARTED • 20s GUIDE",
+        title: lang === "HI" ? "समझ नहीं आ रहा क्या करें? यहाँ से शुरू करें!" : "Don't know what to do? Start here!",
+        description: lang === "HI"
+            ? "सोशियोसॉल्व आपके वार्ड की समस्याओं (सड़क के गड्ढे, कचरा, पानी लीकेज) को सीधे नगर निगम और कॉलेज इंजीनियरिंग टीमों से ठीक करवाता है।"
+            : "SocioSolve connects your neighborhood problems (potholes, garbage, leaks) directly to municipal teams and college engineering solvers.",
+        icon: "waving_hand",
+        actionLabel: lang === "HI" ? "दिखाएं कहाँ क्लिक करें →" : "Show Me Where to Click →"
+    },
+    {
         id: "report",
         targetSelector: '[data-tour="mobile-report-btn"], [data-tour="report-btn"]',
-        stepNumber: 1,
-        totalSteps: 3,
-        badge: lang === "HI" ? "1. समस्या दर्ज करें" : "1. FILE A GRIEVANCE",
-        title: lang === "HI" ? "कोई समस्या देखी? यहाँ रिपोर्ट करें" : "Spot a problem? Report it here",
+        stepNumber: 2,
+        totalSteps: 4,
+        badge: lang === "HI" ? "1. समस्या दर्ज करें" : "1. REPORT AN ISSUE",
+        title: lang === "HI" ? "समस्या देखी? यहाँ क्लिक करें" : "Spot a problem? Click here",
         description: lang === "HI" 
-            ? "सड़क के गड्ढे, कचरा या पानी लीकेज की फोटो लें। GPS स्वचालित रूप से आपका सटीक वार्ड जोड़ देगा।"
-            : "Tap this button to snap a photo of potholes, water leaks, or garbage. GPS automatically tags your exact ward location.",
+            ? "सड़क के गड्ढे या कचरे की फोटो लेने के लिए इस '+' बटन को दबाएं। GPS अपने आप आपका सटीक वार्ड जोड़ देगा।"
+            : "Tap this '+' button to snap a photo of potholes or garbage. GPS automatically attaches your exact ward location.",
         icon: "add_a_photo",
         actionLabel: lang === "HI" ? "आगे: जनसमर्थन फ़ीड →" : "Next: Community Feed →"
     },
     {
         id: "endorse",
         targetSelector: '[data-tour="endorse-btn"]',
-        stepNumber: 2,
-        totalSteps: 3,
+        stepNumber: 3,
+        totalSteps: 4,
         badge: lang === "HI" ? "2. सामुदायिक समर्थन" : "2. COMMUNITY ACTION",
         title: lang === "HI" ? "त्वरित समाधान के लिए समर्थन दें" : "Upvote to speed up repairs",
         description: lang === "HI"
@@ -54,15 +68,15 @@ const getTourSteps = (lang: "EN" | "HI"): TourStep[] => [
     {
         id: "my-reports",
         targetSelector: '[data-tour="my-reports-tab"]',
-        stepNumber: 3,
-        totalSteps: 3,
+        stepNumber: 4,
+        totalSteps: 4,
         badge: lang === "HI" ? "3. निवारण ट्रैकिंग" : "3. RESOLUTION TRACKING",
         title: lang === "HI" ? "समाधान होने तक लाइव ट्रैक करें" : "Follow your issue live to completion",
         description: lang === "HI"
             ? "'मेरी शिकायतें' में देखें कि आपकी रिपोर्ट AI वर्गीकरण से लेकर कॉलेज प्रोटोटाइप और अंतिम सुधार तक कैसे पहुँचती है।"
             : "Switch to 'My Complaints' to watch your grievance move through 5 stages — from AI triage to university lab prototype to verified fix.",
         icon: "task_alt",
-        actionLabel: lang === "HI" ? "🎉 समझ गए • शुरू करें" : "🎉 Got It • Start Exploring"
+        actionLabel: lang === "HI" ? "🎉 समझ गए • ऐप शुरू करें" : "🎉 Got It • Start Exploring"
     }
 ];
 
@@ -80,7 +94,10 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
     const step = steps[currentStepIdx] || steps[0];
 
     const updateRect = useCallback(() => {
-        if (!isOpen || !step) return;
+        if (!isOpen || !step || !step.targetSelector) {
+            setTargetRect(null);
+            return;
+        }
         const el = getVisibleElement(step.targetSelector);
         if (el) {
             const r = el.getBoundingClientRect();
@@ -93,10 +110,14 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
     useEffect(() => {
         if (!isOpen) return;
 
-        const el = getVisibleElement(step.targetSelector);
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
-            setTimeout(updateRect, 300);
+        if (step.targetSelector) {
+            const el = getVisibleElement(step.targetSelector);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                setTimeout(updateRect, 300);
+            } else {
+                setTargetRect(null);
+            }
         } else {
             setTargetRect(null);
         }
@@ -136,6 +157,10 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
         }
     };
 
+    // Calculate smart positioning to prevent overlapping the spotlighted element
+    const isTargetInLowerHalf = targetRect ? (targetRect.top + targetRect.height / 2 > window.innerHeight / 2) : false;
+    const hasTarget = !!targetRect;
+
     return (
         <div className="fixed inset-0 z-[9990] animate-fade-in" aria-modal="true" role="dialog">
             {/* SVG Mask for Dark Backdrop & Spotlight Cutout */}
@@ -149,11 +174,11 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                         <rect x="0" y="0" width="100%" height="100%" fill="white" />
                         {targetRect && (
                             <rect
-                                x={targetRect.left - 6}
-                                y={targetRect.top - 6}
-                                width={targetRect.width + 12}
-                                height={targetRect.height + 12}
-                                rx="16"
+                                x={targetRect.left - 8}
+                                y={targetRect.top - 8}
+                                width={targetRect.width + 16}
+                                height={targetRect.height + 16}
+                                rx="18"
                                 fill="black"
                             />
                         )}
@@ -164,8 +189,8 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                     y="0"
                     width="100%"
                     height="100%"
-                    fill="rgba(10, 20, 14, 0.65)"
-                    mask="url(#civic-spotlight-mask)"
+                    fill={targetRect ? "rgba(10, 20, 14, 0.70)" : "rgba(10, 20, 14, 0.82)"}
+                    mask={targetRect ? "url(#civic-spotlight-mask)" : undefined}
                 />
             </svg>
 
@@ -174,31 +199,53 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                 <div
                     style={{
                         position: "fixed",
-                        top: targetRect.top - 6,
-                        left: targetRect.left - 6,
-                        width: targetRect.width + 12,
-                        height: targetRect.height + 12,
-                        borderRadius: "16px",
+                        top: targetRect.top - 8,
+                        left: targetRect.left - 8,
+                        width: targetRect.width + 16,
+                        height: targetRect.height + 16,
+                        borderRadius: "18px",
                         pointerEvents: "none",
                         zIndex: 9995
                     }}
-                    className="ring-4 ring-primary ring-offset-2 ring-offset-transparent shadow-[0_0_30px_rgba(41,78,54,0.7)] animate-pulse transition-all duration-300"
+                    className="ring-4 ring-amber-400 ring-offset-2 ring-offset-transparent shadow-[0_0_35px_rgba(251,191,36,0.8)] animate-pulse transition-all duration-300"
                 />
             )}
 
-            {/* Mobile Bottom Sheet / Coachmark Card (Pinned to bottom for comfortable thumb reach) */}
+            {/* Smart Positioned Coachmark Card:
+                - Center when no target (Intro welcome)
+                - Top when target is in lower half (e.g. mobile FAB)
+                - Bottom when target is in upper half (e.g. tabs/header)
+            */}
             <div 
-                className="fixed bottom-4 sm:bottom-6 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 max-w-sm sm:max-w-md w-full z-[9999] pointer-events-auto"
+                className={`fixed inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 max-w-sm sm:max-w-md w-full z-[9999] pointer-events-auto transition-all duration-300 ${
+                    !hasTarget 
+                        ? "top-1/2 -translate-y-1/2" 
+                        : isTargetInLowerHalf 
+                        ? "top-4 sm:top-6" 
+                        : "bottom-4 sm:bottom-6"
+                }`}
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 shadow-2xl border border-primary/30 backdrop-blur-lg space-y-3.5">
+                <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 shadow-2xl border-2 border-amber-400/40 backdrop-blur-xl space-y-3.5">
+                    {/* Directional Hint Pill when targeting */}
+                    {hasTarget && (
+                        <div className="flex justify-center -mt-2">
+                            <span className="px-3 py-1 rounded-full bg-amber-400 text-stone-950 font-bold text-[10px] tracking-wide uppercase flex items-center gap-1 shadow-xs animate-bounce">
+                                <span className="material-symbols-outlined text-xs">
+                                    {isTargetInLowerHalf ? "arrow_downward" : "arrow_upward"}
+                                </span>
+                                <span>{isTargetInLowerHalf ? (lang === "HI" ? "नीचे हाइलाइट किया गया बटन देखें ↓" : "Look at the highlighted button below ↓") : (lang === "HI" ? "ऊपर हाइलाइट किया गया हिस्सा देखें ↑" : "Look at the highlighted section above ↑")}</span>
+                            </span>
+                        </div>
+                    )}
+
                     {/* Header Row: Badge, Step Indicator, Close Button */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="w-7 h-7 rounded-xl bg-primary text-white flex items-center justify-center text-xs shadow-xs">
+                            <span className="w-7 h-7 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center text-xs font-bold shadow-xs">
                                 <span className="material-symbols-outlined text-sm">{step.icon}</span>
                             </span>
-                            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary">
+                            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                                 {step.badge}
                             </span>
                         </div>
@@ -209,7 +256,7 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                             <button
                                 type="button"
                                 onClick={onClose}
-                                aria-label="Skip tour"
+                                aria-label="Close guide"
                                 className="w-6 h-6 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center cursor-pointer transition-colors"
                             >
                                 <span className="material-symbols-outlined text-sm">close</span>
@@ -222,7 +269,7 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                         <h4 className="font-bold text-base sm:text-lg text-on-surface leading-snug">
                             {step.title}
                         </h4>
-                        <p className="text-xs sm:text-sm text-on-surface-variant mt-1 leading-relaxed">
+                        <p className="text-xs sm:text-sm text-on-surface-variant mt-1.5 leading-relaxed">
                             {step.description}
                         </p>
                     </div>
@@ -234,9 +281,9 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                                 key={s.id}
                                 className={`h-1.5 rounded-full transition-all duration-300 ${
                                     idx === currentStepIdx 
-                                        ? "w-6 bg-primary" 
+                                        ? "w-6 bg-amber-500" 
                                         : idx < currentStepIdx 
-                                        ? "w-2 bg-primary/40" 
+                                        ? "w-2 bg-amber-500/40" 
                                         : "w-2 bg-surface-container-highest"
                                 }`}
                             />
@@ -250,7 +297,7 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                             onClick={onClose}
                             className="text-xs text-on-surface-variant hover:text-on-surface font-semibold px-2 py-1.5 rounded-lg transition-colors cursor-pointer"
                         >
-                            {lang === "HI" ? "छोड़ें (Skip)" : "Skip Tour"}
+                            {lang === "HI" ? "समझ गया • बंद करें" : "Got It • Close"}
                         </button>
 
                         <div className="flex items-center gap-2">
@@ -260,13 +307,13 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                                     onClick={handlePrev}
                                     className="px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-on-surface transition-colors cursor-pointer"
                                 >
-                                    Back
+                                    {lang === "HI" ? "पीछे" : "Back"}
                                 </button>
                             )}
                             <button
                                 type="button"
                                 onClick={handleNext}
-                                className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-container text-white text-xs font-bold shadow-md shadow-primary/20 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+                                className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-bold shadow-md shadow-amber-400/20 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
                             >
                                 <span>{step.actionLabel}</span>
                             </button>
@@ -277,3 +324,5 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
         </div>
     );
 };
+
+export const HowToUseGuide = CivicAppTour;

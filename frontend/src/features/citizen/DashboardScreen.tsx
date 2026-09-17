@@ -25,7 +25,18 @@ export default function DashboardScreen() {
     const [showHelplineModal, setShowHelplineModal] = useState(false);
     const [showAiScoreInfoModal, setShowAiScoreInfoModal] = useState(false);
     const [activeStory, setActiveStory] = useState<any | null>(null);
-    const [showTour, setShowTour] = useState(false);
+    // Auto-launch "How to Use" guide for first-time visitors / new signups, or when URL contains ?guide=true
+    const [showTour, setShowTour] = useState(() => {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("guide") === "true" || urlParams.get("help") === "true" || urlParams.get("tour") === "true") {
+                return true;
+            }
+            return !localStorage.getItem("sociosolve_how_to_use_completed");
+        } catch (e) {
+            return false;
+        }
+    });
     const [showTourHelper, setShowTourHelper] = useState(() => {
         try {
             return !localStorage.getItem("sociosolve_tour_helper_dismissed");
@@ -520,15 +531,15 @@ export default function DashboardScreen() {
 <span className={`font-sans ${lang === 'HI' ? 'font-bold underline' : 'opacity-70'}`}>हिन्दी</span>
 </button>
 
-{/* Interactive Tour Guide Button */}
+{/* "How to Use" Guide Button - High Visibility for First-Time Users & Demos */}
 <button
     onClick={() => setShowTour(true)}
     type="button"
-    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-lowest/20 hover:bg-surface-container-lowest/30 text-white text-xs font-semibold border border-white/25 transition-all active:scale-95 cursor-pointer shadow-xs"
-    title="Take a 30-second app walkthrough"
+    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-400 hover:bg-amber-300 active:scale-95 text-stone-950 text-xs font-bold shadow-md ring-2 ring-amber-300/50 transition-all cursor-pointer"
+    title={lang === "HI" ? "समझ नहीं आ रहा क्या करें? यहाँ क्लिक करें!" : "Don't know what to do? Click here for a quick 20-second guide!"}
 >
-    <span className="material-symbols-outlined text-sm text-amber-300">lightbulb</span>
-    <span>{lang === "HI" ? "गाइड" : "Tour"}</span>
+    <span className="material-symbols-outlined text-base font-bold text-stone-950">help</span>
+    <span>{lang === "HI" ? "कैसे चलाएं?" : "How to Use"}</span>
 </button>
 
 {/*  Desktop Report Button  */}
@@ -757,17 +768,17 @@ export default function DashboardScreen() {
 
 {/* 💡 FIRST-TIME USER HELPER CARD (Dismissible) */}
 {showTourHelper && (
-    <div className="bg-gradient-to-r from-primary/15 via-emerald-500/10 to-primary/10 rounded-2xl p-3.5 border border-primary/25 flex items-center justify-between gap-3 shadow-xs">
+    <div className="bg-gradient-to-r from-amber-500/15 via-primary/15 to-emerald-500/10 rounded-2xl p-3.5 border border-amber-400/30 flex items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-2.5 min-w-0">
-            <span className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
-                <span className="material-symbols-outlined text-lg">help</span>
+            <span className="w-8 h-8 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shrink-0 shadow-xs font-bold">
+                <span className="material-symbols-outlined text-lg font-bold">help</span>
             </span>
             <div className="min-w-0">
                 <span className="block text-xs font-bold text-on-surface leading-tight">
-                    {lang === 'HI' ? 'सोशियोसॉल्व में नए हैं?' : 'New to SocioSolve?'}
+                    {lang === 'HI' ? 'समझ नहीं आ रहा क्या करें या कहाँ क्लिक करें?' : "Don't know what to do or where to click?"}
                 </span>
                 <span className="block text-[11px] text-on-surface-variant leading-tight truncate">
-                    {lang === 'HI' ? '30 सेकंड में जानें शिकायत कैसे दर्ज और ट्रैक करें' : 'Learn how to file and track grievances in 30 seconds'}
+                    {lang === 'HI' ? '20 सेकंड में देखें कि सोशियोसॉल्व कैसे काम करता है' : 'Tap here to see how this app works in 20 seconds'}
                 </span>
             </div>
         </div>
@@ -775,10 +786,10 @@ export default function DashboardScreen() {
             <button
                 type="button"
                 onClick={() => setShowTour(true)}
-                className="px-3 py-1.5 rounded-xl bg-primary text-white font-bold text-xs shadow-xs hover:bg-primary-container active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1"
+                className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1"
             >
-                <span className="material-symbols-outlined text-sm">play_arrow</span>
-                <span>{lang === 'HI' ? 'टूर देखें' : 'Start Tour'}</span>
+                <span className="material-symbols-outlined text-sm font-bold">play_arrow</span>
+                <span>{lang === 'HI' ? 'कैसे चलाएं' : 'How to Use'}</span>
             </button>
             <button
                 type="button"
@@ -2191,14 +2202,22 @@ export default function DashboardScreen() {
     </div>
 )}
 
-        {/* Interactive Civic App Tour */}
+        {/* Interactive "How to Use" Guide */}
         <CivicAppTour 
             isOpen={showTour} 
             onClose={() => {
                 setShowTour(false);
                 setShowTourHelper(false);
                 try {
+                    localStorage.setItem("sociosolve_how_to_use_completed", "true");
                     localStorage.setItem("sociosolve_tour_helper_dismissed", "true");
+                    const url = new URL(window.location.href);
+                    if (url.searchParams.has("guide") || url.searchParams.has("tour") || url.searchParams.has("help")) {
+                        url.searchParams.delete("guide");
+                        url.searchParams.delete("tour");
+                        url.searchParams.delete("help");
+                        window.history.replaceState({}, "", url.pathname);
+                    }
                 } catch (e) {}
             }}
             lang={lang} 

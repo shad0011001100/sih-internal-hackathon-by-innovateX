@@ -138,7 +138,7 @@ export default function OtpScreen() {
             setAuth(data.role || "citizen", data.user_id || 1);
             setPhone(phoneParam);
             showToast("Verification successful! Welcome to SocioSolve.", "success");
-            navigate("/dashboard");
+            navigate("/dashboard?guide=true");
         } catch (err: any) {
             setError(err.message);
             showToast(err.message || "Invalid OTP", "error");
