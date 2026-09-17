@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../context/ToastContext";
 import { safeFetch } from "../../services/api";
+import { CivicAppTour } from "../../components/CivicAppTour";
 
 export default function DashboardScreen() {
     const [reports, setReports] = useState<any[]>([]);
@@ -24,6 +25,14 @@ export default function DashboardScreen() {
     const [showHelplineModal, setShowHelplineModal] = useState(false);
     const [showAiScoreInfoModal, setShowAiScoreInfoModal] = useState(false);
     const [activeStory, setActiveStory] = useState<any | null>(null);
+    const [showTour, setShowTour] = useState(false);
+    const [showTourHelper, setShowTourHelper] = useState(() => {
+        try {
+            return !localStorage.getItem("sociosolve_tour_helper_dismissed");
+        } catch (e) {
+            return true;
+        }
+    });
 
     const CIVIC_STORIES = [
         {
@@ -510,8 +519,25 @@ export default function DashboardScreen() {
 <span className="opacity-50">/</span>
 <span className={`font-sans ${lang === 'HI' ? 'font-bold underline' : 'opacity-70'}`}>हिन्दी</span>
 </button>
+
+{/* Interactive Tour Guide Button */}
+<button
+    onClick={() => setShowTour(true)}
+    type="button"
+    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-lowest/20 hover:bg-surface-container-lowest/30 text-white text-xs font-semibold border border-white/25 transition-all active:scale-95 cursor-pointer shadow-xs"
+    title="Take a 30-second app walkthrough"
+>
+    <span className="material-symbols-outlined text-sm text-amber-300">lightbulb</span>
+    <span>{lang === "HI" ? "गाइड" : "Tour"}</span>
+</button>
+
 {/*  Desktop Report Button  */}
-<button onClick={() => navigate('/report')} type="button" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary-container hover:bg-secondary-container/90 text-on-secondary-container font-headline-sm text-xs md:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer">
+<button 
+    data-tour="report-btn"
+    onClick={() => navigate('/report')} 
+    type="button" 
+    className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary-container hover:bg-secondary-container/90 text-on-secondary-container font-headline-sm text-xs md:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
+>
 <span className="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
 <span>{t.report}</span>
 </button>
@@ -523,7 +549,7 @@ export default function DashboardScreen() {
 </div>
 </header>
 {/*  Mobile Hero Banner (Visible only on mobile screens < lg)  */}
-<section className="lg:hidden bg-primary relative px-4 pt-3 pb-12 rounded-b-[28px] text-on-primary overflow-hidden">
+<section className="lg:hidden bg-primary relative px-4 pt-3 pb-5 rounded-b-2xl text-on-primary overflow-hidden mb-3">
 <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-10 overflow-hidden">
 <svg className="w-full h-full object-cover" fill="none" preserveAspectRatio="none" viewBox="0 0 400 200">
 <path d="M0,80 C120,130 240,40 400,100 L400,200 L0,200 Z" fill="#FFFFFF"></path>
@@ -543,42 +569,6 @@ export default function DashboardScreen() {
 <div className="flex items-center gap-1.5 mt-0.5 text-primary-fixed text-xs">
 <span className="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span>
 <span>{phone ? `Mobile: ${phone} • Ranchi Municipal Area` : "Ranchi Municipal Area"}</span>
-</div>
-</div>
-</div>
-</section>
-{/*  Mobile Stats Strip (Overlap banner on mobile)  */}
-<section className="lg:hidden px-4 -mt-7 relative z-20 mb-4">
-<div className="grid grid-cols-2 gap-3">
-<div 
-    className="bg-surface-container-lowest rounded-2xl p-4 whisper-border ambient-shadow flex flex-col justify-between"
->
-<div className="flex items-center justify-between">
-<span className="text-on-surface-variant font-label-md text-xs">{t.avgResolution}</span>
-<div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">
-<span className="material-symbols-outlined text-base">bolt</span>
-</div>
-</div>
-<div className="flex items-baseline gap-1.5 mt-2">
-<span className="text-2xl font-bold font-mono text-on-surface leading-none">3.8</span>
-<span className="text-[11px] text-amber-700 font-semibold">{lang === 'HI' ? 'दिन (SLA)' : 'Days (SLA)'}</span>
-</div>
-</div>
-<div 
-    onClick={() => { setActiveTab("Resolved"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-    className={`bg-surface-container-lowest rounded-2xl p-4 whisper-border ambient-shadow flex flex-col justify-between cursor-pointer transition-all ${activeTab === 'Resolved' ? 'ring-2 ring-primary' : ''}`}
->
-<div className="flex items-center justify-between">
-<span className="text-on-surface-variant font-label-md text-xs">{t.communityWins}</span>
-<div className="w-7 h-7 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary">
-<span className="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
-</div>
-</div>
-<div className="flex items-baseline gap-2 mt-2">
-<span className="text-2xl font-bold font-mono text-primary leading-none">
-    {reports.filter(r => r.status === 'resolved' || r.status === 'implemented').length}
-</span>
-<span className="text-[11px] text-primary font-semibold">Community wins</span>
 </div>
 </div>
 </div>
@@ -764,6 +754,46 @@ export default function DashboardScreen() {
         ))}
     </div>
 </div>
+
+{/* 💡 FIRST-TIME USER HELPER CARD (Dismissible) */}
+{showTourHelper && (
+    <div className="bg-gradient-to-r from-primary/15 via-emerald-500/10 to-primary/10 rounded-2xl p-3.5 border border-primary/25 flex items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+                <span className="material-symbols-outlined text-lg">help</span>
+            </span>
+            <div className="min-w-0">
+                <span className="block text-xs font-bold text-on-surface leading-tight">
+                    {lang === 'HI' ? 'सोशियोसॉल्व में नए हैं?' : 'New to SocioSolve?'}
+                </span>
+                <span className="block text-[11px] text-on-surface-variant leading-tight truncate">
+                    {lang === 'HI' ? '30 सेकंड में जानें शिकायत कैसे दर्ज और ट्रैक करें' : 'Learn how to file and track grievances in 30 seconds'}
+                </span>
+            </div>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+            <button
+                type="button"
+                onClick={() => setShowTour(true)}
+                className="px-3 py-1.5 rounded-xl bg-primary text-white font-bold text-xs shadow-xs hover:bg-primary-container active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1"
+            >
+                <span className="material-symbols-outlined text-sm">play_arrow</span>
+                <span>{lang === 'HI' ? 'टूर देखें' : 'Start Tour'}</span>
+            </button>
+            <button
+                type="button"
+                onClick={() => {
+                    setShowTourHelper(false);
+                    try { localStorage.setItem("sociosolve_tour_helper_dismissed", "true"); } catch (e) {}
+                }}
+                className="p-1 rounded-lg text-on-surface-variant hover:text-on-surface cursor-pointer"
+                title="Dismiss"
+            >
+                <span className="material-symbols-outlined text-base">close</span>
+            </button>
+        </div>
+    </div>
+)}
 
 {/*  CLOSED INNOVATION LOOP BANNER (Point 10 - Desktop Only to prevent mobile clutter)  */}
 <div className="hidden lg:block bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-5 border border-primary/20 shadow-xs relative overflow-hidden">
@@ -963,6 +993,7 @@ export default function DashboardScreen() {
 <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
     <div aria-label="Issue filters" className="flex items-center gap-2 overflow-x-auto no-scrollbar" role="tablist">
         <button 
+            data-tour="community-feed-tab"
             onClick={() => { setActiveTab('All'); }} 
             aria-selected={activeTab === 'All'} 
             className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm cursor-pointer ${activeTab === 'All' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant whisper-border hover:bg-surface-container-high font-medium'}`} 
@@ -972,6 +1003,7 @@ export default function DashboardScreen() {
             {t.allIssues}
         </button>
         <button 
+            data-tour="my-reports-tab"
             onClick={() => { setActiveTab('My Reports'); }} 
             aria-selected={activeTab === 'My Reports'} 
             className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm cursor-pointer flex items-center gap-1.5 ${activeTab === 'My Reports' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant whisper-border hover:bg-surface-container-high font-medium'}`} 
@@ -1159,6 +1191,7 @@ export default function DashboardScreen() {
                     <div className="flex items-center gap-2">
                         {/* Upvote / Endorse Button */}
                         <button
+                            data-tour="endorse-btn"
                             type="button"
                             onClick={(e) => { e.stopPropagation(); handleUpvote(reportId, e); }}
                             className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
@@ -1389,7 +1422,13 @@ export default function DashboardScreen() {
 
 {/*  Floating Action Button (FAB) for Reporting Civic Issues (Mobile Only)  */}
 <aside className="lg:hidden fixed bottom-20 right-5 z-40">
-<button onClick={() => navigate('/report')} aria-label="Report new civic issue" className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center elevated-fab-shadow active:scale-90 transition-transform focus:outline-none focus:ring-4 focus:ring-secondary-container/40 cursor-pointer" type="button">
+<button 
+    data-tour="mobile-report-btn"
+    onClick={() => navigate('/report')} 
+    aria-label="Report new civic issue" 
+    className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center elevated-fab-shadow active:scale-90 transition-transform focus:outline-none focus:ring-4 focus:ring-secondary-container/40 cursor-pointer" 
+    type="button"
+>
 <span className="material-symbols-outlined text-[32px] select-none pointer-events-none" data-icon="add">add</span>
 </button>
 </aside>
@@ -2151,6 +2190,19 @@ export default function DashboardScreen() {
         </div>
     </div>
 )}
+
+        {/* Interactive Civic App Tour */}
+        <CivicAppTour 
+            isOpen={showTour} 
+            onClose={() => {
+                setShowTour(false);
+                setShowTourHelper(false);
+                try {
+                    localStorage.setItem("sociosolve_tour_helper_dismissed", "true");
+                } catch (e) {}
+            }}
+            lang={lang} 
+        />
 
         </motion.div>
     );
