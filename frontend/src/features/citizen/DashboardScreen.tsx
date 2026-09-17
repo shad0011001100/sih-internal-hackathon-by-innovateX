@@ -24,7 +24,6 @@ export default function DashboardScreen() {
     const [showStudentSolversModal, setShowStudentSolversModal] = useState(false);
     const [showHelplineModal, setShowHelplineModal] = useState(false);
     const [showAiScoreInfoModal, setShowAiScoreInfoModal] = useState(false);
-    const [activeStory, setActiveStory] = useState<any | null>(null);
     // Auto-launch "How to Use" guide for first-time visitors / new signups, or when URL contains ?guide=true
     const [showTour, setShowTour] = useState(() => {
         try {
@@ -44,89 +43,6 @@ export default function DashboardScreen() {
             return true;
         }
     });
-
-    const CIVIC_STORIES = [
-        {
-            id: "fixed_today",
-            label: lang === "HI" ? "आज ठीक हुआ" : "Fixed Today",
-            sublabel: "Harmu Bypass",
-            icon: "verified",
-            gradient: "from-emerald-500 to-teal-600",
-            badge: "RESOLVED IN 48H",
-            badgeColor: "bg-emerald-100 text-emerald-800",
-            title: "Harmu Bypass Pothole Repaved",
-            description: "Severe crater near Harmu Chowk resurfaced with high-durability asphalt in 48 hours.",
-            location: "Harmu Bypass, Ward 4",
-            solvers: "Ranchi Municipal Corp + BIT Mesra Team",
-            image: "/assets/civic/loop_impact.png",
-            upvotes: 412,
-            time: "Today, 11:30 AM"
-        },
-        {
-            id: "clean_water",
-            label: lang === "HI" ? "साफ़ पानी" : "Clean Water",
-            sublabel: "Doranda Line",
-            icon: "water_drop",
-            gradient: "from-cyan-500 to-blue-600",
-            badge: "PRESSURE NORMAL",
-            badgeColor: "bg-cyan-100 text-cyan-800",
-            title: "Doranda Water Pipeline Repaired",
-            description: "Contaminated line flushed and reinforced with digital pressure telemetry.",
-            location: "Doranda Market, Ward 14",
-            solvers: "Drinking Water & Sanitation Dept",
-            image: "/assets/civic/loop_solve.png",
-            upvotes: 285,
-            time: "Yesterday"
-        },
-        {
-            id: "smart_grid",
-            label: lang === "HI" ? "स्मार्ट ग्रिड" : "Smart Grid",
-            sublabel: "Kokar 2km",
-            icon: "bolt",
-            gradient: "from-amber-500 to-orange-600",
-            badge: "ACTIVE PILOT",
-            badgeColor: "bg-amber-100 text-amber-800",
-            title: "Kokar Solar Streetlights Live",
-            description: "Automated solar-battery LED fixtures installed along 2km pedestrian highway stretch.",
-            location: "Kokar Industrial Stretch, Ward 11",
-            solvers: "IIT Dhanbad Clean Energy Lab",
-            image: "/assets/civic/loop_triage.png",
-            upvotes: 198,
-            time: "2 days ago"
-        },
-        {
-            id: "bit_solvers",
-            label: lang === "HI" ? "छात्र टीम" : "BIT Solvers",
-            sublabel: "Hydro Filter",
-            icon: "school",
-            gradient: "from-purple-500 to-indigo-600",
-            badge: "CAMPUS INNOVATION",
-            badgeColor: "bg-purple-100 text-purple-800",
-            title: "Solar Hydro-Purifier Rollout",
-            description: "Low-cost community water filtration unit deployed for Morabadi residential area.",
-            location: "Morabadi Oxygen Park, Ward 1",
-            solvers: "BIT Mesra Civil & Environmental Dept",
-            image: "/assets/civic/loop_solve.png",
-            upvotes: 530,
-            time: "3 days ago"
-        },
-        {
-            id: "trending_issue",
-            label: lang === "HI" ? "ट्रेंडिंग" : "Trending",
-            sublabel: "Bariatu",
-            icon: "local_fire_department",
-            gradient: "from-rose-500 to-red-600",
-            badge: "620 ENDORSEMENTS",
-            badgeColor: "bg-rose-100 text-rose-800",
-            title: "Bariatu Drainage Vector Spray",
-            description: "Rapid municipal larvicide drone disinfection initiated after community alerts.",
-            location: "Bariatu Medical Quarters, Ward 3",
-            solvers: "RMC Vector Control Cell",
-            image: "/assets/civic/loop_report.png",
-            upvotes: 620,
-            time: "5 hours ago"
-        }
-    ];
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -312,7 +228,6 @@ export default function DashboardScreen() {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
-                setActiveStory(null);
                 setSelectedReport(null);
                 setShowStudentSolversModal(false);
                 setShowHelplineModal(false);
@@ -333,17 +248,6 @@ export default function DashboardScreen() {
             showToast("Report summary copied to clipboard! Ready to share.", "success");
         } else {
             showToast("Issue ready to share with your neighborhood.", "info");
-        }
-    };
-
-    const handleShareStory = (story: any, e: React.MouseEvent) => {
-        e.stopPropagation();
-        const text = `🎉 Solved in Ranchi: ${story.title} (${story.location}). Track real civic outcomes: ${window.location.origin}`;
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text);
-            showToast("Milestone copied to clipboard! Share on WhatsApp.", "success");
-        } else {
-            showToast("Civic milestone ready to share.", "info");
         }
     };
 
@@ -718,54 +622,6 @@ export default function DashboardScreen() {
 </aside>
 {/*  CENTER FEED (col-span-6 on Desktop): Search, Filters, Issue Cards  */}
 <main className="lg:col-span-6 space-y-4 pb-20 lg:pb-8">
-{/* 🌟 CIVIC STORIES ROW (Instagram-Style Micro-Stories) */}
-<div data-tour="civic-highlights" className="bg-surface-container-lowest rounded-3xl p-3.5 sm:p-4 whisper-border ambient-shadow">
-    <div className="flex items-center justify-between mb-2.5 px-1">
-        <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-xs font-bold text-on-surface tracking-wide uppercase">
-                {lang === 'HI' ? 'नागरिक हाइलाइट्स' : 'Civic Highlights'}
-            </span>
-        </div>
-        <span className="text-[11px] text-on-surface-variant font-medium">
-            {lang === 'HI' ? 'देखने के लिए टैप करें' : 'Tap to view'}
-        </span>
-    </div>
-
-    {/* Horizontal Scroll Stories List */}
-    <div className="flex items-center gap-3.5 overflow-x-auto no-scrollbar py-1 px-1">
-        {CIVIC_STORIES.map((story) => (
-            <button
-                key={story.id}
-                type="button"
-                onClick={() => setActiveStory(story)}
-                className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group cursor-pointer"
-            >
-                <div className={`p-0.5 rounded-full bg-gradient-to-tr ${story.gradient} shadow-xs group-hover:scale-105 group-active:scale-95 transition-all duration-200`}>
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-surface-container-lowest p-0.5 flex items-center justify-center overflow-hidden">
-                        <div className={`w-full h-full rounded-full bg-gradient-to-br ${story.gradient} flex items-center justify-center text-white shadow-inner`}>
-                            <span className="material-symbols-outlined text-xl sm:text-2xl drop-shadow-xs">
-                                {story.icon}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div className="text-center">
-                    <span className="block text-[11px] font-bold text-on-surface group-hover:text-primary transition-colors leading-tight whitespace-nowrap">
-                        {story.label}
-                    </span>
-                    <span className="block text-[10px] text-on-surface-variant leading-tight truncate max-w-[68px]">
-                        {story.sublabel}
-                    </span>
-                </div>
-            </button>
-        ))}
-    </div>
-</div>
-
 {/* 💡 FIRST-TIME USER HELPER CARD (Dismissible) */}
 {showTourHelper && (
     <div className="bg-gradient-to-r from-amber-500/15 via-primary/15 to-emerald-500/10 rounded-2xl p-3.5 border border-amber-400/30 flex items-center justify-between gap-3 shadow-xs">
@@ -2088,90 +1944,7 @@ export default function DashboardScreen() {
     </div>
 )}
 
-{/* 📱 CIVIC STORY VIEWER MODAL (Instagram-Style, Safe 1-Tap Dismiss) */}
-{activeStory && (
-    <div 
-        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
-        onClick={() => setActiveStory(null)}
-    >
-        <div 
-            className="bg-surface-container-lowest rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-white/20 relative"
-            onClick={(e) => e.stopPropagation()}
-        >
-            {/* Header */}
-            <div className="p-4 pb-2.5 flex items-center justify-between border-b border-outline-variant/20">
-                <div className="flex items-center gap-2.5">
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-tr ${activeStory.gradient} flex items-center justify-center text-white shadow-xs`}>
-                        <span className="material-symbols-outlined text-sm">{activeStory.icon}</span>
-                    </div>
-                    <div>
-                        <span className="block text-xs font-bold text-on-surface leading-tight">{activeStory.label}</span>
-                        <span className="block text-[10px] text-on-surface-variant leading-tight">{activeStory.location}</span>
-                    </div>
-                </div>
-                <button
-                    type="button"
-                    onClick={() => setActiveStory(null)}
-                    aria-label="Close story"
-                    className="w-7 h-7 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center cursor-pointer transition-colors"
-                >
-                    <span className="material-symbols-outlined text-base">close</span>
-                </button>
-            </div>
 
-            {/* Visual Photo */}
-            <div className="w-full h-64 relative bg-surface-container-high overflow-hidden">
-                <img 
-                    src={activeStory.image} 
-                    alt={activeStory.title} 
-                    className="w-full h-full object-cover"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3">
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase mb-1 ${activeStory.badgeColor}`}>
-                        {activeStory.badge}
-                    </span>
-                    <h3 className="text-white text-base font-bold leading-snug drop-shadow-sm">
-                        {activeStory.title}
-                    </h3>
-                </div>
-            </div>
-
-            {/* Content Body */}
-            <div className="p-4 space-y-3">
-                <p className="text-xs text-on-surface leading-relaxed">
-                    {activeStory.description}
-                </p>
-                <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-2 border-t border-outline-variant/30">
-                    <span className="font-semibold text-primary">{activeStory.solvers}</span>
-                    <span className="font-mono text-[10px]">{activeStory.time}</span>
-                </div>
-                <div className="flex items-center gap-2 pt-1">
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            showToast("Endorsement recorded for this civic milestone!", "success");
-                        }}
-                        className="flex-1 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs hover:bg-primary-container transition-all cursor-pointer"
-                    >
-                        <span className="material-symbols-outlined text-sm">favorite</span>
-                        <span>{activeStory.upvotes} Cheered</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={(e) => handleShareStory(activeStory, e)}
-                        className="px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center gap-1 cursor-pointer"
-                        title="Share on WhatsApp"
-                    >
-                        <span className="material-symbols-outlined text-sm">share</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-)}
 
         {/* Interactive "How to Use" Guide */}
         <CivicAppTour 
