@@ -806,91 +806,57 @@ export default function DashboardScreen() {
     </div>
 )}
 
-{/*  THIS IS HOW YOUR PROBLEM WILL BE RESOLVED BANNER  */}
-<div data-tour="innovation-loop" className="block bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-4 sm:p-5 border border-primary/20 shadow-xs relative overflow-hidden">
-    <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider mb-1">
-        <span className="material-symbols-outlined text-sm">verified</span>
-        {lang === "HI" ? "आपकी समस्या का समाधान" : "How SocioSolve Works"}
+{/*  THIS IS HOW YOUR PROBLEM WILL BE RESOLVED BANNER (Minimalist & Compact)  */}
+<div data-tour="innovation-loop" className="block bg-gradient-to-r from-primary/10 via-emerald-500/5 to-secondary/10 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border border-primary/20 shadow-xs relative overflow-hidden">
+    <div className="flex items-center justify-between gap-2 mb-1">
+        <div className="flex items-center gap-1.5 text-primary font-bold text-xs uppercase tracking-wider">
+            <span className="material-symbols-outlined text-sm">verified</span>
+            <span>{lang === "HI" ? "समाधान प्रक्रिया" : "How It Gets Fixed"}</span>
+        </div>
+        <span className="text-[10px] font-mono text-primary font-semibold hidden sm:inline">4 STEPS</span>
     </div>
-    <h3 className="font-headline-sm text-base sm:text-lg font-bold text-on-surface">
+    <h3 className="font-headline-sm text-sm sm:text-base font-bold text-on-surface">
         {lang === "HI" ? "ऐसे हल होगी आपकी समस्या" : "This is how your problem will be resolved"}
     </h3>
-    <p className="text-xs text-on-surface-variant mt-0.5 leading-normal">
+    <p className="text-[11px] sm:text-xs text-on-surface-variant mt-0.5 leading-normal">
         {lang === "HI" 
-            ? "आपके फोन से फोटो लेने से लेकर कॉलेज के छात्र इंजीनियरों और नगर निगम कर्मियों द्वारा ज़मीन पर सुधार तक।"
-            : "From snapping a photo on your phone to college engineering teams and municipal workers resolving it on the ground."}
+            ? "फोटो रिपोर्ट से लेकर कॉलेज इंजीनियरिंग और नगर निगम द्वारा ज़मीन पर समाधान तक।"
+            : "From photo report to college engineering solvers and on-ground municipal fix."}
     </p>
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 pt-3 border-t border-outline-variant/30 text-center">
-        {/* Step 1: Citizen Field Reporting */}
-        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-primary/40 transition-all group">
-            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
-                <img 
-                    src="/assets/civic/loop_report.png" 
-                    alt="Citizen Field GPS Reporting" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
-                />
-                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center shadow-xs">
-                    <span className="material-symbols-outlined text-[12px]">add_a_photo</span>
-                </span>
-            </div>
-            <span className="block text-primary font-bold text-xs">{lang === "HI" ? "1. फोटो लें" : "1. Snap Photo"}</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "GPS लोकेशन" : "Report with GPS"}</span>
-        </div>
 
-        {/* Step 2: AI Triage & Analytics Scoring */}
-        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-secondary/40 transition-all group">
-            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
-                <img 
-                    src="/assets/civic/loop_triage.png" 
-                    alt="AI Triage Analytics Dashboard" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
-                />
-                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-secondary text-white flex items-center justify-center shadow-xs">
-                    <span className="material-symbols-outlined text-[12px]">psychology</span>
-                </span>
-            </div>
-            <span className="block text-secondary font-bold text-xs">{lang === "HI" ? "2. AI जांच" : "2. AI Triage"}</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "प्राथमिकता तय" : "Urgency Check"}</span>
+    {/* 4 Clean Minimalist Steps */}
+    <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mt-2.5 pt-2.5 border-t border-outline-variant/30 text-center">
+        {/* Step 1 */}
+        <div className="bg-surface-container-lowest rounded-xl p-2 flex flex-col items-center text-center shadow-2xs border border-outline-variant/20">
+            <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm mb-1">
+                <span className="material-symbols-outlined text-base">add_a_photo</span>
+            </span>
+            <span className="block text-primary font-bold text-[10px] sm:text-xs leading-tight">1. Photo</span>
+            <span className="text-[9px] text-on-surface-variant hidden sm:block">Citizen + GPS</span>
         </div>
-
-        {/* Step 3: University Engineering Team */}
-        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-amber-500/40 transition-all group">
-            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
-                <img 
-                    src="/assets/civic/loop_solve.png" 
-                    alt="Faculty and University Engineering Solvers" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
-                />
-                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-xs">
-                    <span className="material-symbols-outlined text-[12px]">school</span>
-                </span>
-            </div>
-            <span className="block text-amber-600 font-bold text-xs">{lang === "HI" ? "3. छात्र समाधान" : "3. Student Solvers"}</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "कॉलेज टेक लैब" : "Campus Tech Labs"}</span>
+        {/* Step 2 */}
+        <div className="bg-surface-container-lowest rounded-xl p-2 flex flex-col items-center text-center shadow-2xs border border-outline-variant/20">
+            <span className="w-7 h-7 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center text-sm mb-1">
+                <span className="material-symbols-outlined text-base">psychology</span>
+            </span>
+            <span className="block text-secondary font-bold text-[10px] sm:text-xs leading-tight">2. AI Check</span>
+            <span className="text-[9px] text-on-surface-variant hidden sm:block">Priority</span>
         </div>
-
-        {/* Step 4: Govt Ground Infrastructure Impact */}
-        <div className="bg-surface-container-lowest/90 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-xs border border-outline-variant/20 hover:border-emerald-500/40 transition-all group">
-            <div className="w-full h-16 sm:h-20 rounded-xl overflow-hidden mb-2 bg-surface-container relative">
-                <img 
-                    src="/assets/civic/loop_impact.png" 
-                    alt="Government Civic Rollout on Ground" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
-                />
-                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
-                    <span className="material-symbols-outlined text-[12px]">verified</span>
-                </span>
-            </div>
-            <span className="block text-emerald-600 font-bold text-xs">{lang === "HI" ? "4. मौके पर सुधार" : "4. Fixed on Ground"}</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "नगर निगम कार्य" : "Municipal Action"}</span>
+        {/* Step 3 */}
+        <div className="bg-surface-container-lowest rounded-xl p-2 flex flex-col items-center text-center shadow-2xs border border-outline-variant/20">
+            <span className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm mb-1">
+                <span className="material-symbols-outlined text-base">school</span>
+            </span>
+            <span className="block text-amber-600 font-bold text-[10px] sm:text-xs leading-tight">3. Solvers</span>
+            <span className="text-[9px] text-on-surface-variant hidden sm:block">College Team</span>
+        </div>
+        {/* Step 4 */}
+        <div className="bg-surface-container-lowest rounded-xl p-2 flex flex-col items-center text-center shadow-2xs border border-outline-variant/20">
+            <span className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm mb-1">
+                <span className="material-symbols-outlined text-base">task_alt</span>
+            </span>
+            <span className="block text-emerald-600 font-bold text-[10px] sm:text-xs leading-tight">4. Fixed</span>
+            <span className="text-[9px] text-on-surface-variant hidden sm:block">On Ground</span>
         </div>
     </div>
 </div>
