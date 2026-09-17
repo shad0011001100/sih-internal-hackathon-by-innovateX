@@ -50,6 +50,9 @@ export default function StudentDashboard() {
     const [missionImpactReport, setMissionImpactReport] = useState("");
     const [missionProgress, setMissionProgress] = useState(0);
     const [savingMission, setSavingMission] = useState(false);
+    const [releaseModalOpen, setReleaseModalOpen] = useState(false);
+    const [releaseReason, setReleaseReason] = useState("");
+    const [releasing, setReleasing] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState({
         days: 0,
         hours: 0,
@@ -368,6 +371,95 @@ export default function StudentDashboard() {
         }
     };
 
+    const handleAddTeamMember = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newMemberName.trim()) return;
+        if (teamMembers.length >= 5) {
+            showToast("Maximum team limit reached (5 members max per capstone).", "warning");
+            return;
+        }
+
+        if (activeProject?.team_id) {
+            try {
+                const res = await safeFetch(`/api/student/teams/${activeProject.team_id}/members`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        name: newMemberName.trim(),
+                        role: newMemberRole,
+                        apaar_id: newMemberApaar.trim() || undefined
+                    })
+                });
+                const m = res.member;
+                const initials = (m.name || "ST").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                setTeamMembers(prev => [...prev, { ...m, initials }]);
+                showToast(res.message || `Teammate ${m.name} added to project team!`, "success");
+                setNewMemberName("");
+                setNewMemberApaar("");
+                setTeamModalOpen(false);
+            } catch (err: any) {
+                showToast(err.message || "Failed to add teammate.", "error");
+            }
+        } else {
+            const initials = newMemberName.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+            const newM = {
+                id: Date.now(),
+                name: newMemberName.trim(),
+                role: newMemberRole,
+                apaar_id: newMemberApaar.trim() || `APAAR-JH-${Math.floor(1000 + Math.random() * 9000)}`,
+                initials,
+                is_leader: false
+            };
+            setTeamMembers(prev => [...prev, newM]);
+            showToast(`Teammate ${newMemberName} added!`, "success");
+            setNewMemberName("");
+            setNewMemberApaar("");
+            setTeamModalOpen(false);
+        }
+    };
+
+    const handleRemoveTeamMember = async (memberId: number, memberName: string) => {
+        if (teamMembers.length <= 1) {
+            showToast("Minimum team size is 1 member. The last remaining student cannot be removed. To drop this project, use 'Release Problem Statement'.", "warning");
+            return;
+        }
+        if (!window.confirm(`Are you sure you want to remove ${memberName} from the project team?`)) return;
+
+        if (activeProject?.team_id) {
+            try {
+                const res = await safeFetch(`/api/student/teams/${activeProject.team_id}/members/${memberId}`, {
+                    method: "DELETE"
+                });
+                setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+                showToast(res.message || `Removed ${memberName} from team.`, "success");
+            } catch (err: any) {
+                showToast(err.message || "Failed to remove teammate.", "error");
+            }
+        } else {
+            setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+            showToast(`Removed ${memberName} from team.`, "info");
+        }
+    };
+
+    const handleReleaseProject = async () => {
+        if (!activeProject) return;
+        setReleasing(true);
+        try {
+            const res = await safeFetch(`/api/student/projects/${activeProject.id}/release`, {
+                method: "POST",
+                body: JSON.stringify({ reason: releaseReason.trim() || "Team unable to build working prototype / pivot" })
+            });
+            showToast(res.message || "Problem statement released. Capstone slot unlocked!", "success");
+            setReleaseModalOpen(false);
+            setReleaseReason("");
+            await fetchDashboard();
+            setActiveNav("Issues");
+        } catch (err: any) {
+            showToast(err.message || "Failed to release problem statement.", "error");
+        } finally {
+            setReleasing(false);
+        }
+    };
+
     const containerVariants = {
         hidden: { opacity: 0 },
         show: {
@@ -386,7 +478,7 @@ export default function StudentDashboard() {
         return issue.category?.toLowerCase() === selectedCategory.toLowerCase();
     });
 
-    const activeProjects = projects.filter(p => p.status !== 'completed');
+    const activeProjects = projects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
     const activeProject = activeProjects[0] || null;
     const maxActiveProjects = 1;
     const canAdopt = activeProjects.length < maxActiveProjects;
@@ -398,8 +490,20 @@ export default function StudentDashboard() {
             setMissionProtoUrl(activeProject.prototype_url || "");
             setMissionImpactReport(activeProject.impact_report || activeProject.description || "");
             setMissionProgress(activeProject.progress_pct || 0);
+            if (Array.isArray(activeProject.team_members) && activeProject.team_members.length > 0) {
+                setTeamMembers(activeProject.team_members.map((m: any) => ({
+                    id: m.id,
+                    user_id: m.user_id,
+                    name: m.name,
+                    role: m.role,
+                    apaar_id: m.apaar_id,
+                    initials: (m.name || "ST").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase(),
+                    is_current_user: m.is_current_user,
+                    is_leader: m.is_leader
+                })));
+            }
         }
-    }, [activeProject?.id, activeProject?.progress_pct]);
+    }, [activeProject?.id, activeProject?.progress_pct, activeProject?.team_members?.length]);
 
     useEffect(() => {
         if (!activeProject) return;
@@ -1025,32 +1129,86 @@ export default function StudentDashboard() {
                                                 <div className="flex items-center gap-2">
                                                     <span className="material-symbols-outlined text-primary text-base">group</span>
                                                     <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider">Active Capstone Team</h4>
+                                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
+                                                        {teamMembers.length} / 5 Members
+                                                    </span>
                                                 </div>
                                                 <button
                                                     type="button"
+                                                    disabled={teamMembers.length >= 5}
                                                     onClick={() => setTeamModalOpen(true)}
-                                                    className="text-[11px] font-bold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                                                    className="text-[11px] font-bold text-primary hover:underline flex items-center gap-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     <span className="material-symbols-outlined text-xs">person_add</span>
-                                                    <span>Manage</span>
+                                                    <span>Add Teammate</span>
                                                 </button>
                                             </div>
 
+                                            {teamMembers.length === 1 && (
+                                                <div className="bg-primary/5 border border-primary/20 rounded-xl p-2.5 flex items-center gap-2 text-[11px] text-on-surface-variant">
+                                                    <span className="material-symbols-outlined text-sm text-primary shrink-0">badge</span>
+                                                    <span><strong>Solo Innovator (Min = 1):</strong> You are leading this capstone individually. You can invite up to 4 more teammates if you need extra hands!</span>
+                                                </div>
+                                            )}
+
                                             <div className="space-y-2">
-                                                {teamMembers.map((tm: any, idx: number) => (
-                                                    <div key={idx} className="flex items-center justify-between text-xs bg-surface-container-low p-2.5 rounded-xl border border-outline-variant/15">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-7 h-7 rounded-full bg-primary/20 text-primary font-bold text-[10px] flex items-center justify-center font-mono">
-                                                                {tm.initials || tm.name.slice(0, 2).toUpperCase()}
+                                                {teamMembers.map((tm: any, idx: number) => {
+                                                    const isSolo = teamMembers.length <= 1;
+                                                    const isLead = tm.is_leader || idx === 0;
+                                                    return (
+                                                        <div key={tm.id || idx} className="flex items-center justify-between text-xs bg-surface-container-low p-2.5 rounded-xl border border-outline-variant/15">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-7 h-7 rounded-full bg-primary/20 text-primary font-bold text-[10px] flex items-center justify-center font-mono shrink-0">
+                                                                    {tm.initials || (tm.name || "ST").slice(0, 2).toUpperCase()}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <p className="font-bold text-on-surface">{tm.name}</p>
+                                                                        {isLead && (
+                                                                            <span className="text-[9px] bg-amber-500/10 text-amber-800 border border-amber-500/30 px-1.5 py-0.2 rounded-md font-semibold">
+                                                                                👑 Lead
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-[10px] text-on-surface-variant">{tm.role}</p>
+                                                                </div>
                                                             </div>
-                                                            <div>
-                                                                <p className="font-bold text-on-surface">{tm.name}</p>
-                                                                <p className="text-[10px] text-on-surface-variant">{tm.role}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[9px] font-mono text-outline hidden sm:inline">{tm.apaar_id}</span>
+                                                                {isSolo ? (
+                                                                    <span
+                                                                        className="p-1 text-outline/30 cursor-not-allowed"
+                                                                        title="Minimum team size is 1 member. Cannot remove sole innovator. Use 'Release Problem Statement' below if you want to drop this project."
+                                                                    >
+                                                                        <span className="material-symbols-outlined text-sm">lock</span>
+                                                                    </span>
+                                                                ) : (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleRemoveTeamMember(tm.id || idx, tm.name)}
+                                                                        className="p-1 text-outline hover:text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer"
+                                                                        title={`Remove ${tm.name} from team`}
+                                                                    >
+                                                                        <span className="material-symbols-outlined text-sm">person_remove</span>
+                                                                    </button>
+                                                                )}
                                                             </div>
                                                         </div>
-                                                        <span className="text-[9px] font-mono text-outline">{tm.apaar_id}</span>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* Escape Hatch: Release Problem Statement */}
+                                            <div className="pt-2 border-t border-outline-variant/20">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setReleaseModalOpen(true)}
+                                                    className="w-full py-2 px-3 rounded-xl border border-error/30 text-error hover:bg-error/10 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                                    title="Stuck or unable to complete prototype? Release problem statement to unlock your slot."
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">flag</span>
+                                                    <span>Release / Forfeit Problem Statement</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -1774,13 +1932,18 @@ export default function StudentDashboard() {
                 </div>
             )}
 
-            {/* Add Teammate Modal (Point 5) */}
+            {/* Add Teammate Modal */}
             {teamModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-md">
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30">
                         <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
                             <div>
-                                <span className="text-[10px] font-mono uppercase font-bold text-primary tracking-widest">Student Team-Up</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-mono uppercase font-bold text-primary tracking-widest">Student Team-Up</span>
+                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
+                                        {teamMembers.length} / 5 Members
+                                    </span>
+                                </div>
                                 <h3 className="text-lg font-bold text-on-surface flex items-center gap-1.5">
                                     <span className="material-symbols-outlined text-primary">person_add</span>
                                     Add Interdisciplinary Teammate
@@ -1791,22 +1954,7 @@ export default function StudentDashboard() {
                             </button>
                         </div>
 
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            if (!newMemberName.trim()) return;
-                            const initials = newMemberName.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-                            const newM = {
-                                name: newMemberName.trim(),
-                                role: newMemberRole,
-                                apaar_id: newMemberApaar.trim() || `APAAR-JH-${Math.floor(1000 + Math.random() * 9000)}`,
-                                initials
-                            };
-                            setTeamMembers(prev => [...prev, newM]);
-                            showToast(`Teammate ${newMemberName} added to project team!`, "success");
-                            setNewMemberName("");
-                            setNewMemberApaar("");
-                            setTeamModalOpen(false);
-                        }} className="space-y-4 mt-4">
+                        <form onSubmit={handleAddTeamMember} className="space-y-4 mt-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Student Full Name</label>
                                 <input
@@ -1853,6 +2001,81 @@ export default function StudentDashboard() {
                                 </button>
                             </div>
                         </form>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Release / Forfeit Problem Statement Modal */}
+            {releaseModalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-md">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30 space-y-4">
+                        <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-error/10 text-error flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-lg">flag</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-on-surface">Release Problem Statement</h3>
+                                    <p className="text-[11px] text-on-surface-variant">Forfeit challenge &amp; unlock quota slot</p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setReleaseModalOpen(false)}
+                                className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-lg">close</span>
+                            </button>
+                        </div>
+
+                        <div className="bg-error/5 border border-error/20 rounded-2xl p-3.5 space-y-2 text-xs text-on-surface-variant">
+                            <p className="font-bold text-error flex items-center gap-1">
+                                <span className="material-symbols-outlined text-sm">warning</span>
+                                What happens when you release?
+                            </p>
+                            <ul className="list-disc list-inside space-y-1 text-[11px] leading-relaxed">
+                                <li>Your <strong>1-project capstone quota is unlocked</strong> so you can adopt another civic challenge immediately.</li>
+                                <li>The civic problem statement is returned to the public pool so other engineering teams can solve it.</li>
+                                <li>All team members are relieved from this mission control workspace.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-on-surface mb-1.5">
+                                Reason for Releasing (Optional Feedback)
+                            </label>
+                            <textarea
+                                rows={3}
+                                value={releaseReason}
+                                onChange={e => setReleaseReason(e.target.value)}
+                                placeholder="e.g. Lacks ultrasonic flow sensor hardware, team pivoted to AI data challenge..."
+                                className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-primary text-xs leading-relaxed"
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant/20">
+                            <button
+                                type="button"
+                                disabled={releasing}
+                                onClick={() => setReleaseModalOpen(false)}
+                                className="px-4 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container rounded-xl cursor-pointer"
+                            >
+                                Keep Working
+                            </button>
+                            <button
+                                type="button"
+                                disabled={releasing}
+                                onClick={handleReleaseProject}
+                                className="px-4 py-2.5 rounded-xl bg-error text-on-error text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                            >
+                                {releasing ? (
+                                    <span className="material-symbols-outlined text-sm animate-spin">refresh</span>
+                                ) : (
+                                    <span className="material-symbols-outlined text-sm">done</span>
+                                )}
+                                <span>Confirm Release</span>
+                            </button>
+                        </div>
                     </motion.div>
                 </div>
             )}

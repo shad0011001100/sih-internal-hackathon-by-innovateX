@@ -147,7 +147,9 @@ class TeamMember(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     team_id = Column(Integer, ForeignKey("teams.id"))
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    member_name = Column(String, nullable=True)
+    apaar_id = Column(String, nullable=True)
     role = Column(String, default="member")  # leader, member
     joined_at = Column(DateTime, default=datetime.datetime.utcnow)
 
