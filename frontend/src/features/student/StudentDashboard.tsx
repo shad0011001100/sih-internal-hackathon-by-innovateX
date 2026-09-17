@@ -2086,134 +2086,158 @@ export default function StudentDashboard() {
 
             {/* Student Academic Profile & Credentials Modal */}
             {profileModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-md">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between pb-4 border-b border-outline-variant/20">
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-scrim/60 backdrop-blur-sm">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        exit={{ opacity: 0, y: 30 }} 
+                        className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-outline-variant/30 flex flex-col max-h-[85vh] sm:max-h-[80vh] overflow-hidden"
+                    >
+                        {/* Mobile Handle */}
+                        <div className="pt-2.5 pb-1 sm:hidden flex justify-center shrink-0">
+                            <div className="w-10 h-1 bg-outline-variant/40 rounded-full" />
+                        </div>
+
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-5 py-3 border-b border-outline-variant/20 shrink-0">
                             <div>
-                                <span className="text-[10px] font-mono uppercase font-bold text-primary tracking-widest">Academic Bank of Credits (ABC)</span>
-                                <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-primary">badge</span>
+                                <span className="text-[9px] font-mono uppercase font-bold text-primary tracking-widest block">Academic Bank of Credits (ABC)</span>
+                                <h3 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-primary text-xl">badge</span>
                                     Student Academic Credentials
                                 </h3>
                             </div>
-                            <button type="button" onClick={() => setProfileModalOpen(false)} className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface">
+                            <button 
+                                type="button" 
+                                onClick={() => setProfileModalOpen(false)} 
+                                className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
+                                aria-label="Close credentials"
+                            >
                                 <span className="material-symbols-outlined text-lg">close</span>
                             </button>
                         </div>
 
-                        {/* Digital Student ID Card */}
-                        <div className="mt-4 p-4 rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-md relative overflow-hidden">
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <span className="text-[10px] font-mono uppercase opacity-80 tracking-wide">Government of India · APAAR Digital ID</span>
-                                    <p className="text-base font-extrabold mt-0.5">{userData?.name || "Aravind Kumar"}</p>
-                                    <p className="text-xs opacity-90">{userData?.institution || "BIT Mesra (Birla Institute of Technology)"}</p>
+                        {/* Scrollable Content Body */}
+                        <div className="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1 overscroll-contain">
+                            {/* Digital Student ID Card - Compact */}
+                            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-800 to-primary text-white shadow-sm relative overflow-hidden">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div>
+                                        <span className="text-[9px] font-mono uppercase opacity-85 tracking-wider block">Government of India · APAAR Digital ID</span>
+                                        <p className="text-sm sm:text-base font-extrabold mt-0.5">{userData?.name || "Aravind Kumar"}</p>
+                                        <p className="text-[11px] opacity-90 leading-tight">{userData?.institution || "BIT Mesra (Birla Institute of Technology)"}</p>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+                                        <span className="material-symbols-outlined text-lg">qr_code_2</span>
+                                    </div>
                                 </div>
-                                <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-xl">qr_code_2</span>
+                                <div className="mt-2.5 pt-2 border-t border-white/20 flex items-center justify-between text-[11px] font-mono">
+                                    <div>
+                                        <span className="text-[8.5px] uppercase opacity-75 block">APAAR Number</span>
+                                        <span className="font-bold tracking-wider">{userData?.apaar_id || "APAAR-12345"}</span>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-[8.5px] uppercase opacity-75 block">Status</span>
+                                        <span className="font-bold text-emerald-200 flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+                                            Verified
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between text-xs font-mono">
-                                <div>
-                                    <span className="text-[9px] uppercase opacity-75 block">APAAR Number</span>
-                                    <span className="font-bold tracking-wider">{userData?.apaar_id || "APAAR-12345"}</span>
+
+                            {/* Skills Summary - Compact Pills */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant font-mono">Verified Skills ({skills.length})</h4>
+                                    <span className="text-[10px] text-primary font-medium">NEP 2020 Aligned</span>
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-[9px] uppercase opacity-75 block">Status</span>
-                                    <span className="font-bold text-emerald-200 flex items-center gap-1">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                                        Verified
+                                <div className="flex flex-wrap gap-1">
+                                    {skills.length === 0 ? (
+                                        <span className="text-xs text-on-surface-variant">No skills recorded yet.</span>
+                                    ) : (
+                                        skills.map((s, idx) => (
+                                            <span key={idx} className="px-2 py-0.5 bg-surface-container-high rounded-md text-[11px] font-medium text-on-surface border border-outline-variant/30 flex items-center gap-1">
+                                                <span className="material-symbols-outlined text-[12px] text-primary">check_circle</span>
+                                                {s.skill_name}
+                                            </span>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Professional Profiles: LinkedIn & GitHub - Compact */}
+                            <div className="pt-2.5 border-t border-outline-variant/20 space-y-2.5">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-on-surface font-mono flex items-center gap-1">
+                                        <span className="material-symbols-outlined text-xs text-primary">public</span>
+                                        Public Recruiter Profiles
+                                    </h4>
+                                    <span className="text-[9.5px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-bold">
+                                        Visible to Industry
                                     </span>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Skills Summary */}
-                        <div className="mt-4 space-y-2">
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-mono">Verified Skills ({skills.length})</h4>
-                            <div className="flex flex-wrap gap-1.5">
-                                {skills.length === 0 ? (
-                                    <span className="text-xs text-on-surface-variant">No skills recorded yet.</span>
-                                ) : (
-                                    skills.map((s, idx) => (
-                                        <span key={idx} className="px-2.5 py-1 bg-surface-container-high rounded-lg text-xs font-medium text-on-surface border border-outline-variant/30 flex items-center gap-1">
-                                            <span className="material-symbols-outlined text-[13px] text-primary">check_circle</span>
-                                            {s.skill_name}
-                                        </span>
-                                    ))
-                                )}
-                            </div>
-                        </div>
+                                <div className="space-y-2">
+                                    <div>
+                                        <label className="text-[10.5px] font-semibold text-on-surface-variant flex items-center justify-between mb-0.5">
+                                            <span>LinkedIn Profile URL</span>
+                                            {linkedinUrl && (
+                                                <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-[10px] flex items-center gap-0.5 font-medium">
+                                                    <span>View Profile</span>
+                                                    <span className="material-symbols-outlined text-[10px]">open_in_new</span>
+                                                </a>
+                                            )}
+                                        </label>
+                                        <input
+                                            type="url"
+                                            value={linkedinUrl}
+                                            onChange={(e) => setLinkedinUrl(e.target.value)}
+                                            placeholder="https://linkedin.com/in/your-profile"
+                                            className="w-full text-xs px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:ring-2 focus:ring-primary outline-none text-on-surface"
+                                        />
+                                    </div>
 
-                        {/* Professional Profiles: LinkedIn & GitHub */}
-                        <div className="mt-4 pt-3 border-t border-outline-variant/20 space-y-3">
-                            <div className="flex items-center justify-between">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface font-mono flex items-center gap-1.5">
-                                    <span className="material-symbols-outlined text-sm text-primary">public</span>
-                                    Public Recruiter &amp; Partner Profiles
-                                </h4>
-                                <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-bold">
-                                    Visible to Officials &amp; Industry
-                                </span>
-                            </div>
-
-                            <div className="space-y-2">
-                                <div>
-                                    <label className="text-[11px] font-semibold text-on-surface-variant flex items-center justify-between mb-1">
-                                        <span>LinkedIn Profile URL</span>
-                                        {linkedinUrl && (
-                                            <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-[10px] flex items-center gap-0.5">
-                                                <span>View Profile</span>
-                                                <span className="material-symbols-outlined text-[10px]">open_in_new</span>
-                                            </a>
-                                        )}
-                                    </label>
-                                    <input
-                                        type="url"
-                                        value={linkedinUrl}
-                                        onChange={(e) => setLinkedinUrl(e.target.value)}
-                                        placeholder="https://linkedin.com/in/your-profile"
-                                        className="w-full text-xs p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:ring-2 focus:ring-primary outline-none"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="text-[11px] font-semibold text-on-surface-variant flex items-center justify-between mb-1">
-                                        <span>GitHub / Project Portfolio URL</span>
-                                        {githubUrl && (
-                                            <a href={githubUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-[10px] flex items-center gap-0.5">
-                                                <span>View Repos</span>
-                                                <span className="material-symbols-outlined text-[10px]">open_in_new</span>
-                                            </a>
-                                        )}
-                                    </label>
-                                    <input
-                                        type="url"
-                                        value={githubUrl}
-                                        onChange={(e) => setGithubUrl(e.target.value)}
-                                        placeholder="https://github.com/your-username"
-                                        className="w-full text-xs p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:ring-2 focus:ring-primary outline-none"
-                                    />
+                                    <div>
+                                        <label className="text-[10.5px] font-semibold text-on-surface-variant flex items-center justify-between mb-0.5">
+                                            <span>GitHub / Project Portfolio URL</span>
+                                            {githubUrl && (
+                                                <a href={githubUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-[10px] flex items-center gap-0.5 font-medium">
+                                                    <span>View Repos</span>
+                                                    <span className="material-symbols-outlined text-[10px]">open_in_new</span>
+                                                </a>
+                                            )}
+                                        </label>
+                                        <input
+                                            type="url"
+                                            value={githubUrl}
+                                            onChange={(e) => setGithubUrl(e.target.value)}
+                                            placeholder="https://github.com/your-username"
+                                            className="w-full text-xs px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:ring-2 focus:ring-primary outline-none text-on-surface"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-5 flex items-center justify-between">
+                        {/* Sticky Action Footer - ALWAYS VISIBLE */}
+                        <div className="p-3 sm:p-4 bg-surface-container-lowest border-t border-outline-variant/20 shrink-0 flex items-center justify-between gap-2.5 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] z-10">
                             <button
                                 type="button"
                                 onClick={handleSaveSocials}
-                                className="px-4 py-2 rounded-xl bg-secondary text-white text-xs font-bold hover:bg-secondary/90 transition-all flex items-center gap-1 cursor-pointer"
+                                className="flex-1 py-2.5 px-3 rounded-xl bg-secondary text-white text-xs font-bold hover:bg-secondary/90 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
                             >
                                 <span className="material-symbols-outlined text-sm">save</span>
-                                <span>Save Profile URLs</span>
+                                <span>Save URLs</span>
                             </button>
 
                             <button 
                                 type="button" 
                                 onClick={() => { handleSaveSocials(); setProfileModalOpen(false); }} 
-                                className="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold shadow-sm cursor-pointer"
+                                className="flex-1 py-2.5 px-4 rounded-xl bg-primary hover:bg-primary/90 text-on-primary text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95"
                             >
-                                Done
+                                <span>Done</span>
+                                <span className="material-symbols-outlined text-sm">check</span>
                             </button>
                         </div>
                     </motion.div>
