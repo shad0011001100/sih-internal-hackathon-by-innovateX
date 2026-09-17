@@ -53,6 +53,40 @@ def get_dashboard(user: models.User = Depends(get_industry_user), db: Session = 
     profile = user.industry_profile
     offers = db.query(models.FundingOffer).filter(models.FundingOffer.industry_user_id == user.id).all()
     
+    # Pre-collect IDs to batch query dependencies and eliminate N+1 latency
+    p_ids = [o.project_id for o in offers if o.project_id]
+    r_ids = [o.report_id for o in offers if o.report_id]
+
+    projects_map = {}
+    if p_ids or r_ids:
+        from sqlalchemy import or_
+        conds = []
+        if p_ids:
+            conds.append(models.Project.id.in_(p_ids))
+        if r_ids:
+            conds.append(models.Project.report_id.in_(r_ids))
+        projects_batch = db.query(models.Project).filter(or_(*conds)).all()
+        for p in projects_batch:
+            projects_map[p.id] = p
+            if p.report_id:
+                projects_map[f"rep_{p.report_id}"] = p
+
+    reports_map = {}
+    if r_ids:
+        reports_batch = db.query(models.Report).filter(models.Report.id.in_(r_ids)).all()
+        reports_map = {r.id: r for r in reports_batch}
+
+    # Batch fetch feedback for all relevant report IDs
+    all_rep_ids = set(r_ids)
+    for p in projects_map.values():
+        if hasattr(p, 'report_id') and p.report_id:
+            all_rep_ids.add(p.report_id)
+            
+    feedbacks_map = {}
+    if all_rep_ids:
+        fb_batch = db.query(models.Feedback).filter(models.Feedback.report_id.in_(list(all_rep_ids))).all()
+        feedbacks_map = {f.report_id: f for f in fb_batch}
+
     offers_list = []
     funded_projects = []
     for offer in offers:
@@ -61,13 +95,12 @@ def get_dashboard(user: models.User = Depends(get_industry_user), db: Session = 
         report_db = None
 
         if offer.project_id:
-            project_db = db.query(models.Project).filter(models.Project.id == offer.project_id).first()
+            project_db = projects_map.get(offer.project_id)
             if project_db:
                 report_db = project_db.report
         elif offer.report_id:
-            # Check if there is an active project associated with this report
-            project_db = db.query(models.Project).filter(models.Project.report_id == offer.report_id).first()
-            report_db = db.query(models.Report).filter(models.Report.id == offer.report_id).first()
+            project_db = projects_map.get(f"rep_{offer.report_id}")
+            report_db = project_db.report if project_db else reports_map.get(offer.report_id)
 
         if project_db:
             project_info = {"id": project_db.id, "title": project_db.title, "status": project_db.status}
@@ -89,8 +122,8 @@ def get_dashboard(user: models.User = Depends(get_industry_user), db: Session = 
             if report_db and report_db.assigned_university:
                 univ_name = report_db.assigned_university.name or univ_name
 
-            # Resolve citizen feedback
-            fb = db.query(models.Feedback).filter(models.Feedback.report_id == project_db.report_id).first() if project_db.report_id else None
+            # Resolve citizen feedback from batch map
+            fb = feedbacks_map.get(project_db.report_id) if project_db.report_id else None
             rating = fb.rating if fb else 4.8
             comment = fb.comment if fb else "The deployed water sensor unit has stabilized supply monitoring for 450+ families in our colony. Timely and effective!"
 

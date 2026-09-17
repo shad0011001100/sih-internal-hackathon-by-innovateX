@@ -111,9 +111,42 @@ def verify_image_authenticity(base64_data: str) -> dict:
             "reason": f"AI vision verification fallback: {str(e)}"
         }
 
+import functools
+
+# Pre-compiled regular expressions for O(1) matching efficiency without runtime re-compilation
+MANUAL_LABOR_REGEX = re.compile(
+    r'\b('
+    r'potholes?|patch\s+road|tar\s+road|asphalt|fill\s+road|ditch\s+digging|heavy\s+construction|'
+    r'masonry|brick\s+laying|road\s+digging|gutter\s+desilt|sewer\s+desilt|garbage\s+dump|'
+    r'bulldoze|excavat\w+|fix\s+pothole|broken\s+pipe\s+digging|'
+    r'gaddha|gaddhe|gadha|gadhha|khadda|khadde|kachra|koora|kuda|safai|naali|nali|'
+    r'drain\s+saaf|sadak\s+khod|sadak\s+toot|mitti|malba|marammat|jhadu|kachre\s+ka\s+dher|'
+    r'nala\s+jam|manhole\s+dhakkan|kachre\s+ki\s+safai|sadak\s+banwao'
+    r')\b',
+    re.IGNORECASE
+)
+
+TECH_REGEX = re.compile(
+    r'\b('
+    r'ai|iot|sensors?|smart|algorithm|machine\s+learning|deep\s+learning|gis|mapping|'
+    r'solar|purif\w+|filter\w*|telemedicine|software|dashboard|computer\s+vision|'
+    r'water\s+testing|predictive|app|portal|cctv|camera|automation|automated|'
+    r'embedded|drone|scada|telemetry|microcontroller|arduino|esp32|raspberry\s+pi'
+    r')\b',
+    re.IGNORECASE
+)
+
+SPAM_INDICATORS_TUPLE = (
+    "free crypto", "buy followers", "casino", "viagra", "cheap loans", 
+    "earn money fast", "telegram bot", "whatsapp spam", "asdfgh", "test test test",
+    "paisa kamao", "ghar baithe kamao", "lottery", "rummy", "online game", "call girl"
+)
+
+@functools.lru_cache(maxsize=1024)
 def is_spam_content(text: str) -> tuple[bool, float, str]:
     """
     Evaluates text for spam, gibberish, abusive, or non-civic input (English + Hindi/Hinglish).
+    Memoized with LRU cache to eliminate duplicate regex passes on identical complaints.
     Returns (is_spam, spam_score, reason)
     """
     clean_text = text.lower().strip()
@@ -124,49 +157,23 @@ def is_spam_content(text: str) -> tuple[bool, float, str]:
     if len(words) == 1 and len(words[0]) > 14 and not any(v in words[0] for v in "aeiou"):
         return True, 0.98, "Gibberish or random character sequence detected."
         
-    spam_indicators = [
-        "free crypto", "buy followers", "casino", "viagra", "cheap loans", 
-        "earn money fast", "telegram bot", "whatsapp spam", "asdfgh", "test test test",
-        "paisa kamao", "ghar baithe kamao", "lottery", "rummy", "online game", "call girl"
-    ]
-    for sp in spam_indicators:
+    for sp in SPAM_INDICATORS_TUPLE:
         if sp in clean_text:
             return True, 0.99, f"Spam pattern detected: '{sp}'."
             
     return False, 0.0, "Content authentic."
 
+@functools.lru_cache(maxsize=1024)
 def evaluate_student_suitability(description: str, category: str) -> tuple[bool, str]:
     """
     Checks if a civic problem is suitable for University Students (IoT, AI, Software, GIS, Water purification capstones)
     versus routine physical manual municipal labor (pothole filling, asphalt road repair, manual ditch digging)
-    that students cannot do. Supports English and Hindi/Hinglish vocabulary.
+    that students cannot do. Optimized with pre-compiled regex and LRU cache.
     """
     desc_lower = description.lower()
     
-    # Manual physical municipal labor keywords (English + Hindi/Hinglish)
-    manual_labor_patterns = (
-        r'\b('
-        r'potholes?|patch\s+road|tar\s+road|asphalt|fill\s+road|ditch\s+digging|heavy\s+construction|'
-        r'masonry|brick\s+laying|road\s+digging|gutter\s+desilt|sewer\s+desilt|garbage\s+dump|'
-        r'bulldoze|excavat\w+|fix\s+pothole|broken\s+pipe\s+digging|'
-        r'gaddha|gaddhe|gadha|gadhha|khadda|khadde|kachra|koora|kuda|safai|naali|nali|'
-        r'drain\s+saaf|sadak\s+khod|sadak\s+toot|mitti|malba|marammat|jhadu|kachre\s+ka\s+dher|'
-        r'nala\s+jam|manhole\s+dhakkan|kachre\s+ki\s+safai|sadak\s+banwao'
-        r')\b'
-    )
-    
-    # Technical research / sensor / monitoring patterns
-    tech_patterns = (
-        r'\b('
-        r'ai|iot|sensors?|smart|algorithm|machine\s+learning|deep\s+learning|gis|mapping|'
-        r'solar|purif\w+|filter\w*|telemedicine|software|dashboard|computer\s+vision|'
-        r'water\s+testing|predictive|app|portal|cctv|camera|automation|automated|'
-        r'embedded|drone|scada|telemetry|microcontroller|arduino|esp32|raspberry\s+pi'
-        r')\b'
-    )
-    
-    labor_match = re.search(manual_labor_patterns, desc_lower)
-    tech_match = re.search(tech_patterns, desc_lower)
+    labor_match = MANUAL_LABOR_REGEX.search(desc_lower)
+    tech_match = TECH_REGEX.search(desc_lower)
     
     if labor_match and not tech_match:
         matched_kw = labor_match.group(0)

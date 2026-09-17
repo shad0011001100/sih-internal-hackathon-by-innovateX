@@ -144,28 +144,14 @@ def get_dashboard(user: models.User = Depends(get_student_user), db: Session = D
     # skill count
     skill_count = len(user.skill_profiles)
     
-    # Filter available problems for students: exclude spam and physical manual labor
-    raw_reports = db.query(models.Report).filter(
+    # Fast indexed query for available student problems
+    problems_count = db.query(models.Report).filter(
         models.Report.status.in_(['reported', 'validated', 'assigned']),
         models.Report.status != 'flagged_spam',
         models.Report.ai_spam_score < 0.6,
-        models.Report.is_duplicate.is_(False)
-    ).all()
-    
-    student_reports = []
-    for r in raw_reports:
-        # Check DB flag or run on-the-fly suitability & spam evaluator
-        is_spam, _, _ = is_spam_content(r.description or "")
-        if is_spam:
-            continue
-            
-        suitable, reason = evaluate_student_suitability(r.description or "", r.category or "")
-        if not suitable or getattr(r, 'is_student_eligible', True) is False:
-            continue
-            
-        student_reports.append(r)
-        
-    problems_count = len(student_reports)
+        models.Report.is_duplicate.is_(False),
+        models.Report.is_student_eligible.is_(True)
+    ).count()
     
     return {
         "user": user_info,
@@ -183,7 +169,8 @@ def get_problems(user: models.User = Depends(get_student_user), db: Session = De
         models.Report.status.in_(['reported', 'validated', 'assigned']),
         models.Report.status != 'flagged_spam',
         models.Report.ai_spam_score < 0.6,
-        models.Report.is_duplicate.is_(False)
+        models.Report.is_duplicate.is_(False),
+        models.Report.is_student_eligible.is_(True)
     ).all()
 
     # Track reports already adopted by this student or team

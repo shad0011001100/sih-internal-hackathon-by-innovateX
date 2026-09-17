@@ -16,14 +16,19 @@ def get_university_user(user: models.User = Depends(get_current_user)):
 def get_dashboard(user: models.User = Depends(get_university_user), db: Session = Depends(get_db)):
     uni_profile = user.university_profile
     assigned_count = 0
-    if uni_profile:
-        assigned_count = db.query(models.Report).filter(models.Report.assigned_university_id == uni_profile.id).count()
-        
     projects_in_progress = []
     if uni_profile:
-        reports = db.query(models.Report).filter(models.Report.assigned_university_id == uni_profile.id).all()
-        report_ids = [r.id for r in reports]
-        projects_in_progress = db.query(models.Project).filter(models.Project.report_id.in_(report_ids)).all()
+        # Single query fetching report IDs
+        report_ids = [
+            r[0] for r in db.query(models.Report.id).filter(
+                models.Report.assigned_university_id == uni_profile.id
+            ).all()
+        ]
+        assigned_count = len(report_ids)
+        if report_ids:
+            projects_in_progress = db.query(models.Project).filter(
+                models.Project.report_id.in_(report_ids)
+            ).all()
         
     departments = []
     if uni_profile and uni_profile.department:
@@ -45,19 +50,41 @@ def get_problems(user: models.User = Depends(get_university_user), db: Session =
 @router.get("/ranking")
 def get_ranking(user: models.User = Depends(get_university_user), db: Session = Depends(get_db)):
     universities = db.query(models.University).order_by(models.University.ranking_score.desc()).all()
+    if not universities:
+        return []
+
+    # Batch query reports and completed projects to eliminate N+1 database queries
+    uni_ids = [u.id for u in universities]
+    reports = db.query(models.Report.id, models.Report.assigned_university_id).filter(
+        models.Report.assigned_university_id.in_(uni_ids)
+    ).all()
+
+    # Map reports to university IDs
+    uni_reports_map = {}
+    report_ids = []
+    for r_id, u_id in reports:
+        uni_reports_map.setdefault(u_id, []).append(r_id)
+        report_ids.append(r_id)
+
+    completed_report_ids = set()
+    if report_ids:
+        completed_projects = db.query(models.Project.report_id).filter(
+            models.Project.report_id.in_(report_ids),
+            models.Project.status == 'completed'
+        ).all()
+        completed_report_ids = {p.report_id for p in completed_projects}
+
     results = []
     for uni in universities:
-        assigned_count = db.query(models.Report).filter(models.Report.assigned_university_id == uni.id).count()
-        
-        reports = db.query(models.Report).filter(models.Report.assigned_university_id == uni.id).all()
-        report_ids = [r.id for r in reports]
-        completed_projects = db.query(models.Project).filter(models.Project.report_id.in_(report_ids), models.Project.status == 'completed').count()
+        assigned_report_ids = uni_reports_map.get(uni.id, [])
+        assigned_count = len(assigned_report_ids)
+        completed_count = sum(1 for r_id in assigned_report_ids if r_id in completed_report_ids)
         
         results.append({
             "name": uni.name,
             "department": uni.department,
             "ranking_score": uni.ranking_score,
-            "project_count": completed_projects,
+            "project_count": completed_count,
             "report_count": assigned_count
         })
     return results

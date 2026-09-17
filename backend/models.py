@@ -40,7 +40,7 @@ class Report(Base):
     __tablename__ = "reports"
 
     id = Column(Integer, primary_key=True, index=True)
-    citizen_id = Column(Integer, ForeignKey("users.id"))
+    citizen_id = Column(Integer, ForeignKey("users.id"), index=True)
     category = Column(String, index=True)
     description = Column(String)
     gps_lat = Column(Float)
@@ -51,7 +51,7 @@ class Report(Base):
 
     # Extended 6-step status pipeline:
     # reported -> validated -> assigned -> in_progress -> under_review -> implemented
-    status = Column(String, default="reported")
+    status = Column(String, default="reported", index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     # AI Intelligent Routing fields (Step 2)
@@ -62,11 +62,11 @@ class Report(Base):
     potential_industry = Column(Text, nullable=True)            # JSON string
     is_duplicate = Column(Boolean, default=False)
     duplicate_reason = Column(String, nullable=True)
-    is_student_eligible = Column(Boolean, default=True)
+    is_student_eligible = Column(Boolean, default=True, index=True)
     student_suitability_reason = Column(Text, nullable=True)
 
     # Assignment fields (Step 3)
-    assigned_university_id = Column(Integer, ForeignKey("universities.id"), nullable=True)
+    assigned_university_id = Column(Integer, ForeignKey("universities.id"), nullable=True, index=True)
     assigned_department = Column(String, nullable=True)
 
     citizen = relationship("User", back_populates="reports")
@@ -112,11 +112,11 @@ class Project(Base):
     __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True, index=True)
-    report_id = Column(Integer, ForeignKey("reports.id"))
+    report_id = Column(Integer, ForeignKey("reports.id"), index=True)
     title = Column(String)
     description = Column(Text, nullable=True)
-    status = Column(String, default="draft")  # draft, submitted, under_review, accepted, completed
-    team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)
+    status = Column(String, default="draft", index=True)  # draft, submitted, under_review, accepted, completed
+    team_id = Column(Integer, ForeignKey("teams.id"), nullable=True, index=True)
     mentor_name = Column(String, nullable=True)
     deadline = Column(DateTime, nullable=True)
     progress_pct = Column(Float, default=0.0)
@@ -135,7 +135,7 @@ class Team(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    report_id = Column(Integer, ForeignKey("reports.id"), nullable=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     project = relationship("Project", back_populates="team", uselist=False)
@@ -146,8 +146,8 @@ class TeamMember(Base):
     __tablename__ = "team_members"
 
     id = Column(Integer, primary_key=True, index=True)
-    team_id = Column(Integer, ForeignKey("teams.id"))
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    team_id = Column(Integer, ForeignKey("teams.id"), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     member_name = Column(String, nullable=True)
     apaar_id = Column(String, nullable=True)
     role = Column(String, default="member")  # leader, member
@@ -175,13 +175,13 @@ class FundingOffer(Base):
     __tablename__ = "funding_offers"
 
     id = Column(Integer, primary_key=True, index=True)
-    industry_user_id = Column(Integer, ForeignKey("users.id"))
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
-    report_id = Column(Integer, ForeignKey("reports.id"), nullable=True)
+    industry_user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=True, index=True)
     offer_type = Column(String, default="funding")  # funding, mentorship, technology, prototyping
     amount = Column(Float, nullable=True)
     description = Column(Text, nullable=True)
-    status = Column(String, default="pending")  # pending, accepted, active, completed
+    status = Column(String, default="pending", index=True)  # pending, accepted, active, completed
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 

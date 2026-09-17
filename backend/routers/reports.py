@@ -187,16 +187,22 @@ def get_problem_intelligence(db: Session = Depends(get_db)):
     """
     District & Panchayat Problem Intelligence endpoint.
     Aggregates priority scoring, severity, district-level breakdown, and resolution rate across Jharkhand.
+    Optimized with lightweight scalar column projection to avoid loading heavy image blobs into RAM.
     """
-    all_reports = db.query(models.Report).all()
-    total = len(all_reports)
+    report_rows = db.query(
+        models.Report.priority_score,
+        models.Report.category,
+        models.Report.status,
+        models.Report.is_duplicate
+    ).all()
+    total = len(report_rows)
 
     priority_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
     category_counts = {}
     status_counts = {"reported": 0, "validated": 0, "assigned": 0, "in_progress": 0, "under_review": 0, "implemented": 0, "resolved": 0}
     duplicate_count = 0
 
-    for r in all_reports:
+    for r in report_rows:
         # Priority
         score = r.priority_score or 0.0
         if score >= 0.8:
