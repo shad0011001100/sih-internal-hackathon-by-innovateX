@@ -212,9 +212,9 @@ export default function ReportScreen() {
 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1b1b1e] tracking-tight">
         File a Civic Grievance
       </h1>
-<p className="text-sm sm:text-base text-[#424942] mt-1.5 max-w-2xl">
-        Empowering rural &amp; urban communities in Jharkhand. Submit photo evidence and written grievance with automatic geotagging.
-      </p>
+<p className="text-xs sm:text-sm text-[#424942] mt-1">
+    Submit photo evidence with automatic GPS verification for fast municipal resolution.
+</p>
 {error && (
     <div className="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
         <span className="material-symbols-outlined text-base">error</span>
@@ -389,9 +389,9 @@ export default function ReportScreen() {
 <span className="material-symbols-outlined text-[20px] text-[#3e644a]">send_and_archive</span>
 <h2 className="text-base font-bold text-[#1b1b1e]">Ready to Submit?</h2>
 </div>
-<p className="text-xs text-[#424942] mb-4 leading-relaxed">
-            Your grievance will immediately generate an official tracking token sent via SMS to your mobile and dispatch to local ward representatives.
-          </p>
+<p className="text-xs text-[#424942] mb-4">
+    Generates an official SMS tracking token and routes directly to local ward teams.
+</p>
 <button 
     onClick={onSubmit} 
     disabled={loading || submitting} 
@@ -422,8 +422,8 @@ export default function ReportScreen() {
     <span className="material-symbols-outlined text-[16px]">psychology</span>
     AI Automated Triage
 </span>
-<p className="text-xs text-[#424942] leading-relaxed">
-    Upon submission, SocioSolve's AI evaluates your evidence, calculates severity, and automatically routes the ticket to the designated municipal zonal engineer or verified student capstone team.
+<p className="text-xs text-[#424942] leading-normal">
+    AI automatically evaluates severity and dispatches tickets to engineers and student solvers.
 </p>
 <div className="mt-3 bg-[#c2edcb]/30 p-2.5 rounded-xl border border-[#3e644a]/20 text-[11px] text-[#294e36] flex items-center gap-2">
     <span className="material-symbols-outlined text-base text-[#3e644a]">verified</span>

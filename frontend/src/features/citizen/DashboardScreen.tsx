@@ -23,6 +23,90 @@ export default function DashboardScreen() {
     const [showStudentSolversModal, setShowStudentSolversModal] = useState(false);
     const [showHelplineModal, setShowHelplineModal] = useState(false);
     const [showAiScoreInfoModal, setShowAiScoreInfoModal] = useState(false);
+    const [activeStory, setActiveStory] = useState<any | null>(null);
+
+    const CIVIC_STORIES = [
+        {
+            id: "fixed_today",
+            label: lang === "HI" ? "आज ठीक हुआ" : "Fixed Today",
+            sublabel: "Harmu Bypass",
+            icon: "verified",
+            gradient: "from-emerald-500 to-teal-600",
+            badge: "RESOLVED IN 48H",
+            badgeColor: "bg-emerald-100 text-emerald-800",
+            title: "Harmu Bypass Pothole Repaved",
+            description: "Severe crater near Harmu Chowk resurfaced with high-durability asphalt in 48 hours.",
+            location: "Harmu Bypass, Ward 4",
+            solvers: "Ranchi Municipal Corp + BIT Mesra Team",
+            image: "/assets/civic/loop_impact.png",
+            upvotes: 412,
+            time: "Today, 11:30 AM"
+        },
+        {
+            id: "clean_water",
+            label: lang === "HI" ? "साफ़ पानी" : "Clean Water",
+            sublabel: "Doranda Line",
+            icon: "water_drop",
+            gradient: "from-cyan-500 to-blue-600",
+            badge: "PRESSURE NORMAL",
+            badgeColor: "bg-cyan-100 text-cyan-800",
+            title: "Doranda Water Pipeline Repaired",
+            description: "Contaminated line flushed and reinforced with digital pressure telemetry.",
+            location: "Doranda Market, Ward 14",
+            solvers: "Drinking Water & Sanitation Dept",
+            image: "/assets/civic/loop_solve.png",
+            upvotes: 285,
+            time: "Yesterday"
+        },
+        {
+            id: "smart_grid",
+            label: lang === "HI" ? "स्मार्ट ग्रिड" : "Smart Grid",
+            sublabel: "Kokar 2km",
+            icon: "bolt",
+            gradient: "from-amber-500 to-orange-600",
+            badge: "ACTIVE PILOT",
+            badgeColor: "bg-amber-100 text-amber-800",
+            title: "Kokar Solar Streetlights Live",
+            description: "Automated solar-battery LED fixtures installed along 2km pedestrian highway stretch.",
+            location: "Kokar Industrial Stretch, Ward 11",
+            solvers: "IIT Dhanbad Clean Energy Lab",
+            image: "/assets/civic/loop_triage.png",
+            upvotes: 198,
+            time: "2 days ago"
+        },
+        {
+            id: "bit_solvers",
+            label: lang === "HI" ? "छात्र टीम" : "BIT Solvers",
+            sublabel: "Hydro Filter",
+            icon: "school",
+            gradient: "from-purple-500 to-indigo-600",
+            badge: "CAMPUS INNOVATION",
+            badgeColor: "bg-purple-100 text-purple-800",
+            title: "Solar Hydro-Purifier Rollout",
+            description: "Low-cost community water filtration unit deployed for Morabadi residential area.",
+            location: "Morabadi Oxygen Park, Ward 1",
+            solvers: "BIT Mesra Civil & Environmental Dept",
+            image: "/assets/civic/loop_solve.png",
+            upvotes: 530,
+            time: "3 days ago"
+        },
+        {
+            id: "trending_issue",
+            label: lang === "HI" ? "ट्रेंडिंग" : "Trending",
+            sublabel: "Bariatu",
+            icon: "local_fire_department",
+            gradient: "from-rose-500 to-red-600",
+            badge: "620 ENDORSEMENTS",
+            badgeColor: "bg-rose-100 text-rose-800",
+            title: "Bariatu Drainage Vector Spray",
+            description: "Rapid municipal larvicide drone disinfection initiated after community alerts.",
+            location: "Bariatu Medical Quarters, Ward 3",
+            solvers: "RMC Vector Control Cell",
+            image: "/assets/civic/loop_report.png",
+            upvotes: 620,
+            time: "5 hours ago"
+        }
+    ];
 
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
@@ -203,6 +287,44 @@ export default function DashboardScreen() {
         setUpvoted(prev => ({ ...prev, [reportId]: true }));
         setUpvotes(prev => ({ ...prev, [reportId]: (prev[reportId] || 0) + 1 }));
         showToast("Upvote recorded! Priority score boosted for municipal dispatch.", "success");
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setActiveStory(null);
+                setSelectedReport(null);
+                setShowStudentSolversModal(false);
+                setShowHelplineModal(false);
+                setShowAiScoreInfoModal(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
+    const handleShareReport = (report: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const loc = getReportLocationName(report);
+        const title = report.title || report.challenge_summary || report.category;
+        const text = `🚨 Civic Issue in ${loc}: ${title}. Track on SocioSolve: ${window.location.origin}`;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text);
+            showToast("Report summary copied to clipboard! Ready to share.", "success");
+        } else {
+            showToast("Issue ready to share with your neighborhood.", "info");
+        }
+    };
+
+    const handleShareStory = (story: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const text = `🎉 Solved in Ranchi: ${story.title} (${story.location}). Track real civic outcomes: ${window.location.origin}`;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text);
+            showToast("Milestone copied to clipboard! Share on WhatsApp.", "success");
+        } else {
+            showToast("Civic milestone ready to share.", "info");
+        }
     };
 
     const baseReports = activeTab === "My Reports" ? myReports : reports;
@@ -595,15 +717,63 @@ export default function DashboardScreen() {
 </aside>
 {/*  CENTER FEED (col-span-6 on Desktop): Search, Filters, Issue Cards  */}
 <main className="lg:col-span-6 space-y-4 pb-20 lg:pb-8">
+{/* 🌟 CIVIC STORIES ROW (Instagram-Style Micro-Stories) */}
+<div className="bg-surface-container-lowest rounded-3xl p-3.5 sm:p-4 whisper-border ambient-shadow">
+    <div className="flex items-center justify-between mb-2.5 px-1">
+        <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-xs font-bold text-on-surface tracking-wide uppercase">
+                {lang === 'HI' ? 'नागरिक हाइलाइट्स' : 'Civic Highlights'}
+            </span>
+        </div>
+        <span className="text-[11px] text-on-surface-variant font-medium">
+            {lang === 'HI' ? 'देखने के लिए टैप करें' : 'Tap to view'}
+        </span>
+    </div>
+
+    {/* Horizontal Scroll Stories List */}
+    <div className="flex items-center gap-3.5 overflow-x-auto no-scrollbar py-1 px-1">
+        {CIVIC_STORIES.map((story) => (
+            <button
+                key={story.id}
+                type="button"
+                onClick={() => setActiveStory(story)}
+                className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group cursor-pointer"
+            >
+                <div className={`p-0.5 rounded-full bg-gradient-to-tr ${story.gradient} shadow-xs group-hover:scale-105 group-active:scale-95 transition-all duration-200`}>
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-surface-container-lowest p-0.5 flex items-center justify-center overflow-hidden">
+                        <div className={`w-full h-full rounded-full bg-gradient-to-br ${story.gradient} flex items-center justify-center text-white shadow-inner`}>
+                            <span className="material-symbols-outlined text-xl sm:text-2xl drop-shadow-xs">
+                                {story.icon}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div className="text-center">
+                    <span className="block text-[11px] font-bold text-on-surface group-hover:text-primary transition-colors leading-tight whitespace-nowrap">
+                        {story.label}
+                    </span>
+                    <span className="block text-[10px] text-on-surface-variant leading-tight truncate max-w-[68px]">
+                        {story.sublabel}
+                    </span>
+                </div>
+            </button>
+        ))}
+    </div>
+</div>
+
 {/*  CLOSED INNOVATION LOOP BANNER (Point 10 - Desktop Only to prevent mobile clutter)  */}
 <div className="hidden lg:block bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-5 border border-primary/20 shadow-xs relative overflow-hidden">
     <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider mb-1">
         <span className="material-symbols-outlined text-sm">all_inclusive</span>
         Jharkhand Closed Innovation Loop
     </div>
-    <h3 className="font-headline-sm text-base font-bold text-on-surface">Citizen Grievances Solved by Local University Research</h3>
-    <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
-        Grievances submitted by citizens are AI-validated, assigned to premier Jharkhand engineering faculties (BIT Mesra, NIT Jamshedpur, IIT Dhanbad), funded by CSR partners, and verified on ground.
+    <h3 className="font-headline-sm text-base font-bold text-on-surface">Campus Research Solving Civic Grievances</h3>
+    <p className="text-xs text-on-surface-variant mt-0.5 leading-normal">
+        Real citizen grievances assigned to university engineering teams and resolved on ground.
     </p>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 pt-3 border-t border-outline-variant/30 text-center">
         {/* Step 1: Citizen Field Reporting */}
@@ -933,8 +1103,39 @@ export default function DashboardScreen() {
             onClick={() => setSelectedReport(report)}
             className="bg-surface-container-lowest rounded-3xl overflow-hidden whisper-border ambient-shadow transition-all hover:border-primary/50 hover:shadow-md cursor-pointer group flex flex-col"
         >
-            {/* 1. Half-sectioned Visual Image Box (User Requested) */}
-            <div className="w-full h-44 sm:h-52 relative overflow-hidden bg-surface-container-high shrink-0">
+            {/* 1. Postcard Header: Avatar + Locality Tag + Relative Time + Status */}
+            <div className="p-3 sm:p-4 pb-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                        {report.ward_no ? `W${report.ward_no}` : "JH"}
+                    </div>
+                    <div className="min-w-0">
+                        <span className="block text-xs sm:text-sm font-bold text-on-surface leading-tight truncate">
+                            {localityName}
+                        </span>
+                        <span className="block text-[11px] text-on-surface-variant leading-tight">
+                            {report.ward_no ? `Ward ${report.ward_no}` : "Ranchi"} • {report.time_ago || "Active"}
+                        </span>
+                    </div>
+                </div>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide shadow-xs shrink-0 ${
+                    report.status === 'resolved' || report.status === 'implemented' 
+                        ? 'bg-emerald-600/15 text-emerald-700' 
+                        : report.status === 'in_progress' || report.status === 'assigned' 
+                        ? 'bg-amber-600/15 text-amber-800' 
+                        : 'bg-primary/15 text-primary'
+                }`}>
+                    {(report.status === 'resolved' || report.status === 'implemented') ? (
+                        <span className="material-symbols-outlined text-[12px]">verified</span>
+                    ) : (
+                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                    )}
+                    {(report.status || 'reported').replace('_', ' ').toUpperCase()}
+                </span>
+            </div>
+
+            {/* 2. Visual Photo with Category Overlay */}
+            <div className="w-full h-48 sm:h-56 relative overflow-hidden bg-surface-container-high shrink-0">
                 <img 
                     src={evidenceImg} 
                     alt={displayTitle} 
@@ -942,62 +1143,64 @@ export default function DashboardScreen() {
                     loading="lazy"
                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/35" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/20" />
 
-                {/* Top Badges: Category & Status */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20 shadow-xs">
+                <div className="absolute bottom-2.5 left-3">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20 shadow-xs">
                         {report.category || 'Civic Issue'}
                     </span>
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-md shadow-xs ${
-                        report.status === 'resolved' || report.status === 'implemented' 
-                            ? 'bg-emerald-600/90 text-white' 
-                            : report.status === 'in_progress' || report.status === 'assigned' 
-                            ? 'bg-amber-600/90 text-white' 
-                            : 'bg-red-600/90 text-white'
-                    }`}>
-                        {(report.status === 'resolved' || report.status === 'implemented') ? (
-                            <span className="material-symbols-outlined text-[13px]">verified</span>
-                        ) : (
-                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                        )}
-                        {(report.status || 'reported').replace('_', ' ').toUpperCase()}
-                    </span>
-                </div>
-
-                {/* Bottom of Image: Upvote Counter & Tap Indicator */}
-                <div className="absolute bottom-2.5 right-3 flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); handleUpvote(reportId, e); }}
-                        className={`px-2.5 py-1 rounded-full text-xs font-bold backdrop-blur-md border border-white/25 flex items-center gap-1 shadow-xs active:scale-95 transition-all cursor-pointer ${
-                            hasUpvoted ? 'bg-primary text-white' : 'bg-black/60 text-white hover:bg-black/80'
-                        }`}
-                        title="Click to endorse this grievance"
-                    >
-                        <span className="material-symbols-outlined text-sm font-bold leading-none">arrow_drop_up</span>
-                        <span>{currentUpvotes}</span>
-                        <span className="text-[10px] opacity-80">{lang === 'HI' ? 'समर्थन' : 'Supports'}</span>
-                    </button>
                 </div>
             </div>
 
-            {/* 2. Bottom Card Section (Clean, no description clutter, tap to expand) */}
-            <div className="p-4 sm:p-5 space-y-2.5">
-                <h4 className="font-bold text-on-surface text-base sm:text-lg group-hover:text-primary transition-colors leading-snug line-clamp-2">
-                    {displayTitle}
-                </h4>
+            {/* 3. Social Interaction Bar & Single-Sentence Caption */}
+            <div className="p-3.5 sm:p-4 space-y-2.5">
+                {/* Action Icons Row */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        {/* Upvote / Endorse Button */}
+                        <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); handleUpvote(reportId, e); }}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
+                                hasUpvoted 
+                                    ? 'bg-primary text-white shadow-xs' 
+                                    : 'bg-surface-container hover:bg-surface-container-high text-on-surface'
+                            }`}
+                            title="Endorse this grievance"
+                        >
+                            <span className="material-symbols-outlined text-sm font-bold">
+                                {hasUpvoted ? "favorite" : "thumb_up"}
+                            </span>
+                            <span>{currentUpvotes}</span>
+                            <span className="text-[10px] opacity-80">{lang === 'HI' ? 'समर्थन' : 'Supports'}</span>
+                        </button>
 
-                <div className="flex items-center justify-between text-xs text-on-surface-variant pt-2 border-t border-outline-variant/20">
-                    <span className="inline-flex items-center gap-1 font-medium text-on-surface-variant">
-                        <span className="material-symbols-outlined text-sm text-primary">location_on</span>
-                        <span className="truncate max-w-[170px] sm:max-w-[220px]">{localityName}</span>
-                    </span>
-                    <span className="text-primary font-bold inline-flex items-center gap-0.5 text-xs group-hover:underline">
+                        {/* WhatsApp / Share button */}
+                        <button
+                            type="button"
+                            onClick={(e) => handleShareReport(report, e)}
+                            className="p-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-all cursor-pointer"
+                            title="Share on WhatsApp"
+                        >
+                            <span className="material-symbols-outlined text-base">share</span>
+                        </button>
+                    </div>
+
+                    {/* View Details Button */}
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setSelectedReport(report); }}
+                        className="text-primary font-bold text-xs inline-flex items-center gap-1 hover:underline cursor-pointer"
+                    >
                         <span>{lang === 'HI' ? 'विवरण देखें' : 'View Details'}</span>
                         <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </span>
+                    </button>
                 </div>
+
+                {/* 1-Line Caption */}
+                <p className="text-xs sm:text-sm font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                    {displayTitle}
+                </p>
             </div>
         </article>
     );
@@ -1463,27 +1666,27 @@ export default function DashboardScreen() {
                 )}
                 <div className="flex items-center justify-between py-2 border-b border-outline-variant/20">
                     <div className="flex items-center gap-1.5">
-                        <span className="text-on-surface-variant">Operational Urgency:</span>
+                        <span className="text-on-surface-variant">{lang === 'HI' ? 'प्राथमिकता स्तर:' : 'Priority Level:'}</span>
                         <button
                             type="button"
                             onClick={() => setShowAiScoreInfoModal(true)}
                             className="text-primary hover:text-primary-dark transition-colors inline-flex items-center cursor-pointer"
-                            title="How is urgency calculated?"
+                            title="How is priority calculated?"
                         >
                             <span className="material-symbols-outlined text-[16px]">info</span>
                         </button>
                     </div>
                     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                        (selectedReport.priority_score > 85 || selectedReport.urgency === "Urgent Attention")
+                        (selectedReport.priority_score > 85 && selectedReport.urgency === "Urgent Attention")
                             ? "bg-error/15 text-error"
-                            : (selectedReport.priority_score > 70 || selectedReport.urgency === "Standard Priority")
+                            : (selectedReport.priority_score > 60 || selectedReport.urgency === "Standard Priority")
                             ? "bg-amber-500/15 text-amber-700"
                             : "bg-primary/15 text-primary"
                     }`}>
                         <span className="material-symbols-outlined text-[14px]">
-                            {(selectedReport.priority_score > 85 || selectedReport.urgency === "Urgent Attention") ? "warning" : "schedule"}
+                            {(selectedReport.priority_score > 85 && selectedReport.urgency === "Urgent Attention") ? "warning" : "schedule"}
                         </span>
-                        {selectedReport.urgency || ((selectedReport.priority_score > 85) ? "Urgent Attention" : (selectedReport.priority_score > 70) ? "Standard Priority" : "Routine")}
+                        {selectedReport.urgency || ((selectedReport.priority_score > 85 && selectedReport.urgency === "Urgent Attention") ? "Urgent Attention" : (selectedReport.priority_score > 60) ? "Standard Priority" : "Routine")}
                     </span>
                 </div>
                 {selectedReport.provider_deadline && (
@@ -1784,7 +1987,7 @@ export default function DashboardScreen() {
     </div>
 )}
 
-{/*  HOW OPERATIONAL URGENCY IS CALCULATED MODAL  */}
+{/*  HOW PRIORITY SCORE IS CALCULATED MODAL  */}
 {showAiScoreInfoModal && (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
         <div className="bg-surface-container-lowest rounded-3xl max-w-lg w-full p-6 whisper-border ambient-shadow space-y-4 max-h-[90vh] overflow-y-auto">
@@ -1794,8 +1997,8 @@ export default function DashboardScreen() {
                         <span className="material-symbols-outlined text-2xl">psychology</span>
                     </div>
                     <div>
-                        <h3 className="font-headline-sm text-base font-bold text-on-surface">Operational Urgency Logic</h3>
-                        <p className="text-xs text-on-surface-variant">How SocioSolve calculates grievance priority</p>
+                        <h3 className="font-headline-sm text-base font-bold text-on-surface">Priority Score Logic</h3>
+                        <p className="text-xs text-on-surface-variant">How SocioSolve calculates grievance triage</p>
                     </div>
                 </div>
                 <button
@@ -1807,17 +2010,17 @@ export default function DashboardScreen() {
                 </button>
             </div>
 
-            <p className="text-xs text-on-surface-variant leading-relaxed">
-                Rather than an arbitrary number, urgency is determined by a transparent 4-pillar evaluation model designed to eliminate bureaucratic delay:
+            <p className="text-xs text-on-surface-variant leading-normal">
+                Priority is calculated automatically across 4 objective criteria:
             </p>
 
             <div className="space-y-2.5">
                 <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
                     <span className="material-symbols-outlined text-error text-xl shrink-0 mt-0.5">warning</span>
                     <div>
-                        <h4 className="text-xs font-bold text-on-surface">1. Immediate Threat to Public Safety</h4>
-                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
-                            Exposed 11kV wires, contaminated tap water, or active road subsidence are immediately classified as <strong>Urgent Attention</strong> for immediate dispatch.
+                        <h4 className="text-xs font-bold text-on-surface">1. Public Safety Hazard</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Live electric wires, pipeline ruptures, and structural collapses get immediate emergency status.
                         </p>
                     </div>
                 </div>
@@ -1825,9 +2028,9 @@ export default function DashboardScreen() {
                 <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
                     <span className="material-symbols-outlined text-blue-600 text-xl shrink-0 mt-0.5">domain</span>
                     <div>
-                        <h4 className="text-xs font-bold text-on-surface">2. Domain Criticality</h4>
-                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
-                            Potable water, sewage overflows, and vector breeding are weighted higher than aesthetic road paint or signboards.
+                        <h4 className="text-xs font-bold text-on-surface">2. Civic Domain Weight</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Drinking water, sanitation, and health hazards are prioritized over routine aesthetics.
                         </p>
                     </div>
                 </div>
@@ -1835,9 +2038,9 @@ export default function DashboardScreen() {
                 <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
                     <span className="material-symbols-outlined text-secondary text-xl shrink-0 mt-0.5">groups</span>
                     <div>
-                        <h4 className="text-xs font-bold text-on-surface">3. Population Density Impact</h4>
-                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
-                            Incidents near healthcare centers, hospitals, primary schools, and dense transit corridors (e.g. Bariatu, Doranda) receive priority escalation.
+                        <h4 className="text-xs font-bold text-on-surface">3. Population Density</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Issues near schools, hospitals, and busy transit hubs automatically receive boosted scores.
                         </p>
                     </div>
                 </div>
@@ -1845,9 +2048,9 @@ export default function DashboardScreen() {
                 <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
                     <span className="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5">thumb_up</span>
                     <div>
-                        <h4 className="text-xs font-bold text-on-surface">4. Community Upvote Escalation</h4>
-                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">
-                            When multiple residents upvote an unresolved grievance, the system flags it directly onto the Municipal Commissioner's morning triage dashboard.
+                        <h4 className="text-xs font-bold text-on-surface">4. Community Endorsements</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Every resident upvote pushes unresolved complaints higher on the official daily dashboard.
                         </p>
                     </div>
                 </div>
@@ -1860,6 +2063,91 @@ export default function DashboardScreen() {
             >
                 <span>Understood</span>
             </button>
+        </div>
+    </div>
+)}
+
+{/* 📱 CIVIC STORY VIEWER MODAL (Instagram-Style, Safe 1-Tap Dismiss) */}
+{activeStory && (
+    <div 
+        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+        onClick={() => setActiveStory(null)}
+    >
+        <div 
+            className="bg-surface-container-lowest rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-white/20 relative"
+            onClick={(e) => e.stopPropagation()}
+        >
+            {/* Header */}
+            <div className="p-4 pb-2.5 flex items-center justify-between border-b border-outline-variant/20">
+                <div className="flex items-center gap-2.5">
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-tr ${activeStory.gradient} flex items-center justify-center text-white shadow-xs`}>
+                        <span className="material-symbols-outlined text-sm">{activeStory.icon}</span>
+                    </div>
+                    <div>
+                        <span className="block text-xs font-bold text-on-surface leading-tight">{activeStory.label}</span>
+                        <span className="block text-[10px] text-on-surface-variant leading-tight">{activeStory.location}</span>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setActiveStory(null)}
+                    aria-label="Close story"
+                    className="w-7 h-7 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center cursor-pointer transition-colors"
+                >
+                    <span className="material-symbols-outlined text-base">close</span>
+                </button>
+            </div>
+
+            {/* Visual Photo */}
+            <div className="w-full h-64 relative bg-surface-container-high overflow-hidden">
+                <img 
+                    src={activeStory.image} 
+                    alt={activeStory.title} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3">
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase mb-1 ${activeStory.badgeColor}`}>
+                        {activeStory.badge}
+                    </span>
+                    <h3 className="text-white text-base font-bold leading-snug drop-shadow-sm">
+                        {activeStory.title}
+                    </h3>
+                </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-4 space-y-3">
+                <p className="text-xs text-on-surface leading-relaxed">
+                    {activeStory.description}
+                </p>
+                <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-2 border-t border-outline-variant/30">
+                    <span className="font-semibold text-primary">{activeStory.solvers}</span>
+                    <span className="font-mono text-[10px]">{activeStory.time}</span>
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            showToast("Endorsement recorded for this civic milestone!", "success");
+                        }}
+                        className="flex-1 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs hover:bg-primary-container transition-all cursor-pointer"
+                    >
+                        <span className="material-symbols-outlined text-sm">favorite</span>
+                        <span>{activeStory.upvotes} Cheered</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={(e) => handleShareStory(activeStory, e)}
+                        className="px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                        title="Share on WhatsApp"
+                    >
+                        <span className="material-symbols-outlined text-sm">share</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 )}

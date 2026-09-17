@@ -547,7 +547,7 @@ export default function OfficialDashboard() {
                                         </span>
                                     </div>
                                     <p className="text-xs text-on-surface-variant mt-0.5">
-                                        Deadlines defined directly by problem statement providers (Resident Welfare, Ward Committees, Local Panchayats)
+                                        Deadlines set directly by resident associations and local ward committees.
                                     </p>
                                 </div>
 
