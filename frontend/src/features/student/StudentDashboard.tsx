@@ -662,7 +662,7 @@ export default function StudentDashboard() {
                             title="Go to Active Mission Control"
                         >
                             <span className="material-symbols-outlined text-amber-600 text-sm animate-pulse">alarm</span>
-                            <span className="text-amber-900 dark:text-amber-200">
+                            <span className="text-stone-900 dark:text-amber-100 font-medium">
                                 Phase Due: <strong>{timeRemaining.days}d {timeRemaining.hours}h left</strong>
                             </span>
                         </button>
@@ -768,7 +768,7 @@ export default function StudentDashboard() {
                                     <div className="lg:col-span-1 bg-gradient-to-br from-primary/10 via-surface-container-lowest to-surface-container-low rounded-3xl p-5 shadow-sm border border-primary/20 flex flex-col justify-between space-y-4">
                                         <div>
                                             <div className="flex items-center justify-between mb-2">
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-900 dark:text-amber-200 text-[11px] font-bold">
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-stone-900 dark:text-amber-100 text-[11px] font-bold">
                                                     <span className="material-symbols-outlined text-[14px] text-amber-600 animate-spin">hourglass_top</span>
                                                     Live Countdown
                                                 </span>
@@ -1165,7 +1165,7 @@ export default function StudentDashboard() {
                                                                     <div className="flex items-center gap-1.5">
                                                                         <p className="font-bold text-on-surface">{tm.name}</p>
                                                                         {isLead && (
-                                                                            <span className="text-[9px] bg-amber-500/10 text-amber-800 border border-amber-500/30 px-1.5 py-0.2 rounded-md font-semibold">
+                                                                            <span className="text-[9px] bg-amber-500/10 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 px-1.5 py-0.2 rounded-md font-semibold">
                                                                                 👑 Lead
                                                                             </span>
                                                                         )}
@@ -1255,7 +1255,7 @@ export default function StudentDashboard() {
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Active Capstone Mission</span>
-                                            <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold">
+                                            <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-amber-500/20 text-stone-900 dark:text-amber-100 font-bold">
                                                 {timeRemaining.days}d {timeRemaining.hours}h left (Phase {timeRemaining.phaseIndex})
                                             </span>
                                         </div>
@@ -1479,20 +1479,24 @@ export default function StudentDashboard() {
                         </div>
                         {/* Active Capstone Quota Status Indicator */}
                         {!canAdopt ? (
-                            <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
-                                <div className="flex items-start sm:items-center gap-2.5">
-                                    <span className="material-symbols-outlined text-amber-600 text-2xl shrink-0 mt-0.5 sm:mt-0">lock</span>
+                            <div className="bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/50 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                                <div className="flex items-start sm:items-center gap-3">
+                                    <div className="w-9 h-9 rounded-xl bg-amber-500 text-stone-950 flex items-center justify-center shrink-0 font-bold shadow-xs">
+                                        <span className="material-symbols-outlined text-xl">lock</span>
+                                    </div>
                                     <div>
-                                        <p className="text-xs font-bold">Active Capstone Limit Reached (1/1 Active)</p>
-                                        <p className="text-[11px] opacity-85 mt-0.5 leading-relaxed">
-                                            You are currently leading <strong>"{activeProjects[0]?.title || 'Active Capstone'}"</strong>. To prevent project hoarding and ensure high quality delivery, students can lead 1 active project at a time. Advance your ongoing project to completion to adopt a new challenge.
+                                        <p className="text-xs font-bold text-stone-900 dark:text-amber-100">
+                                            Active Capstone Limit Reached (1/1 Active)
+                                        </p>
+                                        <p className="text-xs text-stone-800 dark:text-stone-300 mt-0.5 leading-relaxed">
+                                            You are currently leading <strong className="text-stone-950 dark:text-white font-bold">"{activeProjects[0]?.title || 'Active Capstone'}"</strong>. Complete your active project before adopting another.
                                         </p>
                                     </div>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => { setActiveNav("Mission"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                                    className="px-3.5 py-1.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-900 dark:text-amber-100 rounded-xl text-xs font-bold shrink-0 transition-colors self-start sm:self-center cursor-pointer"
+                                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 active:scale-95 text-stone-950 rounded-xl text-xs font-bold shrink-0 transition-all self-start sm:self-center cursor-pointer shadow-xs whitespace-nowrap"
                                 >
                                     Open Mission Workspace →
                                 </button>
@@ -2008,7 +2012,7 @@ export default function StudentDashboard() {
             {/* Release / Forfeit Problem Statement Modal */}
             {releaseModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-md">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30 space-y-4">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30 space-y-4 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-error/10 text-error flex items-center justify-center">
@@ -2083,7 +2087,7 @@ export default function StudentDashboard() {
             {/* Student Academic Profile & Credentials Modal */}
             {profileModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-scrim/50 backdrop-blur-md">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between pb-4 border-b border-outline-variant/20">
                             <div>
                                 <span className="text-[10px] font-mono uppercase font-bold text-primary tracking-widest">Academic Bank of Credits (ABC)</span>
