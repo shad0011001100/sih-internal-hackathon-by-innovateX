@@ -120,6 +120,7 @@ class Project(Base):
     mentor_name = Column(String, nullable=True)
     deadline = Column(DateTime, nullable=True)
     progress_pct = Column(Float, default=0.0)
+    presentation_url = Column(String, nullable=True)
     documentation_url = Column(String, nullable=True)
     prototype_url = Column(String, nullable=True)
     impact_report = Column(Text, nullable=True)

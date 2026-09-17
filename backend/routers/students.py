@@ -40,6 +40,7 @@ class ProjectUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     progress_pct: Optional[float] = None
+    presentation_url: Optional[str] = None
     documentation_url: Optional[str] = None
     prototype_url: Optional[str] = None
     impact_report: Optional[str] = None
@@ -60,9 +61,53 @@ def get_dashboard(user: models.User = Depends(get_student_user), db: Session = D
     projects = []
     for tm in user.team_memberships:
         if tm.team and tm.team.project:
-            projects.append(tm.team.project)
+            p = tm.team.project
+            rep = p.report
+            techs = []
+            if rep and rep.suggested_technologies:
+                try:
+                    techs = json.loads(rep.suggested_technologies)
+                except Exception:
+                    techs = [rep.suggested_technologies]
+            departments = []
+            if rep and rep.relevant_departments:
+                try:
+                    departments = json.loads(rep.relevant_departments)
+                except Exception:
+                    departments = [rep.relevant_departments]
+
+            projects.append({
+                "id": p.id,
+                "report_id": p.report_id,
+                "title": p.title,
+                "description": p.description,
+                "status": p.status,
+                "mentor_name": p.mentor_name,
+                "deadline": p.deadline.isoformat() if p.deadline else None,
+                "progress_pct": p.progress_pct or 0.0,
+                "presentation_url": p.presentation_url,
+                "documentation_url": p.documentation_url,
+                "prototype_url": p.prototype_url,
+                "impact_report": p.impact_report,
+                "created_at": p.created_at.isoformat() if p.created_at else None,
+                "category": rep.category if rep else "General",
+                "report": {
+                    "id": rep.id,
+                    "title": getattr(rep, 'title', None) or rep.challenge_summary or (rep.description[:40] if rep.description else 'Civic Grievance'),
+                    "category": rep.category,
+                    "description": rep.description,
+                    "challenge_summary": rep.challenge_summary,
+                    "suggested_technologies": techs if isinstance(techs, list) else [],
+                    "relevant_departments": departments if isinstance(departments, list) else [],
+                    "gps_lat": rep.gps_lat,
+                    "gps_lon": rep.gps_lon,
+                    "photo_url": rep.photo_url,
+                    "assigned_department": rep.assigned_department,
+                    "student_suitability_reason": getattr(rep, 'student_suitability_reason', None)
+                } if rep else None
+            })
             
-    active_projects = [p for p in projects if getattr(p, 'status', None) != 'completed']
+    active_projects = [p for p in projects if p.get('status') != 'completed']
     can_adopt = len(active_projects) < 1
 
     # skill count
@@ -292,6 +337,8 @@ def update_project(project_id: int, req: ProjectUpdate, user: models.User = Depe
         project.description = req.description
     if req.progress_pct is not None:
         project.progress_pct = req.progress_pct
+    if req.presentation_url is not None:
+        project.presentation_url = req.presentation_url
     if req.documentation_url is not None:
         project.documentation_url = req.documentation_url
     if req.prototype_url is not None:
@@ -300,7 +347,21 @@ def update_project(project_id: int, req: ProjectUpdate, user: models.User = Depe
         project.impact_report = req.impact_report
         
     db.commit()
-    return {"status": "ok"}
+    db.refresh(project)
+    return {
+        "status": "ok",
+        "project": {
+            "id": project.id,
+            "title": project.title,
+            "description": project.description,
+            "progress_pct": project.progress_pct,
+            "presentation_url": project.presentation_url,
+            "documentation_url": project.documentation_url,
+            "prototype_url": project.prototype_url,
+            "impact_report": project.impact_report,
+            "status": project.status
+        }
+    }
 
 @router.post("/projects/{project_id}/submit")
 def submit_project(project_id: int, user: models.User = Depends(get_student_user), db: Session = Depends(get_db)):
