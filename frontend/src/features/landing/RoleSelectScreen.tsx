@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -55,6 +56,14 @@ function RoleCard({ icon, label, credential, color, textOnColor, bordered, onCli
 export default function RoleSelectScreen() {
     const navigate = useNavigate();
     const [showMore, setShowMore] = useState(false);
+    const setAuth = useAuthStore((s) => s.setAuth);
+    const setPhone = useAuthStore((s) => s.setPhone);
+
+    const handleQuickCitizen = () => {
+        setAuth("citizen", 1);
+        setPhone("+919876543210");
+        navigate("/dashboard");
+    };
 
     return (
         <motion.div
@@ -72,16 +81,32 @@ export default function RoleSelectScreen() {
                 >
                     <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
                 </button>
-                <h1 className="text-2xl font-bold text-on-surface tracking-tight">Who are you?</h1>
-                <p className="text-sm text-on-surface-variant mt-1">Choose your portal to continue</p>
+                <h1 className="text-2xl font-bold text-on-surface tracking-tight">Select Portal</h1>
+                <p className="text-sm text-on-surface-variant mt-1">Tap a role to continue or test with 1-click access</p>
             </div>
 
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="flex-1 px-6 pb-6 space-y-4"
+                className="flex-1 px-6 pb-6 space-y-3.5"
             >
+                {/* 1-Tap Quick Citizen Entry for Evaluators */}
+                <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                        <span className="text-xs font-bold text-primary block leading-tight">Testing or Reporting?</span>
+                        <span className="text-[11px] text-on-surface-variant block mt-0.5 truncate">Skip login &amp; enter as Citizen</span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={handleQuickCitizen}
+                        className="px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-bold shrink-0 shadow-xs active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                        <span>1-Click Enter</span>
+                        <span className="material-symbols-outlined text-sm">bolt</span>
+                    </button>
+                </div>
+
                 {/* Primary Portals */}
                 <RoleCard
                     icon="person"

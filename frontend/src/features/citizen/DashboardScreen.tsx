@@ -595,8 +595,8 @@ export default function DashboardScreen() {
 </aside>
 {/*  CENTER FEED (col-span-6 on Desktop): Search, Filters, Issue Cards  */}
 <main className="lg:col-span-6 space-y-4 pb-20 lg:pb-8">
-{/*  CLOSED INNOVATION LOOP BANNER (Point 10)  */}
-<div className="bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-5 border border-primary/20 shadow-xs relative overflow-hidden">
+{/*  CLOSED INNOVATION LOOP BANNER (Point 10 - Desktop Only to prevent mobile clutter)  */}
+<div className="hidden lg:block bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-5 border border-primary/20 shadow-xs relative overflow-hidden">
     <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider mb-1">
         <span className="material-symbols-outlined text-sm">all_inclusive</span>
         Jharkhand Closed Innovation Loop
@@ -680,9 +680,9 @@ export default function DashboardScreen() {
     </div>
 </div>
 
-{/*  DISTRICT & PANCHAYAT PROBLEM INTELLIGENCE WIDGET (Point 3)  */}
+{/*  DISTRICT & PANCHAYAT PROBLEM INTELLIGENCE WIDGET (Point 3 - Desktop Only)  */}
 {intelligenceData && (
-    <div className="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow space-y-3">
+    <div className="hidden lg:block bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow space-y-3">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -930,135 +930,73 @@ export default function DashboardScreen() {
     return (
         <article 
             key={reportId} 
-            className="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow transition-all hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary space-y-3"
+            onClick={() => setSelectedReport(report)}
+            className="bg-surface-container-lowest rounded-3xl overflow-hidden whisper-border ambient-shadow transition-all hover:border-primary/50 hover:shadow-md cursor-pointer group flex flex-col"
         >
-            {/*  Top Status & Category Row  */}
-            <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
-                        report.status === 'resolved' || report.status === 'implemented' ? 'bg-primary-fixed text-on-primary-fixed' :
-                        report.status === 'in_progress' || report.status === 'assigned' ? 'bg-secondary-container text-on-secondary-container' :
-                        'bg-error-container text-on-error-container'
+            {/* 1. Half-sectioned Visual Image Box (User Requested) */}
+            <div className="w-full h-44 sm:h-52 relative overflow-hidden bg-surface-container-high shrink-0">
+                <img 
+                    src={evidenceImg} 
+                    alt={displayTitle} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/35" />
+
+                {/* Top Badges: Category & Status */}
+                <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20 shadow-xs">
+                        {report.category || 'Civic Issue'}
+                    </span>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-md shadow-xs ${
+                        report.status === 'resolved' || report.status === 'implemented' 
+                            ? 'bg-emerald-600/90 text-white' 
+                            : report.status === 'in_progress' || report.status === 'assigned' 
+                            ? 'bg-amber-600/90 text-white' 
+                            : 'bg-red-600/90 text-white'
                     }`}>
                         {(report.status === 'resolved' || report.status === 'implemented') ? (
-                            <span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+                            <span className="material-symbols-outlined text-[13px]">verified</span>
                         ) : (
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-pulse-dot absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-current"></span>
-                            </span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                         )}
                         {(report.status || 'reported').replace('_', ' ').toUpperCase()}
                     </span>
-                    <span className="hidden sm:inline-flex items-center text-xs font-mono text-outline">
-                        #{String(reportId).slice(0, 8).toUpperCase()}
-                    </span>
-                </div>
-                <span className="text-xs font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
-                    {report.category || 'Civic Issue'}
-                </span>
-            </div>
-            
-            {/*  Issue Content & Evidence Thumbnail Row  */}
-            <div className="flex items-start justify-between gap-3 sm:gap-4">
-                <div className="flex-1 min-w-0 space-y-1.5">
-                    <h4 
-                        onClick={() => setSelectedReport(report)} 
-                        className="text-headline-sm font-headline-sm text-on-surface font-bold text-base sm:text-lg hover:text-primary cursor-pointer transition-colors leading-snug"
-                    >
-                        {displayTitle}
-                    </h4>
-                    <p className="text-body-md text-xs sm:text-sm text-on-surface-variant leading-relaxed line-clamp-3">
-                        {report.description}
-                    </p>
                 </div>
 
-                {/* Evidence Photo Thumbnail */}
-                <div 
-                    onClick={() => setSelectedReport(report)}
-                    className="w-24 h-20 sm:w-28 sm:h-24 md:w-32 md:h-24 rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-high relative shrink-0 cursor-pointer shadow-xs hover:ring-2 hover:ring-primary/40 transition-all group"
-                    title="Click to view full photo & redressal progress"
-                >
-                    <img 
-                        src={evidenceImg} 
-                        alt="Civic evidence" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-end p-1.5">
-                        <span className="material-symbols-outlined text-white text-sm">zoom_in</span>
-                    </div>
+                {/* Bottom of Image: Upvote Counter & Tap Indicator */}
+                <div className="absolute bottom-2.5 right-3 flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleUpvote(reportId, e); }}
+                        className={`px-2.5 py-1 rounded-full text-xs font-bold backdrop-blur-md border border-white/25 flex items-center gap-1 shadow-xs active:scale-95 transition-all cursor-pointer ${
+                            hasUpvoted ? 'bg-primary text-white' : 'bg-black/60 text-white hover:bg-black/80'
+                        }`}
+                        title="Click to endorse this grievance"
+                    >
+                        <span className="material-symbols-outlined text-sm font-bold leading-none">arrow_drop_up</span>
+                        <span>{currentUpvotes}</span>
+                        <span className="text-[10px] opacity-80">{lang === 'HI' ? 'समर्थन' : 'Supports'}</span>
+                    </button>
                 </div>
             </div>
 
-            {/*  Interactive Bottom Action Row  */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-outline-variant/30">
-                <div className="flex items-center gap-3 text-xs text-on-surface-variant font-medium">
-                    <span className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm text-outline" data-icon="calendar_today">calendar_today</span>
-                        {report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Recent'}
+            {/* 2. Bottom Card Section (Clean, no description clutter, tap to expand) */}
+            <div className="p-4 sm:p-5 space-y-2.5">
+                <h4 className="font-bold text-on-surface text-base sm:text-lg group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                    {displayTitle}
+                </h4>
+
+                <div className="flex items-center justify-between text-xs text-on-surface-variant pt-2 border-t border-outline-variant/20">
+                    <span className="inline-flex items-center gap-1 font-medium text-on-surface-variant">
+                        <span className="material-symbols-outlined text-sm text-primary">location_on</span>
+                        <span className="truncate max-w-[170px] sm:max-w-[220px]">{localityName}</span>
                     </span>
-                    
-                    {/* Clean Location Tag (No raw GPS noise) */}
-                    <button 
-                        type="button"
-                        onClick={(e) => { 
-                            e.stopPropagation(); 
-                            if (report.gps_lat && report.gps_lon) {
-                                window.open(`https://www.google.com/maps/search/?api=1&query=${report.gps_lat},${report.gps_lon}`, '_blank');
-                            } else {
-                                showToast(`Locality: ${localityName}`, "info");
-                            }
-                        }}
-                        className="inline-flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0 text-xs font-medium"
-                        title={report.gps_lat ? `GPS: ${Number(report.gps_lat).toFixed(4)}°, ${Number(report.gps_lon).toFixed(4)}° • Click to view on Google Maps` : 'View locality'}
-                    >
-                        <span className="material-symbols-outlined text-[15px] text-primary" data-icon="location_on">location_on</span>
-                        <span>{localityName}</span>
-                        <span className="material-symbols-outlined text-[12px] opacity-60">open_in_new</span>
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    {/*  Interactive Endorsement / Support Button or Resolved State  */}
-                    {['resolved', 'implemented'].includes(report.status) ? (
-                        <span 
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            title="Issue resolved on ground"
-                        >
-                            <span className="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span>
-                            <span>{report.status === 'implemented' ? 'Implemented' : 'Resolved'}</span>
-                            <span className="text-[11px] text-emerald-800 font-bold ml-0.5">• ▲ {currentUpvotes} Supports</span>
-                        </span>
-                    ) : (
-                        <button 
-                            type="button"
-                            onClick={(e) => handleUpvote(reportId, e)}
-                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 cursor-pointer ${
-                                hasUpvoted 
-                                    ? 'bg-primary text-on-primary shadow-xs' 
-                                    : 'bg-surface-container hover:bg-primary/10 text-on-surface hover:text-primary'
-                            }`}
-                            title="Citizen Endorsement: Boost municipal priority score"
-                        >
-                            <span className="material-symbols-outlined text-base font-bold leading-none" data-icon="arrow_drop_up">arrow_drop_up</span>
-                            <span>{currentUpvotes}</span>
-                            <span className="text-[11px] font-medium opacity-90">
-                                {lang === 'HI' ? (hasUpvoted ? 'समर्थित' : 'समर्थन') : (hasUpvoted ? 'Supported' : 'Supports')}
-                            </span>
-                        </button>
-                    )}
-
-                    {/*  Interactive Timeline Detail View Button  */}
-                    <button 
-                        type="button"
-                        onClick={() => setSelectedReport(report)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-all active:scale-95 cursor-pointer"
-                    >
-                        <span className="material-symbols-outlined text-[16px]">timeline</span>
-                        <span>View Progress</span>
-                    </button>
+                    <span className="text-primary font-bold inline-flex items-center gap-0.5 text-xs group-hover:underline">
+                        <span>{lang === 'HI' ? 'विवरण देखें' : 'View Details'}</span>
+                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    </span>
                 </div>
             </div>
         </article>
@@ -1376,18 +1314,18 @@ export default function DashboardScreen() {
         <div className="bg-surface-container-lowest rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 whisper-border ambient-shadow space-y-5 relative">
             <div className="flex items-start justify-between">
                 <div>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-primary-fixed/40 text-on-primary-fixed-variant">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary-fixed/40 text-on-primary-fixed-variant">
                         Grievance #{selectedReport.id} • {selectedReport.category}
                     </span>
-                    <h3 className="font-headline-sm text-lg font-bold text-on-surface mt-1">
-                        {selectedReport.description?.slice(0, 70)}...
+                    <h3 className="font-headline-sm text-lg sm:text-xl font-bold text-on-surface mt-1.5 leading-snug">
+                        {selectedReport.title || selectedReport.challenge_summary || (selectedReport.description ? selectedReport.description.split('\n')[0].slice(0, 70) : `Civic Grievance #${selectedReport.id}`)}
                     </h3>
                 </div>
                 <button
                     type="button"
                     onClick={() => setSelectedReport(null)}
                     aria-label="Close modal"
-                    className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors cursor-pointer"
+                    className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors cursor-pointer shrink-0"
                 >
                     <span className="material-symbols-outlined text-xl">close</span>
                 </button>
@@ -1401,6 +1339,39 @@ export default function DashboardScreen() {
                     className="w-full h-48 sm:h-56 object-cover" 
                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
                 />
+            </div>
+
+            {/* Full Problem Description Box (User Requested Pop-Up Description) */}
+            <div className="bg-surface-container-low/90 rounded-2xl p-4 border border-outline-variant/30 space-y-1.5 shadow-xs">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-sm text-primary">description</span>
+                    <span>Problem Description &amp; Citizen Notes</span>
+                </div>
+                <p className="text-xs sm:text-sm text-on-surface leading-relaxed whitespace-pre-wrap pt-0.5">
+                    {selectedReport.description || "No detailed description provided."}
+                </p>
+            </div>
+
+            {/* Citizen Support Endorsement Row inside Modal */}
+            <div className="flex items-center justify-between bg-surface-container-low/60 rounded-2xl p-3 border border-outline-variant/20">
+                <div>
+                    <span className="text-xs font-bold text-on-surface block">Community Endorsements</span>
+                    <span className="text-[10px] text-on-surface-variant">Boost priority score for municipal action</span>
+                </div>
+                <button
+                    type="button"
+                    onClick={(e) => handleUpvote(selectedReport.id, e)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer ${
+                        upvoted[selectedReport.id]
+                            ? 'bg-primary text-on-primary'
+                            : 'bg-surface-container hover:bg-surface-container-high text-on-surface'
+                    }`}
+                >
+                    <span className="material-symbols-outlined text-sm font-bold">arrow_drop_up</span>
+                    <span>
+                        {(selectedReport.priority_score ? Math.round(selectedReport.priority_score * 10) : 5) + (upvotes[selectedReport.id] || 0)} {lang === 'HI' ? 'समर्थन' : 'Supports'}
+                    </span>
+                </button>
             </div>
 
             {/*  5-Stage Grievance Progress Stepper (Point 9)  */}

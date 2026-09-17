@@ -2,35 +2,81 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 
 export default function LandingScreen() {
     const [lang, setLang] = useState<"en" | "hi">("en");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const setAuth = useAuthStore((s) => s.setAuth);
+    const setPhone = useAuthStore((s) => s.setPhone);
 
-    const text = {
+    const t = {
         en: {
-            tagline: "Solutions for Jharkhand",
-            whatLabel: "WHAT DO WE DO?",
-            what: "We solve societal challenges faced by Jharkhand people — where a student works on it to find solutions under a university or industry.",
-            chooseLang: "CHOOSE LANGUAGE",
-            english: "English",
-            hindi: "हिन्दी",
-            cta: "Get Started",
-            sub: "Building a better Jharkhand together",
+            brand: "SocioSolve Jharkhand",
+            tagline: "Govt of Jharkhand • Citizen Grievance Redressal",
+            heroTitle: "See a civic problem?",
+            heroHighlight: "Report it in seconds.",
+            heroDesc: "Potholes, broken water pumps, garbage, streetlights — reported by citizens, solved by engineering teams and municipal bodies.",
+            ctaReport: "Report an Issue Now",
+            ctaReportSub: "Snap photo • Auto GPS • Track live",
+            ctaFeed: "Explore Community Feed",
+            ctaFeedSub: "See issues resolved near you",
+            portalLinks: "Student, Official, or University?",
+            choosePortal: "Switch Portal →",
+            stats: [
+                { label: "Resolved Cases", val: "74%" },
+                { label: "Avg Resolution", val: "3.8 Days" },
+                { label: "Active Districts", val: "24" }
+            ]
         },
         hi: {
-            tagline: "झारखंड के समाधान",
-            whatLabel: "हम क्या करते हैं?",
-            what: "हम झारखंड के लोगों की सामाजिक चुनौतियों को हल करते हैं — जहाँ एक छात्र विश्वविद्यालय या उद्योग के तहत समाधान खोजने पर काम करता है।",
-            chooseLang: "भाषा चुनें",
-            english: "English",
-            hindi: "हिन्दी",
-            cta: "शुरू करें",
-            sub: "मिलकर एक बेहतर झारखंड बनाएं",
-        },
+            brand: "सोशियोसॉल्व झारखंड",
+            tagline: "झारखंड सरकार • नागरिक शिकायत निवारण पोर्टल",
+            heroTitle: "शहर में समस्या देखी?",
+            heroHighlight: "कुछ ही पलों में रिपोर्ट करें।",
+            heroDesc: "सड़क के गड्ढे, टूटे हैंडपंप, कचरा, स्ट्रीटलाइट — नागरिक रिपोर्ट करें, छात्र और नगर निगम समाधान करेंगे।",
+            ctaReport: "शिकायत दर्ज करें",
+            ctaReportSub: "फोटो लें • जीपीएस लोकेशन • लाइव ट्रैक",
+            ctaFeed: "समुदाय फ़ीड देखें",
+            ctaFeedSub: "आस-पास सुलझाई गई समस्याएं देखें",
+            portalLinks: "छात्र, अधिकारी या विश्वविद्यालय?",
+            choosePortal: "पोर्टल चुनें →",
+            stats: [
+                { label: "समाधान दर", val: "74%" },
+                { label: "औसत समय", val: "3.8 दिन" },
+                { label: "सक्रिय जिले", val: "24" }
+            ]
+        }
+    }[lang];
+
+    // 1-Click Guest Exploration into Citizen Feed
+    const handleExploreFeed = () => {
+        try {
+            setLoading(true);
+            setAuth("citizen", 1);
+            setPhone("+919876543210");
+            navigate("/dashboard");
+        } catch (e) {
+            navigate("/login/citizen");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const t = text[lang];
+    // 1-Click to Report Issue
+    const handleReportDirect = () => {
+        try {
+            setLoading(true);
+            setAuth("citizen", 1);
+            setPhone("+919876543210");
+            navigate("/report");
+        } catch (e) {
+            navigate("/login/citizen");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <motion.div
@@ -38,97 +84,126 @@ export default function LandingScreen() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="min-h-screen flex flex-col"
-            style={{
-                background: "linear-gradient(160deg, #4a7a57 0%, #3e644a 40%, #2d4f38 100%)"
-            }}
+            className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-[#244530] via-[#1e3b28] to-[#14291c] text-white p-5 sm:p-8"
         >
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col px-6 pt-14 pb-6">
-                {/* Logo */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1, type: "spring", stiffness: 260 }}
-                    className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-6"
-                >
-                    <span className="material-symbols-outlined text-white text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>eco</span>
-                </motion.div>
-
-                {/* Title */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, type: "spring", stiffness: 260 }}
-                >
-                    <h1 className="text-4xl font-bold text-white tracking-tight leading-tight">SocioSolve</h1>
-                    <p className="text-white/70 mt-1 text-base font-medium">{t.tagline}</p>
-                </motion.div>
-
-                {/* What we do card */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25, type: "spring", stiffness: 260 }}
-                    className="mt-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-5"
-                >
-                    <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-2">{t.whatLabel}</p>
-                    <p className="text-white text-sm leading-relaxed">{t.what}</p>
-                </motion.div>
-
-                {/* Language Chooser */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35, type: "spring", stiffness: 260 }}
-                    className="mt-8"
-                >
-                    <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-3">{t.chooseLang}</p>
-                    <div className="grid grid-cols-2 gap-3">
-                        <button
-                            onClick={() => setLang("en")}
-                            className={`flex items-center justify-center space-x-2 py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95 ${
-                                lang === "en"
-                                    ? "bg-secondary text-white shadow-lg shadow-secondary/30"
-                                    : "bg-white/10 text-white border border-white/20"
-                            }`}
-                        >
-                            <span className="material-symbols-outlined text-base">language</span>
-                            <span>{t.english}</span>
-                        </button>
-                        <button
-                            onClick={() => setLang("hi")}
-                            className={`flex items-center justify-center space-x-2 py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95 ${
-                                lang === "hi"
-                                    ? "bg-secondary text-white shadow-lg shadow-secondary/30"
-                                    : "bg-white/10 text-white border border-white/20"
-                            }`}
-                        >
-                            <span className="material-symbols-outlined text-base">language</span>
-                            <span>{t.hindi}</span>
-                        </button>
+            {/* Top Navigation & Language Switch */}
+            <header className="flex items-center justify-between max-w-md mx-auto w-full pt-4">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shadow-xs">
+                        <span className="material-symbols-outlined text-white text-2xl">eco</span>
                     </div>
-                </motion.div>
+                    <div>
+                        <span className="font-bold text-base tracking-tight block leading-tight">SocioSolve</span>
+                        <span className="text-[10px] text-white/70 uppercase tracking-widest font-mono">Jharkhand</span>
+                    </div>
+                </div>
 
-                <div className="flex-1" />
-
-                {/* CTA Button */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.45, type: "spring", stiffness: 260 }}
-                    className="mt-6 space-y-3"
-                >
+                {/* Compact Language Switch */}
+                <div className="flex items-center bg-black/25 border border-white/15 rounded-full p-0.5 text-xs font-semibold">
                     <button
-                        onClick={() => navigate("/select-role")}
-                        className="w-full py-4 rounded-2xl bg-secondary text-white text-base font-bold flex items-center justify-center space-x-2 shadow-xl shadow-secondary/30 active:scale-95 transition-transform"
+                        type="button"
+                        onClick={() => setLang("en")}
+                        className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                            lang === "en" ? "bg-white text-[#1e3b28] font-bold shadow-xs" : "text-white/80 hover:text-white"
+                        }`}
                     >
-                        <span>{t.cta}</span>
-                        <span className="material-symbols-outlined text-xl">chevron_right</span>
+                        EN
                     </button>
-                    <p className="text-center text-white/40 text-xs">{t.sub}</p>
-                </motion.div>
-            </div>
+                    <button
+                        type="button"
+                        onClick={() => setLang("hi")}
+                        className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                            lang === "hi" ? "bg-white text-[#1e3b28] font-bold shadow-xs" : "text-white/80 hover:text-white"
+                        }`}
+                    >
+                        हिन्दी
+                    </button>
+                </div>
+            </header>
+
+            {/* Central Hero Section */}
+            <main className="max-w-md mx-auto w-full py-8 space-y-6">
+                <div className="space-y-2 text-center sm:text-left">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-emerald-300 border border-white/15 text-xs font-semibold">
+                        <span className="material-symbols-outlined text-sm">verified</span>
+                        <span>{t.tagline}</span>
+                    </span>
+                    <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight pt-2">
+                        {t.heroTitle} <br />
+                        <span className="text-emerald-300">{t.heroHighlight}</span>
+                    </h1>
+                    <p className="text-sm text-white/80 leading-relaxed pt-1">
+                        {t.heroDesc}
+                    </p>
+                </div>
+
+                {/* Quick Impact Stats Strip */}
+                <div className="grid grid-cols-3 gap-2 bg-black/20 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
+                    {t.stats.map((s, idx) => (
+                        <div key={idx} className="space-y-0.5">
+                            <span className="font-mono font-bold text-lg text-emerald-300 block leading-tight">{s.val}</span>
+                            <span className="text-[10px] text-white/70 font-medium block">{s.label}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Primary Action Buttons (Thumb-friendly & Clear) */}
+                <div className="space-y-3 pt-2">
+                    {/* Primary Button: Report Issue */}
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={handleReportDirect}
+                        className="w-full py-4 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base flex items-center justify-between shadow-lg shadow-emerald-500/25 active:scale-98 transition-all cursor-pointer group"
+                    >
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="w-10 h-10 rounded-xl bg-slate-950/10 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-2xl text-slate-950">add_a_photo</span>
+                            </div>
+                            <div>
+                                <span className="block text-base font-extrabold leading-tight text-slate-950">{t.ctaReport}</span>
+                                <span className="block text-[11px] text-slate-900/80 font-medium">{t.ctaReportSub}</span>
+                            </div>
+                        </div>
+                        <span className="material-symbols-outlined text-2xl text-slate-950 group-hover:translate-x-1 transition-transform">
+                            arrow_forward
+                        </span>
+                    </button>
+
+                    {/* Secondary Button: Explore Feed */}
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={handleExploreFeed}
+                        className="w-full py-3.5 px-5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm flex items-center justify-between active:scale-98 transition-all cursor-pointer group"
+                    >
+                        <div className="flex items-center gap-3 text-left">
+                            <span className="material-symbols-outlined text-xl text-emerald-300">feed</span>
+                            <div>
+                                <span className="block font-bold text-sm leading-tight">{t.ctaFeed}</span>
+                                <span className="block text-[11px] text-white/65">{t.ctaFeedSub}</span>
+                            </div>
+                        </div>
+                        <span className="material-symbols-outlined text-lg text-white/70 group-hover:translate-x-1 transition-transform">
+                            chevron_right
+                        </span>
+                    </button>
+                </div>
+            </main>
+
+            {/* Bottom Roles Selector Link */}
+            <footer className="max-w-md mx-auto w-full pt-4 pb-2 border-t border-white/10 text-center">
+                <div className="flex items-center justify-between text-xs text-white/75">
+                    <span>{t.portalLinks}</span>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/select-role")}
+                        className="font-bold text-emerald-300 hover:text-white underline underline-offset-4 cursor-pointer transition-colors"
+                    >
+                        {t.choosePortal}
+                    </button>
+                </div>
+            </footer>
         </motion.div>
     );
 }

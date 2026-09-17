@@ -427,37 +427,37 @@ export default function RoleLoginScreen() {
                 <form onSubmit={handleSubmit}>
                     <div className="bg-surface-container-lowest rounded-3xl shadow-xl border border-outline-variant/40 p-6 space-y-5">
 
-                        {/* 1-Click Demo Evaluation Login for Hackathon Judges */}
-                        <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/25 flex flex-col gap-2">
+                        {/* 1-Click Instant Demo Access */}
+                        <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex flex-col gap-2">
                             <div className="flex items-center justify-between">
-                                <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-[15px]">verified</span>
-                                    Judge & Evaluator 1-Click Access
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[15px]">bolt</span>
+                                    Instant 1-Click Demo Login
                                 </span>
-                                <span className="text-[10px] bg-primary/20 text-primary font-mono font-bold px-2 py-0.5 rounded-full">
-                                    Instant Demo
+                                <span className="text-[10px] bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 font-mono font-bold px-2 py-0.5 rounded-full">
+                                    No Typing Needed
                                 </span>
                             </div>
                             <button
                                 type="button"
                                 disabled={loading}
                                 onClick={handleQuickDemo}
-                                className="w-full py-2.5 px-3 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                             >
-                                <span className="material-symbols-outlined text-base">bolt</span>
+                                <span className="material-symbols-outlined text-base">login</span>
                                 <span>
-                                    {role === "citizen" && "Auto-Fill & Verify Demo Citizen (+91 9876543210)"}
-                                    {role === "student" && "Demo Login: Student Innovator (APAAR-12345)"}
-                                    {role === "university" && "Demo Login: BIT Mesra (admin@bitmesra.ac.in)"}
-                                    {role === "official" && "Demo Login: IAS Municipal Commissioner (GOV-001)"}
-                                    {role === "industry" && "Demo Login: Tata Steel CSR Foundation (IND-001)"}
+                                    {role === "citizen" && "Instant Demo Citizen Login (+91 9876543210)"}
+                                    {role === "student" && "Instant Demo Student Login (APAAR-12345)"}
+                                    {role === "university" && "Instant Demo University Login (BIT Mesra)"}
+                                    {role === "official" && "Instant Demo Official Login (GOV-001)"}
+                                    {role === "industry" && "Instant Demo Industry Login (IND-001)"}
                                 </span>
                             </button>
                         </div>
 
                         <div>
-                            <h2 className="text-base font-bold text-on-surface">
-                                {otpSent ? "Enter OTP" : "Or enter credentials manually"}
+                            <h2 className="text-sm font-bold text-on-surface">
+                                {otpSent ? "Enter 6-Digit Verification Code" : "Or enter your credentials manually"}
                             </h2>
                             <p className="text-xs text-on-surface-variant mt-0.5">
                                 {cfg.hint}
