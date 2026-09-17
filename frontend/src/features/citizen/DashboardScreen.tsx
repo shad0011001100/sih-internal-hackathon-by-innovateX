@@ -719,7 +719,7 @@ export default function DashboardScreen() {
 {/*  CENTER FEED (col-span-6 on Desktop): Search, Filters, Issue Cards  */}
 <main className="lg:col-span-6 space-y-4 pb-20 lg:pb-8">
 {/* 🌟 CIVIC STORIES ROW (Instagram-Style Micro-Stories) */}
-<div className="bg-surface-container-lowest rounded-3xl p-3.5 sm:p-4 whisper-border ambient-shadow">
+<div data-tour="civic-highlights" className="bg-surface-container-lowest rounded-3xl p-3.5 sm:p-4 whisper-border ambient-shadow">
     <div className="flex items-center justify-between mb-2.5 px-1">
         <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 relative">
@@ -806,15 +806,19 @@ export default function DashboardScreen() {
     </div>
 )}
 
-{/*  CLOSED INNOVATION LOOP BANNER (Point 10 - Desktop Only to prevent mobile clutter)  */}
-<div className="hidden lg:block bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-5 border border-primary/20 shadow-xs relative overflow-hidden">
+{/*  THIS IS HOW YOUR PROBLEM WILL BE RESOLVED BANNER  */}
+<div data-tour="innovation-loop" className="block bg-gradient-to-r from-primary/15 via-emerald-500/10 to-secondary/15 rounded-3xl p-4 sm:p-5 border border-primary/20 shadow-xs relative overflow-hidden">
     <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider mb-1">
-        <span className="material-symbols-outlined text-sm">all_inclusive</span>
-        Jharkhand Closed Innovation Loop
+        <span className="material-symbols-outlined text-sm">verified</span>
+        {lang === "HI" ? "आपकी समस्या का समाधान" : "How SocioSolve Works"}
     </div>
-    <h3 className="font-headline-sm text-base font-bold text-on-surface">Campus Research Solving Civic Grievances</h3>
+    <h3 className="font-headline-sm text-base sm:text-lg font-bold text-on-surface">
+        {lang === "HI" ? "ऐसे हल होगी आपकी समस्या" : "This is how your problem will be resolved"}
+    </h3>
     <p className="text-xs text-on-surface-variant mt-0.5 leading-normal">
-        Real citizen grievances assigned to university engineering teams and resolved on ground.
+        {lang === "HI" 
+            ? "आपके फोन से फोटो लेने से लेकर कॉलेज के छात्र इंजीनियरों और नगर निगम कर्मियों द्वारा ज़मीन पर सुधार तक।"
+            : "From snapping a photo on your phone to college engineering teams and municipal workers resolving it on the ground."}
     </p>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 pt-3 border-t border-outline-variant/30 text-center">
         {/* Step 1: Citizen Field Reporting */}
@@ -831,8 +835,8 @@ export default function DashboardScreen() {
                     <span className="material-symbols-outlined text-[12px]">add_a_photo</span>
                 </span>
             </div>
-            <span className="block text-primary font-bold text-xs">1. Report</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">Citizen + GPS</span>
+            <span className="block text-primary font-bold text-xs">{lang === "HI" ? "1. फोटो लें" : "1. Snap Photo"}</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "GPS लोकेशन" : "Report with GPS"}</span>
         </div>
 
         {/* Step 2: AI Triage & Analytics Scoring */}
@@ -849,8 +853,8 @@ export default function DashboardScreen() {
                     <span className="material-symbols-outlined text-[12px]">psychology</span>
                 </span>
             </div>
-            <span className="block text-secondary font-bold text-xs">2. Triage</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">AI Scoring</span>
+            <span className="block text-secondary font-bold text-xs">{lang === "HI" ? "2. AI जांच" : "2. AI Triage"}</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "प्राथमिकता तय" : "Urgency Check"}</span>
         </div>
 
         {/* Step 3: University Engineering Team */}
@@ -867,8 +871,8 @@ export default function DashboardScreen() {
                     <span className="material-symbols-outlined text-[12px]">school</span>
                 </span>
             </div>
-            <span className="block text-amber-600 font-bold text-xs">3. Solve</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">Faculty + Team</span>
+            <span className="block text-amber-600 font-bold text-xs">{lang === "HI" ? "3. छात्र समाधान" : "3. Student Solvers"}</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "कॉलेज टेक लैब" : "Campus Tech Labs"}</span>
         </div>
 
         {/* Step 4: Govt Ground Infrastructure Impact */}
@@ -885,8 +889,8 @@ export default function DashboardScreen() {
                     <span className="material-symbols-outlined text-[12px]">verified</span>
                 </span>
             </div>
-            <span className="block text-emerald-600 font-bold text-xs">4. Impact</span>
-            <span className="text-[10px] text-on-surface-variant font-medium">Govt Rollout</span>
+            <span className="block text-emerald-600 font-bold text-xs">{lang === "HI" ? "4. मौके पर सुधार" : "4. Fixed on Ground"}</span>
+            <span className="text-[10px] text-on-surface-variant font-medium">{lang === "HI" ? "नगर निगम कार्य" : "Municipal Action"}</span>
         </div>
     </div>
 </div>
@@ -946,7 +950,7 @@ export default function DashboardScreen() {
 )}
 
 {/*  Search & Filters Container  */}
-<div className="bg-surface-container-lowest rounded-3xl p-4 whisper-border ambient-shadow space-y-3">
+<div data-tour="search-and-filters" className="bg-surface-container-lowest rounded-3xl p-4 whisper-border ambient-shadow space-y-3">
 {/*  Live Controlled Search Bar  */}
 <div className="relative flex items-center">
 <span className="material-symbols-outlined absolute left-3.5 text-outline text-xl" data-icon="search">search</span>
@@ -1408,7 +1412,7 @@ export default function DashboardScreen() {
 </button>
 </div>
 {/*  Multilingual Voice Hotline Card  */}
-<div id="hotline" className="rounded-3xl p-5 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-sm scroll-mt-20">
+<div id="hotline" data-tour="voice-hotline" className="rounded-3xl p-5 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-sm scroll-mt-20">
 <div className="flex items-center gap-2 mb-2">
 <span className="material-symbols-outlined text-2xl text-secondary-fixed" data-icon="record_voice_over">record_voice_over</span>
 <h5 className="font-headline-sm text-sm font-bold">Multilingual Voice Hotline</h5>
@@ -1468,6 +1472,7 @@ export default function DashboardScreen() {
 </button>
 
 <button 
+    data-tour="mobile-helpline-tab"
     onClick={() => setShowHelplineModal(true)} 
     aria-label="Helpline" 
     className="flex flex-col items-center justify-center min-h-[44px] min-w-[54px] text-on-surface-variant px-2 py-1 hover:text-primary active:scale-90 transition-transform duration-150 cursor-pointer" 

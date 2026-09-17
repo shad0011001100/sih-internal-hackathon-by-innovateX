@@ -14,15 +14,18 @@ export interface TourStep {
 
 const getVisibleElement = (selector: string): HTMLElement | null => {
     if (!selector) return null;
-    const elements = document.querySelectorAll<HTMLElement>(selector);
-    for (let i = 0; i < elements.length; i++) {
-        const el = elements[i];
-        const r = el.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0 && window.getComputedStyle(el).display !== "none" && window.getComputedStyle(el).visibility !== "hidden") {
-            return el;
+    const selectors = selector.split(",").map(s => s.trim());
+    for (const sel of selectors) {
+        const elements = document.querySelectorAll<HTMLElement>(sel);
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i];
+            const r = el.getBoundingClientRect();
+            if (r.width > 0 && r.height > 0 && window.getComputedStyle(el).display !== "none" && window.getComputedStyle(el).visibility !== "hidden") {
+                return el;
+            }
         }
     }
-    return elements[0] || null;
+    return null;
 };
 
 const getTourSteps = (lang: "EN" | "HI"): TourStep[] => [
@@ -30,52 +33,104 @@ const getTourSteps = (lang: "EN" | "HI"): TourStep[] => [
         id: "intro",
         targetSelector: "",
         stepNumber: 1,
-        totalSteps: 4,
-        badge: lang === "HI" ? "शुरुआत करें • 20 सेकंड गाइड" : "GET STARTED • 20s GUIDE",
+        totalSteps: 8,
+        badge: lang === "HI" ? "शुरुआत करें • आसान गाइड" : "GET STARTED • QUICK GUIDE",
         title: lang === "HI" ? "समझ नहीं आ रहा क्या करें? यहाँ से शुरू करें!" : "Don't know what to do? Start here!",
         description: lang === "HI"
             ? "सोशियोसॉल्व आपके वार्ड की समस्याओं (सड़क के गड्ढे, कचरा, पानी लीकेज) को सीधे नगर निगम और कॉलेज इंजीनियरिंग टीमों से ठीक करवाता है।"
-            : "SocioSolve connects your neighborhood problems (potholes, garbage, leaks) directly to municipal teams and college engineering solvers.",
+            : "SocioSolve connects your neighborhood problems (potholes, garbage, water leaks) directly to municipal teams and college engineering solvers.",
         icon: "waving_hand",
-        actionLabel: lang === "HI" ? "दिखाएं कहाँ क्लिक करें →" : "Show Me Where to Click →"
+        actionLabel: lang === "HI" ? "आगे: प्रक्रिया देखें →" : "Show Me How It Works →"
+    },
+    {
+        id: "innovation-loop",
+        targetSelector: '[data-tour="innovation-loop"]',
+        stepNumber: 2,
+        totalSteps: 8,
+        badge: lang === "HI" ? "समाधान प्रक्रिया" : "PROBLEM RESOLUTION",
+        title: lang === "HI" ? "ऐसे हल होगी आपकी समस्या" : "This is how your problem will be resolved",
+        description: lang === "HI"
+            ? "1. फोटो लें → 2. AI प्राथमिकता तय करेगा → 3. कॉलेज छात्र इंजीनियरिंग समाधान बनाएंगे → 4. नगर निगम ज़मीन पर काम पूरा करेगा।"
+            : "1. Snap a photo with GPS → 2. AI checks urgency → 3. Student solvers design the fix → 4. Municipal workers resolve it on the ground.",
+        icon: "verified",
+        actionLabel: lang === "HI" ? "आगे: वार्ड की उपलब्धियां →" : "Next: Civic Highlights →"
+    },
+    {
+        id: "civic-highlights",
+        targetSelector: '[data-tour="civic-highlights"]',
+        stepNumber: 3,
+        totalSteps: 8,
+        badge: lang === "HI" ? "वार्ड की उपलब्धियां" : "CIVIC HIGHLIGHTS",
+        title: lang === "HI" ? "देखें आपके इलाके में क्या ठीक हुआ" : "See what got fixed in your ward",
+        description: lang === "HI"
+            ? "हर दिन ठीक हुए गड्ढों, साफ़ पानी की लाइनों और चालू स्ट्रीटलाइट्स की लाइव स्टोरीज़ देखें। नागरिकों ने इन्हें सराहा है!"
+            : "Tap these highlight circles to see daily milestones in your area — like repaved roads in Harmu or restored clean water in Doranda.",
+        icon: "auto_awesome",
+        actionLabel: lang === "HI" ? "आगे: समस्या रिपोर्ट करें →" : "Next: Report a Problem →"
     },
     {
         id: "report",
         targetSelector: '[data-tour="mobile-report-btn"], [data-tour="report-btn"]',
-        stepNumber: 2,
-        totalSteps: 4,
-        badge: lang === "HI" ? "1. समस्या दर्ज करें" : "1. REPORT AN ISSUE",
-        title: lang === "HI" ? "समस्या देखी? यहाँ क्लिक करें" : "Spot a problem? Click here",
+        stepNumber: 4,
+        totalSteps: 8,
+        badge: lang === "HI" ? "1. समस्या दर्ज करें" : "1. FILE A COMPLAINT",
+        title: lang === "HI" ? "समस्या देखी? यहाँ रिपोर्ट करें" : "Spot a problem? Click here to report",
         description: lang === "HI" 
-            ? "सड़क के गड्ढे या कचरे की फोटो लेने के लिए इस '+' बटन को दबाएं। GPS अपने आप आपका सटीक वार्ड जोड़ देगा।"
-            : "Tap this '+' button to snap a photo of potholes or garbage. GPS automatically attaches your exact ward location.",
+            ? "सड़क के गड्ढे, कचरे या पानी लीकेज की फोटो लेने के लिए इस '+' बटन को दबाएं। GPS अपने आप आपका सटीक वार्ड जोड़ देगा।"
+            : "Whenever you spot an issue, tap this '+' button to take a photo. GPS automatically tags your exact ward location.",
         icon: "add_a_photo",
-        actionLabel: lang === "HI" ? "आगे: जनसमर्थन फ़ीड →" : "Next: Community Feed →"
+        actionLabel: lang === "HI" ? "आगे: वार्ड अनुसार खोजें →" : "Next: Search & Filters →"
+    },
+    {
+        id: "search-and-filters",
+        targetSelector: '[data-tour="search-and-filters"]',
+        stepNumber: 5,
+        totalSteps: 8,
+        badge: lang === "HI" ? "2. खोज और फ़िल्टर" : "2. SEARCH & FILTERS",
+        title: lang === "HI" ? "अपने वार्ड की शिकायतें खोजें" : "Search & filter complaints in your ward",
+        description: lang === "HI"
+            ? "अपनी कॉलोनी का नाम टाइप करें, या सड़क, पानी, कचरा और बिजली जैसी श्रेणियों के अनुसार फ़िल्टर करके देखें।"
+            : "Search by locality or handpump, or filter by categories like Roads, Water, Sanitation, and Electricity.",
+        icon: "tune",
+        actionLabel: lang === "HI" ? "आगे: जनसमर्थन दें →" : "Next: Upvote & Support →"
     },
     {
         id: "endorse",
-        targetSelector: '[data-tour="endorse-btn"]',
-        stepNumber: 3,
-        totalSteps: 4,
-        badge: lang === "HI" ? "2. सामुदायिक समर्थन" : "2. COMMUNITY ACTION",
-        title: lang === "HI" ? "त्वरित समाधान के लिए समर्थन दें" : "Upvote to speed up repairs",
+        targetSelector: '[data-tour="endorse-btn"], [data-tour="community-feed-tab"]',
+        stepNumber: 6,
+        totalSteps: 8,
+        badge: lang === "HI" ? "3. सामुदायिक समर्थन" : "3. COMMUNITY SUPPORT",
+        title: lang === "HI" ? "समस्या को जल्दी सुलझाने के लिए समर्थन दें" : "Upvote to speed up repairs",
         description: lang === "HI"
-            ? "अपने वार्ड की शिकायतें देखें। 'समर्थन' दबाएं ताकि नगर निगम इसे प्राथमिकता सूची में सबसे ऊपर ले सके।"
-            : "Browse neighbor reports in your ward. Tap 'Support' on any issue to push it higher on the municipal priority schedule.",
+            ? "अपने पड़ोसियों की शिकायतों पर 'समर्थन' (Upvote) दबाएं। जितने अधिक नागरिक समर्थन देंगे, नगर निगम उसे उतनी ही तेजी से हल करेगा।"
+            : "Tap 'Supports' on neighbor complaints. Issues with higher community votes get pushed to the top of the municipal priority queue!",
         icon: "thumb_up",
-        actionLabel: lang === "HI" ? "आगे: शिकायत ट्रैक करें →" : "Next: Track Complaints →"
+        actionLabel: lang === "HI" ? "आगे: लाइव स्टेटस ट्रैक करें →" : "Next: Track Complaints →"
     },
     {
         id: "my-reports",
         targetSelector: '[data-tour="my-reports-tab"]',
-        stepNumber: 4,
-        totalSteps: 4,
-        badge: lang === "HI" ? "3. निवारण ट्रैकिंग" : "3. RESOLUTION TRACKING",
-        title: lang === "HI" ? "समाधान होने तक लाइव ट्रैक करें" : "Follow your issue live to completion",
+        stepNumber: 7,
+        totalSteps: 8,
+        badge: lang === "HI" ? "4. लाइव ट्रैकिंग" : "4. LIVE TRACKING",
+        title: lang === "HI" ? "समाधान होने तक लाइव ट्रैक करें" : "Follow your complaint live to resolution",
         description: lang === "HI"
-            ? "'मेरी शिकायतें' में देखें कि आपकी रिपोर्ट AI वर्गीकरण से लेकर कॉलेज प्रोटोटाइप और अंतिम सुधार तक कैसे पहुँचती है।"
-            : "Switch to 'My Complaints' to watch your grievance move through 5 stages — from AI triage to university lab prototype to verified fix.",
+            ? "'मेरी शिकायतें' टैब में देखें कि आपकी रिपोर्ट AI वर्गीकरण से लेकर कॉलेज प्रोटोटाइप और अंतिम सुधार तक कैसे पहुँचती है।"
+            : "Switch to 'My Complaints' to watch your grievance move through 5 stages — from AI triage to university lab prototype to verified on-ground fix.",
         icon: "task_alt",
+        actionLabel: lang === "HI" ? "आगे: फोन हेल्पलाइन →" : "Next: Phone Hotline →"
+    },
+    {
+        id: "voice-hotline",
+        targetSelector: '[data-tour="voice-hotline"], [data-tour="mobile-helpline-tab"]',
+        stepNumber: 8,
+        totalSteps: 8,
+        badge: lang === "HI" ? "5. फोन हेल्पलाइन" : "5. PHONE HOTLINE",
+        title: lang === "HI" ? "लिख नहीं सकते? 5 भाषाओं में कॉल करें" : "Can't type? Report via phone in 5 languages",
+        description: lang === "HI"
+            ? "1800-JH-VOICE पर मुफ्त कॉल करें। संताली, हो, कुडुख, मुंडारी या हिन्दी में अपनी समस्या बताएं और ऑपरेटर आपकी शिकायत दर्ज करेगा।"
+            : "Call 1800-JH-VOICE toll-free to report in Hindi, Santali, Ho, Kurukh, or Mundari. An official operator will register it for you.",
+        icon: "record_voice_over",
         actionLabel: lang === "HI" ? "🎉 समझ गए • ऐप शुरू करें" : "🎉 Got It • Start Exploring"
     }
 ];
@@ -107,14 +162,42 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
         }
     }, [isOpen, step]);
 
+    const scrollToTarget = useCallback((el: HTMLElement) => {
+        const computedStyle = window.getComputedStyle(el);
+        const isFixed = computedStyle.position === "fixed";
+        
+        if (!isFixed) {
+            const rect = el.getBoundingClientRect();
+            const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+            // Center the target element in the viewport comfortably
+            const targetScrollY = currentScrollY + rect.top - (window.innerHeight * 0.35);
+            
+            window.scrollTo({
+                top: Math.max(0, targetScrollY),
+                behavior: "smooth"
+            });
+        }
+    }, []);
+
     useEffect(() => {
         if (!isOpen) return;
+
+        let rafId: number;
+        const startTime = performance.now();
+
+        // Continuously update the spotlight mask coordinates at 60fps during smooth scroll
+        const followSmoothScroll = () => {
+            updateRect();
+            if (performance.now() - startTime < 850) {
+                rafId = requestAnimationFrame(followSmoothScroll);
+            }
+        };
 
         if (step.targetSelector) {
             const el = getVisibleElement(step.targetSelector);
             if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                setTimeout(updateRect, 300);
+                scrollToTarget(el);
+                rafId = requestAnimationFrame(followSmoothScroll);
             } else {
                 setTargetRect(null);
             }
@@ -124,6 +207,7 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
 
         const handleResize = () => updateRect();
         const handleScroll = () => updateRect();
+        const handleTouchMove = () => updateRect();
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
             if (e.key === "ArrowRight") handleNext();
@@ -132,14 +216,17 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
 
         window.addEventListener("resize", handleResize);
         window.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("touchmove", handleTouchMove, { passive: true });
         window.addEventListener("keydown", handleKeyDown);
 
         return () => {
+            if (rafId) cancelAnimationFrame(rafId);
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [isOpen, currentStepIdx, step, updateRect]);
+    }, [isOpen, currentStepIdx, step, updateRect, scrollToTarget]);
 
     if (!isOpen) return null;
 
@@ -234,7 +321,7 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                                 <span className="material-symbols-outlined text-xs">
                                     {isTargetInLowerHalf ? "arrow_downward" : "arrow_upward"}
                                 </span>
-                                <span>{isTargetInLowerHalf ? (lang === "HI" ? "नीचे हाइलाइट किया गया बटन देखें ↓" : "Look at the highlighted button below ↓") : (lang === "HI" ? "ऊपर हाइलाइट किया गया हिस्सा देखें ↑" : "Look at the highlighted section above ↑")}</span>
+                                <span>{isTargetInLowerHalf ? (lang === "HI" ? "नीचे हाइलाइट किया गया बटन देखें ↓" : "Look at the highlighted section below ↓") : (lang === "HI" ? "ऊपर हाइलाइट किया गया हिस्सा देखें ↑" : "Look at the highlighted section above ↑")}</span>
                             </span>
                         </div>
                     )}
@@ -275,13 +362,13 @@ export const CivicAppTour: React.FC<CivicAppTourProps> = ({ isOpen, onClose, lan
                     </div>
 
                     {/* Progress Indicator Dots */}
-                    <div className="flex items-center gap-1.5 pt-1">
+                    <div className="flex items-center gap-1 pt-1 overflow-x-auto no-scrollbar">
                         {steps.map((s, idx) => (
                             <div
                                 key={s.id}
                                 className={`h-1.5 rounded-full transition-all duration-300 ${
                                     idx === currentStepIdx 
-                                        ? "w-6 bg-amber-500" 
+                                        ? "w-5 bg-amber-500" 
                                         : idx < currentStepIdx 
                                         ? "w-2 bg-amber-500/40" 
                                         : "w-2 bg-surface-container-highest"
