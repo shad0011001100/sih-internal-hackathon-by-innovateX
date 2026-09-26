@@ -11,21 +11,21 @@ export default function IndustryDashboard() {
     const [marketplace, setMarketplace] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [fundingId, setFundingId] = useState<number | null>(null);
+    const [submittingProjectId, setSubmittingProjectId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [activeNav, setActiveNav] = useState("Dashboard");
     const [supportModalOpen, setSupportModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<any | null>(null);
-    const [selectedTrack, setSelectedTrack] = useState<"funding" | "mentorship" | "lab_sponsorship">("funding");
-    const [pledgeAmount, setPledgeAmount] = useState(50000);
+    const [selectedTrack, setSelectedTrack] = useState<"mentorship" | "lab_sponsorship" | "field_adoption">("mentorship");
     const [mentorDetails, setMentorDetails] = useState("Senior IoT Systems Engineer (Tata Steel R&D)");
     const [labDetails, setLabDetails] = useState("Turbidity & Flow Sensors IoT Prototyping Kit (5 Units)");
+    const [fieldSiteDetails, setFieldSiteDetails] = useState("Tata Steel Jamshedpur Testing Ground");
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
     const [partnerSettings, setPartnerSettings] = useState({
         companyName: "Tata Steel CSR Foundation",
         cinNumber: "L27100MH1907PLC000260",
         csrRegistrationNo: "CSR00018942",
-        annualBudget: "₹ 50,00,000",
+        annualCapacity: "15 Capstone Projects",
         focusSdgs: "SDG 6 (Clean Water), SDG 11 (Sustainable Cities), SDG 9 (Infrastructure)",
         nodalPocName: "Siddharth Roy (Head - Urban CSR)",
         nodalEmail: "csr.jharkhand@tatasteel.com",
@@ -44,7 +44,7 @@ export default function IndustryDashboard() {
 
     const handleSavePartnerSettings = (e: React.FormEvent) => {
         e.preventDefault();
-        showToast("CSR Partner Profile & Capital Allocation settings updated successfully!", "success");
+        showToast("CSR Partner Profile & Sponsorship settings updated successfully!", "success");
         setSettingsModalOpen(false);
     };
 
@@ -63,9 +63,8 @@ export default function IndustryDashboard() {
                 sponsor: {
                     company_name: companyName,
                     sector: "Sustainable Urban Infrastructure",
-                    grant_amount: proj.amount || 50000,
-                    support_track: proj.offer_type || "funding",
-                    support_description: "CSR Innovation Seed Grant & Prototyping Support",
+                    support_track: proj.offer_type || "mentorship",
+                    support_description: "Technical Mentorship & Hardware Prototyping Support",
                     date_sponsored: proj.created_at || "12 Feb 2026"
                 },
                 project: {
@@ -144,28 +143,28 @@ export default function IndustryDashboard() {
         e.preventDefault();
         if (!selectedItem) return;
         const projectId = selectedItem.id;
-        setFundingId(projectId);
+        setSubmittingProjectId(projectId);
         setSubmitting(true);
         try {
-            const desc = selectedTrack === 'funding' 
-                ? `CSR Financial Grant of ${formatINR(pledgeAmount)}`
-                : selectedTrack === 'mentorship'
+            const desc = selectedTrack === 'mentorship'
                 ? `Industry Mentorship: ${mentorDetails}`
-                : `Hardware & Lab Sponsorship: ${labDetails}`;
+                : selectedTrack === 'lab_sponsorship'
+                ? `Hardware & Lab Sponsorship: ${labDetails}`
+                : `Field Pilot Adoption & Testing: ${fieldSiteDetails}`;
 
             await safeFetch("/api/industry/fund", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     project_id: projectId,
-                    amount: selectedTrack === 'funding' ? Number(pledgeAmount) : 0,
+                    amount: 0,
                     offer_type: selectedTrack,
                     description: desc
                 })
             });
 
-            const trackLabel = selectedTrack === 'funding' ? `CSR Grant of ${formatINR(pledgeAmount)}` : selectedTrack === 'mentorship' ? 'Technical Mentorship' : 'Hardware Lab Sponsorship';
-            showToast(`${trackLabel} pledged successfully!`, "success");
+            const trackLabel = selectedTrack === 'mentorship' ? 'Technical Mentorship' : selectedTrack === 'lab_sponsorship' ? 'Hardware Lab Sponsorship' : 'Field Pilot Adoption';
+            showToast(`${trackLabel} committed successfully!`, "success");
             setMarketplace(prev => prev.filter(m => m.id !== projectId));
             setSupportModalOpen(false);
         } catch (e: any) {
@@ -173,7 +172,7 @@ export default function IndustryDashboard() {
             setError(e.message || "Failed to pledge CSR support");
             showToast(e.message || "Failed to pledge CSR support", "error");
         } finally {
-            setFundingId(null);
+            setSubmittingProjectId(null);
             setSubmitting(false);
         }
     };
@@ -194,10 +193,6 @@ export default function IndustryDashboard() {
         }
     };
 
-    const formatINR = (amount: number) => {
-        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount || 0);
-    };
-
     const containerVariants = {
         hidden: { opacity: 0 },
         show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -208,7 +203,6 @@ export default function IndustryDashboard() {
     };
 
     const companyName = dashboardData?.companyName || dashboardData?.profile?.company_name || 'Industry Partner';
-    const totalInvestment = dashboardData?.metrics?.totalInvestment ?? dashboardData?.profile?.total_invested ?? 0;
     const issuesFunded = dashboardData?.metrics?.issuesFunded ?? dashboardData?.profile?.issues_funded ?? (dashboardData?.offers ? dashboardData.offers.length : 0);
     const successRate = dashboardData?.metrics?.successRate ?? dashboardData?.profile?.success_rate ?? 100;
     const fundedProjects = dashboardData?.fundedProjects || [];
@@ -264,11 +258,16 @@ export default function IndustryDashboard() {
                 </span>
             </div>
 
-            {/* Progress & Grant Bar */}
+            {/* Support Track & Progress */}
             <div className="flex justify-between items-center bg-surface-container-low/60 rounded-xl p-2.5 border border-outline-variant/20">
                 <div>
-                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold block">CSR Grant Committed</span>
-                    <span className="font-mono font-bold text-sm text-primary">{formatINR(proj.amount)}</span>
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold block">Support Track</span>
+                    <span className="font-semibold text-xs text-primary flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">
+                            {proj.offer_type === 'mentorship' ? 'psychology' : proj.offer_type === 'lab_sponsorship' ? 'memory' : 'domain'}
+                        </span>
+                        <span>{proj.offer_type === 'mentorship' ? 'Technical Mentorship' : proj.offer_type === 'lab_sponsorship' ? 'Hardware & Lab Kit' : 'Field Pilot Adoption'}</span>
+                    </span>
                 </div>
                 <div className="w-1/2 sm:w-1/3">
                     <div className="flex justify-between text-[10px] text-on-surface-variant mb-1 font-mono">
@@ -345,8 +344,8 @@ export default function IndustryDashboard() {
                     <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-primary/10 text-primary uppercase tracking-wider">
                         {item.category || "Civic Innovation"}
                     </span>
-                    <span className="px-2 py-0.5 bg-error/15 text-error text-[10px] font-bold rounded-full">
-                        {item.impact || 'High'} Impact
+                    <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full">
+                        Open for Adoption
                     </span>
                 </div>
                 <h3 className="font-bold text-on-surface text-base sm:text-lg mb-1.5">{item.title}</h3>
@@ -360,20 +359,19 @@ export default function IndustryDashboard() {
             </div>
             <div className="flex items-center justify-between pt-3 border-t border-outline-variant/20 mt-auto">
                 <div>
-                    <span className="text-[10px] text-outline uppercase block mb-0.5 font-medium">Est. Capital / Need</span>
-                    <span className="font-heading font-bold text-base text-on-surface">{formatINR(item.estCost || item.estimated_cost || 50000)}</span>
+                    <span className="text-[10px] text-outline uppercase block mb-0.5 font-medium">Support Track Needed</span>
+                    <span className="font-heading font-semibold text-xs text-on-surface">{item.support_needed || "Mentorship & Prototyping"}</span>
                 </div>
                 <button 
                     type="button"
                     onClick={() => {
                         setSelectedItem(item);
-                        setPledgeAmount(item.estCost || item.estimated_cost || 50000);
                         setSupportModalOpen(true);
                     }} 
                     className="px-4 py-2 bg-primary hover:bg-primary-container text-on-primary rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                     <span className="material-symbols-outlined text-[16px]">handshake</span>
-                    Sponsor / Mentor
+                    Adopt &amp; Support
                 </button>
             </div>
         </div>
@@ -391,7 +389,7 @@ export default function IndustryDashboard() {
         <div className="min-h-screen flex flex-col bg-background pb-20">
             {/* Header */}
             <header className="sticky top-0 z-40 bg-inverse-surface text-inverse-on-surface shadow-md">
-                <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="w-full px-4 h-16 flex items-center justify-between">
                     <div>
                         <span className="text-[10px] text-outline uppercase tracking-widest font-bold">Partner Portal</span>
                         <div className="flex items-center gap-2">
@@ -423,7 +421,7 @@ export default function IndustryDashboard() {
 
             {/* Top Interactive Navigation Tabs */}
             <div className="bg-surface-container-low border-b border-outline-variant/30 sticky top-16 z-30 shadow-xs">
-                <div className="max-w-[1200px] mx-auto px-4 flex items-center gap-2 overflow-x-auto py-2.5 scrollbar-none">
+                <div className="w-full px-4 flex items-center gap-2 overflow-x-auto py-2.5 scrollbar-none">
                     {[
                         { id: "Dashboard", label: "Dashboard Overview", icon: "grid_view", count: null },
                         { id: "Portfolio", label: "CSR Portfolio", icon: "account_balance_wallet", count: fundedProjects.length },
@@ -459,7 +457,7 @@ export default function IndustryDashboard() {
                 </div>
             </div>
 
-            <motion.main variants={containerVariants} initial="hidden" animate="show" className="flex-1 max-w-[1200px] mx-auto w-full px-4 py-6 space-y-6">
+            <motion.main variants={containerVariants} initial="hidden" animate="show" className="flex-1 w-full px-4 py-6 space-y-6">
                 
                 {error && (
                     <div className="p-4 rounded-2xl bg-error-container text-on-error-container flex items-center justify-between">
@@ -483,14 +481,14 @@ export default function IndustryDashboard() {
                         {/* Impact Summary */}
                         <motion.section variants={itemVariants} className="grid grid-cols-3 gap-3">
                             <div className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col items-center text-center col-span-3 sm:col-span-1 bg-gradient-to-br from-primary-container/10 to-transparent">
-                                <span className="text-xs text-on-surface-variant font-semibold mb-1 uppercase tracking-wider">Total CSR Investment</span>
+                                <span className="text-xs text-on-surface-variant font-semibold mb-1 uppercase tracking-wider">Active Capstones</span>
                                 <div className="flex items-center gap-1 text-primary font-heading font-bold text-2xl">
-                                    {formatINR(totalInvestment)}
-                                    <span className="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                                    {fundedProjects.length || 6}
+                                    <span className="material-symbols-outlined text-base" data-icon="rocket_launch">rocket_launch</span>
                                 </div>
                             </div>
                             <div className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col items-center text-center col-span-1">
-                                <span className="text-xs text-on-surface-variant font-semibold mb-1 uppercase tracking-wider">Funded</span>
+                                <span className="text-xs text-on-surface-variant font-semibold mb-1 uppercase tracking-wider">Adopted</span>
                                 <span className="font-heading font-bold text-2xl text-on-surface">{issuesFunded}</span>
                             </div>
                             <div className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/30 flex flex-col items-center text-center col-span-1">
@@ -504,7 +502,7 @@ export default function IndustryDashboard() {
                             <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2">
                                 <div className="flex items-center gap-2">
                                     <span className="material-symbols-outlined text-primary text-xl">account_balance_wallet</span>
-                                    <h2 className="text-lg font-bold font-heading text-on-surface">Active Funded Projects</h2>
+                                    <h2 className="text-lg font-bold font-heading text-on-surface">Active Supported Projects</h2>
                                 </div>
                                 {fundedProjects.length > 0 && (
                                     <button 
@@ -520,7 +518,7 @@ export default function IndustryDashboard() {
 
                             {fundedProjects.length === 0 ? (
                                 <div className="p-6 rounded-2xl bg-surface-container-low text-center space-y-2">
-                                    <p className="text-xs text-on-surface-variant">No funded projects yet in your corporate portfolio.</p>
+                                    <p className="text-xs text-on-surface-variant">No supported projects yet in your corporate portfolio.</p>
                                     <button 
                                         type="button"
                                         onClick={() => { setActiveNav("Marketplace"); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
@@ -541,7 +539,7 @@ export default function IndustryDashboard() {
                             <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2">
                                 <div className="flex items-center gap-2">
                                     <span className="material-symbols-outlined text-secondary text-xl">volunteer_activism</span>
-                                    <h2 className="text-lg font-bold font-heading text-on-surface">Opportunities Awaiting CSR Capital</h2>
+                                    <h2 className="text-lg font-bold font-heading text-on-surface">Opportunities Awaiting Industry Support</h2>
                                 </div>
                                 {marketplace.length > 0 && (
                                     <button 
@@ -568,7 +566,7 @@ export default function IndustryDashboard() {
 
                 {/* VIEW 2: DEDICATED PORTFOLIO VIEW */}
                 {activeNav === "Portfolio" && (
-                    <motion.section variants={itemVariants} id="funded-projects" className="space-y-5">
+                    <motion.section variants={itemVariants} id="supported-projects" className="space-y-5">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant/30 pb-4">
                             <div>
                                 <h2 className="text-xl font-bold font-heading text-on-surface flex items-center gap-2">
@@ -643,7 +641,7 @@ export default function IndustryDashboard() {
                                         Student Capstone Marketplace
                                     </h2>
                                     <p className="text-xs text-on-surface-variant mt-1">
-                                        Verified civic problem statements adopted by engineering teams seeking CSR funding, hardware kits, or technical mentorship.
+                                        Verified civic problem statements adopted by engineering teams seeking industry sponsorship, hardware kits, or technical mentorship.
                                     </p>
                                 </div>
                                 <span className="text-xs font-mono text-on-surface-variant self-start sm:self-auto px-3 py-1 bg-surface-container rounded-full">
@@ -742,9 +740,9 @@ export default function IndustryDashboard() {
                                     <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Select CSR Support Track</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { key: "funding", label: "CSR Grant", icon: "payments", desc: "Capital Funding" },
                                             { key: "mentorship", label: "Mentorship", icon: "school", desc: "Expert Engineers" },
-                                            { key: "lab_sponsorship", label: "Lab Hardware", icon: "memory", desc: "Sensors & Kits" }
+                                            { key: "lab_sponsorship", label: "Lab Hardware", icon: "memory", desc: "Sensors & Kits" },
+                                            { key: "field_adoption", label: "Field Pilot", icon: "domain", desc: "Testing Grounds" }
                                         ].map(track => (
                                             <button
                                                 key={track.key}
@@ -764,17 +762,16 @@ export default function IndustryDashboard() {
                                     </div>
                                 </div>
 
-                                {selectedTrack === "funding" && (
+                                {selectedTrack === "field_adoption" && (
                                     <div>
-                                        <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Grant Pledge Amount (INR ₹)</label>
+                                        <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Pilot Deployment &amp; Testing Facility</label>
                                         <input
-                                            type="number"
+                                            type="text"
                                             required
-                                            min="5000"
-                                            step="5000"
-                                            value={pledgeAmount}
-                                            onChange={e => setPledgeAmount(Number(e.target.value))}
-                                            className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-secondary text-sm font-mono font-bold text-on-surface"
+                                            value={fieldSiteDetails}
+                                            onChange={e => setFieldSiteDetails(e.target.value)}
+                                            placeholder="e.g. Tata Steel Jamshedpur Testing Ground"
+                                            className="w-full px-3.5 py-2.5 bg-surface-container-low rounded-xl border border-outline-variant/50 focus:ring-2 focus:ring-secondary text-sm text-on-surface"
                                         />
                                     </div>
                                 )}
@@ -855,7 +852,7 @@ export default function IndustryDashboard() {
                                 </div>
                                 <div>
                                     <h3 className="text-base font-bold font-headline-sm text-on-surface">CSR Partner Profile &amp; Policies</h3>
-                                    <p className="text-[11px] text-on-surface-variant">Manage corporate entity credentials, allocation pool &amp; SDG focus</p>
+                                    <p className="text-[11px] text-on-surface-variant">Manage corporate entity credentials, sponsorship capacity &amp; SDG focus</p>
                                 </div>
                             </div>
                             <button type="button" onClick={() => setSettingsModalOpen(false)} className="p-1 rounded-full text-on-surface-variant hover:bg-surface-container cursor-pointer">
@@ -901,11 +898,11 @@ export default function IndustryDashboard() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Annual CSR Allocation Pool</label>
+                                        <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Annual Capstone Sponsorship Target</label>
                                         <input 
                                             type="text"
-                                            value={partnerSettings.annualBudget}
-                                            onChange={e => setPartnerSettings({ ...partnerSettings, annualBudget: e.target.value })}
+                                            value={partnerSettings.annualCapacity}
+                                            onChange={e => setPartnerSettings({ ...partnerSettings, annualCapacity: e.target.value })}
                                             className="w-full px-3 py-2 text-xs rounded-xl bg-surface-container-low border border-outline-variant/40 focus:ring-2 focus:ring-primary text-on-surface outline-none font-semibold text-primary"
                                         />
                                     </div>
@@ -940,7 +937,7 @@ export default function IndustryDashboard() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Priority UN Sustainable Development Goals (SDGs)</label>
+                                    <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Target UN Sustainable Development Goals (SDGs)</label>
                                     <input 
                                         type="text"
                                         value={partnerSettings.focusSdgs}
@@ -959,8 +956,8 @@ export default function IndustryDashboard() {
                                         className="mt-0.5 rounded text-primary focus:ring-primary cursor-pointer"
                                     />
                                     <div>
-                                        <span className="text-xs font-bold text-on-surface block">Automated State Innovation Grant Co-Matching</span>
-                                        <span className="text-[10px] text-on-surface-variant">Enable Jharkhand Innovation Council 1:1 matching on approved CSR student capstone funding</span>
+                                        <span className="text-xs font-bold text-on-surface block">Automated State Innovation Council Endorsement</span>
+                                        <span className="text-[10px] text-on-surface-variant">Enable Jharkhand Innovation Council endorsement on approved student capstone milestones</span>
                                     </div>
                                 </label>
 
@@ -972,8 +969,8 @@ export default function IndustryDashboard() {
                                         className="mt-0.5 rounded text-primary focus:ring-primary cursor-pointer"
                                     />
                                     <div>
-                                        <span className="text-xs font-bold text-on-surface block">Quarterly Impact &amp; 80G Tax Utilization Audit Delivery</span>
-                                        <span className="text-[10px] text-on-surface-variant">Receive automated certified fund utilization certificates verified by university nodal officers</span>
+                                        <span className="text-xs font-bold text-on-surface block">Quarterly Milestone Verification &amp; Impact Dossier Delivery</span>
+                                        <span className="text-[10px] text-on-surface-variant">Receive automated milestone completion certificates verified by university nodal officers</span>
                                     </div>
                                 </label>
                             </div>
@@ -1047,7 +1044,7 @@ export default function IndustryDashboard() {
                                 <div className="bg-surface-container-low/70 rounded-2xl p-4 border border-outline-variant/25 space-y-2.5">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
                                         <span className="material-symbols-outlined text-sm">domain</span>
-                                        Corporate CSR Grantor
+                                        Corporate Industry Partner
                                     </span>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                         <div>
@@ -1059,8 +1056,8 @@ export default function IndustryDashboard() {
                                             <span className="font-mono text-on-surface text-xs">{partnerSettings.csrRegistrationNo}</span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] text-on-surface-variant block">Grant Allocated</span>
-                                            <span className="font-mono font-bold text-primary text-xs">{formatINR(selectedImpactData.sponsor?.grant_amount)}</span>
+                                            <span className="text-[10px] text-on-surface-variant block">Support Track</span>
+                                            <span className="font-bold text-primary text-xs">{selectedImpactData.sponsor?.support_track === "lab_sponsorship" ? "Hardware & Lab Kit" : selectedImpactData.sponsor?.support_track === "field_adoption" ? "Field Pilot Adoption" : "Technical Mentorship"}</span>
                                         </div>
                                     </div>
                                 </div>

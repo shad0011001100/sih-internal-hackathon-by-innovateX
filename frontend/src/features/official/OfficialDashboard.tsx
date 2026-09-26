@@ -45,7 +45,7 @@ export default function OfficialDashboard() {
     const [inspectorNotes, setInspectorNotes] = useState("");
     const [rejectReason, setRejectReason] = useState("Duplicate Grievance");
     const [showRejectInput, setShowRejectInput] = useState(false);
-    const [hazardLevel, setHazardLevel] = useState("Standard Priority");
+    const [hazardLevel, setHazardLevel] = useState("Standard Verification");
     const [validating, setValidating] = useState(false);
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
     const [officialSettings, setOfficialSettings] = useState({
@@ -199,7 +199,7 @@ export default function OfficialDashboard() {
         setInspectingReport(report);
         setInspectorNotes("");
         setShowRejectInput(false);
-        setHazardLevel(report.priority_score > 80 ? "Critical Emergency" : "Standard Priority");
+        setHazardLevel(report.priority_score > 80 ? "Emergency Action" : "Standard Verification");
         setInspectModalOpen(true);
     };
 
@@ -382,7 +382,7 @@ export default function OfficialDashboard() {
         <div className="min-h-screen flex flex-col bg-background text-on-background selection:bg-secondary selection:text-white">
             {/* Header */}
             <header className="bg-secondary sticky top-0 z-40 shadow-md border-b border-secondary-container/40">
-                <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="w-full px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center text-white">
                             <span className="material-symbols-outlined text-2xl" data-icon="shield">shield</span>
@@ -421,7 +421,7 @@ export default function OfficialDashboard() {
 
             {/* Page Navigation Tabs */}
             <div className="bg-surface-container-low px-4 pt-3 border-b border-outline-variant/30 sticky top-16 z-30 shadow-xs">
-                <div className="max-w-[1200px] mx-auto flex gap-4 md:gap-8 overflow-x-auto no-scrollbar">
+                <div className="w-full flex gap-4 md:gap-8 overflow-x-auto no-scrollbar">
                     {[
                         { id: "Overview", label: "Executive Overview & Deadlines", icon: "dashboard" },
                         { id: "Reports", label: "Grievances Queue", icon: "assignment", count: reports.length },
@@ -452,7 +452,7 @@ export default function OfficialDashboard() {
                 </div>
             </div>
 
-            <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 pb-24">
+            <main className="flex-1 w-full px-4 py-6 pb-24">
                 {error && (
                     <div className="mb-4 p-4 rounded-2xl bg-error-container text-on-error-container flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -552,7 +552,7 @@ export default function OfficialDashboard() {
                                 </div>
 
                                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                                    {["All", "Urgent", "Approaching", "On Track"].map(df => (
+                                    {["All", "Pending", "In Progress", "Resolved"].map(df => (
                                         <button
                                             key={df}
                                             type="button"
@@ -572,9 +572,9 @@ export default function OfficialDashboard() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                                 {reports.filter(r => {
                                     if (deadlineFilter === "All") return true;
-                                    if (deadlineFilter === "Urgent") return r.urgency === "Urgent Attention";
-                                    if (deadlineFilter === "Approaching") return r.urgency === "Standard Priority";
-                                    return r.urgency === "Routine" || r.status === "implemented";
+                                    if (deadlineFilter === "Pending") return r.status === "reported" || r.status === "validated";
+                                    if (deadlineFilter === "In Progress") return r.status === "assigned" || r.status === "in_progress";
+                                    return r.status === "implemented" || r.status === "resolved";
                                 }).map(r => (
                                     <div key={r.id} className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-3 hover:border-secondary/40 transition-all">
                                         <div className="flex items-start justify-between gap-2">
@@ -582,12 +582,8 @@ export default function OfficialDashboard() {
                                                 <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{r.category}</span>
                                                 <h4 className="text-sm font-bold text-on-surface line-clamp-1 mt-0.5">{r.challenge_summary || r.description}</h4>
                                             </div>
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                                                r.urgency === "Urgent Attention" ? "bg-error/15 text-error" :
-                                                r.urgency === "Standard Priority" ? "bg-amber-500/15 text-amber-700" :
-                                                "bg-emerald-500/15 text-emerald-700"
-                                            }`}>
-                                                {r.urgency || "Standard"}
+                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-secondary-container text-on-secondary-container uppercase">
+                                                {r.status === "implemented" ? "Resolved" : r.status === "assigned" ? "Assigned" : "Active"}
                                             </span>
                                         </div>
 
@@ -725,15 +721,9 @@ export default function OfficialDashboard() {
                                                         </span>
                                                     )}
 
-                                                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1 ${
-                                                        (report.urgency === "Urgent Attention" || report.priority_score > 85)
-                                                            ? "bg-error/15 text-error"
-                                                            : "bg-secondary/15 text-secondary"
-                                                    }`}>
-                                                        <span className="material-symbols-outlined text-[13px]">
-                                                            {(report.urgency === "Urgent Attention" || report.priority_score > 85) ? "warning" : "info"}
-                                                        </span>
-                                                        {report.urgency || "Standard Priority"}
+                                                    <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1 bg-secondary/15 text-secondary">
+                                                        <span className="material-symbols-outlined text-[13px]">schedule</span>
+                                                        {report.status === "implemented" ? "Resolved" : report.status === "assigned" ? "Assigned" : "Active Case"}
                                                     </span>
 
                                                     {report.provider_name && (
@@ -1048,7 +1038,7 @@ export default function OfficialDashboard() {
                                         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#10b981]"></span> Routine / Stable</span>
                                         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#0ea5e9]"></span> Active Field Work</span>
                                         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#f59e0b]"></span> Approaching Deadline</span>
-                                        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#ef4444]"></span> Urgent Attention</span>
+                                        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#ef4444]"></span> Critical Casework</span>
                                     </div>
                                     <span className="text-on-surface-variant font-mono text-[11px]">Vector Projection · WGS84</span>
                                 </div>
@@ -1327,8 +1317,8 @@ export default function OfficialDashboard() {
                                             onChange={e => setHazardLevel(e.target.value)}
                                             className="px-2.5 py-1 bg-surface-container-low rounded-lg border border-outline-variant/40 text-xs font-semibold text-on-surface"
                                         >
-                                            <option value="Standard Priority">Standard Priority</option>
-                                            <option value="Critical Emergency">Critical Emergency (High Hazard)</option>
+                                            <option value="Standard Verification">Standard Verification</option>
+                                            <option value="Emergency Action">Emergency Action</option>
                                             <option value="Routine Maintenance">Routine Maintenance</option>
                                         </select>
                                     </div>

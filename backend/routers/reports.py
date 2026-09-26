@@ -147,7 +147,7 @@ def create_report(req: ReportCreate, user: models.User = Depends(get_current_use
                 duplicate_reason = f"Duplicate cluster of Ticket #{existing.id} ({existing.category}): '{existing.challenge_summary or existing.description[:45]}...' reported nearby."
                 break
 
-    photo_url = "https://via.placeholder.com/400" # MOCK for MVP
+    photo_url = req.photo_base64 if req.photo_base64 and req.photo_base64 != "dummy" else ""
     challenge_summary = req.title or routing_data.get("challenge_summary")
     
     report = models.Report(

@@ -194,7 +194,7 @@ export default function CitizenProfileScreen() {
                         </div>
                         <div className="flex items-center justify-between text-[11px] text-white/70 mt-2">
                             <span>{myReports.length} Grievance(s) Filed</span>
-                            <span>Leveling up unlocks direct Municipal Ward Priority</span>
+                            <span>Leveling up unlocks direct Municipal Ward Recognition</span>
                         </div>
                     </div>
                 </div>

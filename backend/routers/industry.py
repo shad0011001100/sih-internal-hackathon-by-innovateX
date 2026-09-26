@@ -305,9 +305,8 @@ def get_project_impact_report(
         "sponsor": {
             "company_name": company_name,
             "sector": (profile.sector if profile else None) or "Sustainable Urban Infrastructure",
-            "grant_amount": offer.amount if offer else 50000.0,
-            "support_track": (offer.offer_type if offer else "funding") or "funding",
-            "support_description": (offer.description if offer else None) or "CSR Innovation Seed Grant & Prototyping Kit",
+            "support_track": (offer.offer_type if offer else "mentorship") or "mentorship",
+            "support_description": (offer.description if offer else None) or "Technical Mentorship & Prototyping Hardware Kit",
             "date_sponsored": offer.created_at.strftime("%d %b %Y") if (offer and offer.created_at) else "12 Feb 2026"
         },
         "project": {

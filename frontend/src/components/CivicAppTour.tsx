@@ -56,8 +56,8 @@ const getTourSteps = (lang: "EN" | "HI"): TourStep[] => [
         totalSteps: 4,
         title: lang === "HI" ? "3. समर्थन (Upvote)" : "3. Community Upvotes",
         description: lang === "HI"
-            ? "पड़ोसियों की रिपोर्ट को समर्थन दें ताकि नगर निगम इसे प्राथमिकता में ऊपर ले।"
-            : "Tap 'Supports' on neighbor complaints to push them higher on the municipal priority list.",
+            ? "पड़ोसियों की रिपोर्ट को समर्थन दें ताकि नगर निगम इसे त्वरित संज्ञान में ले।"
+            : "Tap 'Supports' on neighbor complaints to validate community demand for municipal action.",
         actionLabel: lang === "HI" ? "आगे →" : "Next →"
     },
     {

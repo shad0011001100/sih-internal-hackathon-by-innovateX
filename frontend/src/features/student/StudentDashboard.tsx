@@ -576,7 +576,7 @@ export default function StudentDashboard() {
         <div className="min-h-screen flex flex-col bg-background pb-20">
             {/* Header */}
             <header className="sticky top-0 z-40 bg-gradient-to-r from-primary to-primary-container shadow-sm border-b border-primary/20">
-                <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="w-full px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-on-primary">
                         <span className="material-symbols-outlined text-2xl" data-icon="school">school</span>
                         <span className="font-bold font-heading text-lg tracking-tight">SocioSolve <span className="opacity-80 text-sm font-normal">Innovation Hub</span></span>
@@ -604,7 +604,7 @@ export default function StudentDashboard() {
 
             {/* Top Workspace Tab Selector */}
             <div className="sticky top-16 z-30 bg-surface-container-lowest/95 backdrop-blur-md border-b border-outline-variant/30 py-2.5 px-4 shadow-xs">
-                <div className="max-w-[1200px] mx-auto flex items-center justify-between gap-3">
+                <div className="w-full flex items-center justify-between gap-3">
                     <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
                         <button
                             type="button"
@@ -674,7 +674,7 @@ export default function StudentDashboard() {
                 variants={containerVariants} 
                 initial="hidden" 
                 animate="show" 
-                className="flex-1 max-w-[1200px] mx-auto w-full px-4 py-6 space-y-6"
+                className="flex-1 w-full px-4 py-6 space-y-6"
             >
                 {error && (
                     <div className="p-4 rounded-2xl bg-error-container text-on-error-container flex items-center justify-between">
@@ -802,13 +802,13 @@ export default function StudentDashboard() {
 
                                         <div className="bg-surface-container-lowest/90 rounded-2xl p-3 border border-outline-variant/20 text-[11px] text-on-surface-variant leading-relaxed">
                                             {timeRemaining.phaseIndex === 1 && (
-                                                <p>💡 <strong>Current Priority:</strong> Submit your idea pitch deck (Google Slides or PPT) to anchor project methodology with your mentor.</p>
+                                                <p>💡 <strong>Current Milestone:</strong> Submit your idea pitch deck (Google Slides or PPT) to anchor project methodology with your mentor.</p>
                                             )}
                                             {timeRemaining.phaseIndex === 2 && (
-                                                <p>⚙️ <strong>Current Priority:</strong> Commit source code to GitHub and link your functioning hardware/software prototype demo.</p>
+                                                <p>⚙️ <strong>Current Milestone:</strong> Commit source code to GitHub and link your functioning hardware/software prototype demo.</p>
                                             )}
                                             {timeRemaining.phaseIndex === 3 && (
-                                                <p>🏆 <strong>Current Priority:</strong> Complete field trial telemetry and submit for Government implementation review.</p>
+                                                <p>🏆 <strong>Current Milestone:</strong> Complete field trial telemetry and submit for Government implementation review.</p>
                                             )}
                                         </div>
                                     </div>
@@ -1548,18 +1548,6 @@ export default function StudentDashboard() {
                                                 Tech Capstone
                                             </span>
                                         </div>
-                                        {(() => {
-                                            const normScore = issue.priority_score != null 
-                                                ? (issue.priority_score <= 1.0 ? Math.round(issue.priority_score * 100) : Math.round(issue.priority_score)) 
-                                                : null;
-                                            const isHigh = (normScore != null && normScore > 70) || issue.priority === 'High';
-                                            return (
-                                                <span className={`text-[10px] px-2 py-0.5 rounded flex items-center gap-1 ${isHigh ? 'bg-error-container text-on-error-container font-semibold' : 'bg-secondary-container text-on-secondary-container'}`}>
-                                                    <span className="material-symbols-outlined text-[12px]" data-icon="flag">flag</span>
-                                                    {normScore != null ? `${normScore > 70 ? 'High Priority' : 'Priority'} (${normScore}/100)` : (issue.priority || 'Normal')}
-                                                </span>
-                                            );
-                                        })()}
                                     </div>
                                     <h3 className="font-bold text-on-surface text-base mb-1">{issue.title || issue.description?.slice(0, 50)}</h3>
                                     {(() => {

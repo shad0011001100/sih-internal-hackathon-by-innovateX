@@ -12,7 +12,7 @@ export default function DashboardScreen() {
     const [myReports, setMyReports] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<"All" | "My Reports" | "In Progress" | "Resolved">("My Reports");
+    const [activeTab, setActiveTab] = useState<"All" | "My Reports" | "In Progress" | "Resolved">("All");
     const [selectedWard, setSelectedWard] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [showFilters, setShowFilters] = useState(false);
@@ -23,6 +23,7 @@ export default function DashboardScreen() {
     const [lang, setLang] = useState<"EN" | "HI">("EN");
     const [showStudentSolversModal, setShowStudentSolversModal] = useState(false);
     const [showHelplineModal, setShowHelplineModal] = useState(false);
+    const [showAiScoreInfoModal, setShowAiScoreInfoModal] = useState(false);
     // Auto-launch "How to Use" guide for first-time visitors / new signups, or when URL contains ?guide=true
     const [showTour, setShowTour] = useState(() => {
         try {
@@ -212,7 +213,7 @@ export default function DashboardScreen() {
         const allReps = [...reports, ...myReports];
         const targetReport = allReps.find(r => String(r.id) === String(reportId));
         if (targetReport && ['resolved', 'implemented'].includes(targetReport.status)) {
-            showToast("This issue is already resolved and does not require additional endorsements.", "info");
+            showToast("This issue is already resolved and does not require priority upvoting.", "info");
             return;
         }
         if (upvoted[reportId]) {
@@ -221,7 +222,7 @@ export default function DashboardScreen() {
         }
         setUpvoted(prev => ({ ...prev, [reportId]: true }));
         setUpvotes(prev => ({ ...prev, [reportId]: (prev[reportId] || 0) + 1 }));
-        showToast("Endorsement recorded for municipal dispatch.", "success");
+        showToast("Upvote recorded! Priority score boosted for municipal dispatch.", "success");
     };
 
     useEffect(() => {
@@ -318,13 +319,61 @@ export default function DashboardScreen() {
     const FALLBACK_CIVIC_IMAGE = "/assets/civic/case_road.jpg";
 
     const getReportEvidenceImage = (report: any): string => {
+        // 1. If citizen uploaded an evidence photo (base64 data), use it directly
         if (report.photo_base64 && report.photo_base64.length > 50) {
             return report.photo_base64;
         }
-        if (report.photo_url && report.photo_url.length > 5) {
+
+        // 2. Read the complaint text: title, challenge summary, description, and category
+        const titleAndDesc = `${report.title || ''} ${report.challenge_summary || ''} ${report.description || ''}`.toLowerCase();
+        const category = (report.category || '').toLowerCase();
+        const fullText = `${titleAndDesc} ${category}`;
+
+        // Keywords for each civic domain
+        const waterKeywords = ['water', 'drinking', 'potable', 'tap', 'pipeline', 'pipe', 'burst', 'rupture', 'handpump', 'hand-pump', 'well', 'tube well', 'tubewell', 'turbid', 'turbidity', 'chlorin', 'filtration', 'purif', 'jal', 'paani'];
+        const roadKeywords = ['pothole', 'potholes', 'asphalt', 'crater', 'subsidence', 'subgrade', 'highway', 'bypass', 'road', 'street', 'bitumen', 'pavement', 'traffic', 'sadak', 'rasta'];
+        const wasteKeywords = ['waste', 'garbage', 'solid waste', 'dump', 'dumping', 'trash', 'litter', 'debris', 'culvert', 'stormwater', 'choke', 'choked', 'sewer', 'sewerage', 'overflow', 'blackwater', 'kachra', 'safai'];
+        const healthKeywords = ['health', 'hospital', 'clinic', 'dispensary', 'sub-centre', 'sub centre', 'medical', 'doctor', 'swasthya', 'mosquito', 'larva', 'dengue', 'malaria'];
+        const schoolKeywords = ['school', 'classroom', 'student', 'education', 'bench', 'blackboard', 'vidyalaya', 'college'];
+        const lightKeywords = ['streetlight', 'street light', 'streetlamp', 'high-mast', 'high mast', 'lamp pole', 'solar street', 'lighting'];
+
+        // Compute domain relevance scores from complaint text
+        let wScore = 0, rScore = 0, wasteScore = 0, hScore = 0, sScore = 0, lScore = 0;
+        waterKeywords.forEach(k => { if (fullText.includes(k)) wScore++; });
+        roadKeywords.forEach(k => { if (fullText.includes(k)) rScore++; });
+        wasteKeywords.forEach(k => { if (fullText.includes(k)) wasteScore++; });
+        healthKeywords.forEach(k => { if (fullText.includes(k)) hScore++; });
+        schoolKeywords.forEach(k => { if (fullText.includes(k)) sScore++; });
+        lightKeywords.forEach(k => { if (fullText.includes(k)) lScore++; });
+
+        const domainScores = [
+            { score: wScore, img: "/assets/civic/case_water.jpg" },
+            { score: rScore, img: "/assets/civic/case_road.jpg" },
+            { score: wasteScore, img: "/assets/civic/case_waste.jpg" },
+            { score: hScore, img: "/assets/civic/case_health.jpg" },
+            { score: sScore, img: "/assets/civic/case_school.jpg" },
+            { score: lScore, img: "/assets/civic/case_light.jpg" },
+        ];
+        domainScores.sort((a, b) => b.score - a.score);
+
+        // If complaint content strongly matches a civic domain, use that photo
+        if (domainScores[0].score > 0) {
+            return domainScores[0].img;
+        }
+
+        // 3. If no keywords matched, check if report has a valid local civic asset photo_url
+        if (report.photo_url && report.photo_url.startsWith("/assets/civic/") && !report.photo_url.includes("placeholder")) {
             return report.photo_url;
         }
-        return "";
+
+        // 4. Category-based fallback
+        if (category.includes("water")) return "/assets/civic/case_water.jpg";
+        if (category.includes("road") || category.includes("transport")) return "/assets/civic/case_road.jpg";
+        if (category.includes("waste") || category.includes("sanitat")) return "/assets/civic/case_waste.jpg";
+        if (category.includes("health")) return "/assets/civic/case_health.jpg";
+        if (category.includes("school") || category.includes("educat")) return "/assets/civic/case_school.jpg";
+
+        return FALLBACK_CIVIC_IMAGE;
     };
 
     return (
@@ -338,7 +387,7 @@ export default function DashboardScreen() {
 
 {/*  Top Header / Navigation Bar (Full-Width Responsive Desktop & Mobile)  */}
 <header className="bg-primary sticky top-0 z-40 shadow-sm border-b border-primary-container/40">
-<div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+<div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 {/*  Brand Logo & Region  */}
 <div className="flex items-center gap-3">
 <div className="w-10 h-10 rounded-full bg-surface-container-lowest/15 flex items-center justify-center text-on-primary">
@@ -352,7 +401,21 @@ export default function DashboardScreen() {
 <p className="hidden sm:block text-[11px] text-primary-fixed/80 font-medium">{t.sub}</p>
 </div>
 </div>
-
+{/*  Desktop Nav Links  */}
+<nav aria-label="Desktop primary" className="hidden md:flex items-center gap-1 lg:gap-2">
+<button onClick={() => { setActiveTab("All"); setSelectedWard(null); setSelectedCategory("All"); setSearchQuery(""); window.scrollTo({ top: 0, behavior: "smooth" }); }} type="button" className={`px-3.5 py-2 rounded-full font-label-md text-sm font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${activeTab === 'All' && !selectedWard ? 'text-on-primary bg-primary-container/70' : 'text-primary-fixed hover:text-on-primary hover:bg-primary-container/30'}`}>
+<span className="material-symbols-outlined text-lg" data-icon="feed">feed</span>
+        {t.home}
+      </button>
+<button onClick={() => setShowStudentSolversModal(true)} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+<span className="material-symbols-outlined text-lg" data-icon="diversity_3">diversity_3</span>
+        {t.solvers}
+      </button>
+<button onClick={() => setShowHelplineModal(true)} type="button" className="px-3.5 py-2 rounded-full text-primary-fixed hover:text-on-primary hover:bg-primary-container/30 font-label-md text-sm font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+<span className="material-symbols-outlined text-lg" data-icon="phone_in_talk">phone_in_talk</span>
+        {t.helpline}
+      </button>
+</nav>
 {/*  Right Controls: Language Switch & Report CTA  */}
 <div className="flex items-center gap-2 sm:gap-3">
 {/*  Language Switch  */}
@@ -426,10 +489,10 @@ export default function DashboardScreen() {
 </div>
 </section>
 {/*  Main Responsive Content Container: 12-Column Grid (Desktop max-w-[1200px])  */}
-<div className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-4 lg:py-8">
-<div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+<div className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 {/*  LEFT COLUMN (col-span-3 on Desktop): Citizen Profile & Ward Vitals  */}
-<aside className="hidden lg:block w-72 shrink-0 space-y-5 sticky top-24">
+<aside className="hidden lg:block lg:col-span-3 space-y-5 sticky top-24">
 {/*  Citizen Profile Card  */}
 <div className="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
 <div className="flex items-start justify-between mb-4">
@@ -558,7 +621,7 @@ export default function DashboardScreen() {
 </div>
 </aside>
 {/*  CENTER FEED (col-span-6 on Desktop): Search, Filters, Issue Cards  */}
-<main className="flex-1 min-w-0 space-y-4 pb-20 lg:pb-8">
+<main className="lg:col-span-6 space-y-4 pb-20 lg:pb-8">
 {/* 💡 FIRST-TIME USER HELPER CARD (Dismissible) */}
 {showTourHelper && (
     <div className="bg-gradient-to-r from-amber-500/15 via-primary/15 to-emerald-500/10 rounded-2xl p-3.5 border border-amber-400/30 flex items-center justify-between gap-3 shadow-xs">
@@ -633,7 +696,7 @@ export default function DashboardScreen() {
                 <span className="material-symbols-outlined text-base">psychology</span>
             </span>
             <span className="block text-secondary font-bold text-[10px] sm:text-xs leading-tight">2. AI Check</span>
-            <span className="text-[9px] text-on-surface-variant hidden sm:block">Categorized</span>
+            <span className="text-[9px] text-on-surface-variant hidden sm:block">Priority</span>
         </div>
         {/* Step 3 */}
         <div className="bg-surface-container-lowest rounded-xl p-2 flex flex-col items-center text-center shadow-2xs border border-outline-variant/20">
@@ -698,7 +761,7 @@ export default function DashboardScreen() {
                                 {h.district || "Ranchi"} • {h.panchayat_ward || "Ward 14"}
                             </span>
                             <span className="font-mono text-xs font-semibold text-primary">
-                                {h.category}
+                                {h.category} (Sev: {h.severity || "High"})
                             </span>
                         </div>
                     ))}
@@ -762,25 +825,6 @@ export default function DashboardScreen() {
         ))}
     </div>
 )}
-
-
-{/* Hero Actions Section */}
-<div className="bg-gradient-to-r from-primary-container/40 to-surface-container-lowest rounded-3xl p-6 sm:p-8 mb-6 border border-primary/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
-    <div>
-        <h2 className="text-2xl sm:text-3xl font-black text-on-surface mb-2">What would you like to do today?</h2>
-        <p className="text-sm text-on-surface-variant max-w-md">Report a new civic issue or track the progress of your existing complaints directly with the municipal corporation.</p>
-    </div>
-    <div className="flex items-center gap-3 w-full sm:w-auto">
-        <button onClick={() => navigate('/report')} className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-primary text-on-primary font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer">
-            <span className="material-symbols-outlined text-[20px]">add_circle</span>
-            Report a Problem
-        </button>
-        <button onClick={() => { setActiveTab('My Reports'); window.scrollTo({ top: 300, behavior: 'smooth' }); }} className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-surface-container-high text-on-surface font-bold hover:bg-surface-container-highest active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer border border-outline-variant/30">
-            <span className="material-symbols-outlined text-[20px]">track_changes</span>
-            Track Complaints
-        </button>
-    </div>
-</div>
 
 {/*  Filter Pills Tablist & Active Ward Tag  */}
 <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
@@ -914,10 +958,9 @@ export default function DashboardScreen() {
 )}
 
 {/*  Report Cards Feed  */}
-<div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
 {!loading && filteredReports.map((report: any) => {
     const reportId = report.id;
-    const currentUpvotes = (upvotes[reportId] || 0);
+    const currentUpvotes = (report.priority_score ? Math.round(report.priority_score * 10) : 5) + (upvotes[reportId] || 0);
     const hasUpvoted = !!upvoted[reportId];
     const displayTitle = report.title || report.challenge_summary || (report.description ? report.description.split('\n')[0].slice(0, 60) : `Civic Grievance #${reportId}`);
     const evidenceImg = getReportEvidenceImage(report);
@@ -962,19 +1005,13 @@ export default function DashboardScreen() {
 
             {/* 2. Visual Photo with Category Overlay */}
             <div className="w-full h-48 sm:h-56 relative overflow-hidden bg-surface-container-high shrink-0">
-                {evidenceImg ? (
-                    <img 
-                        src={evidenceImg} 
-                        alt={displayTitle} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                    />
-                ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-surface-container-low text-on-surface-variant/40">
-                        <span className="material-symbols-outlined text-4xl mb-1">image_not_supported</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider">No Photo</span>
-                    </div>
-                )}
+                <img 
+                    src={evidenceImg} 
+                    alt={displayTitle} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/20" />
 
                 <div className="absolute bottom-2.5 left-3">
@@ -987,7 +1024,38 @@ export default function DashboardScreen() {
             {/* 3. Social Interaction Bar & Single-Sentence Caption */}
             <div className="p-3.5 sm:p-4 space-y-2.5">
                 {/* Action Icons Row */}
-                <div className="flex items-center justify-end">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        {/* Upvote / Endorse Button */}
+                        <button
+                            data-tour="endorse-btn"
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); handleUpvote(reportId, e); }}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
+                                hasUpvoted 
+                                    ? 'bg-primary text-white shadow-xs' 
+                                    : 'bg-surface-container hover:bg-surface-container-high text-on-surface'
+                            }`}
+                            title="Endorse this grievance"
+                        >
+                            <span className="material-symbols-outlined text-sm font-bold">
+                                {hasUpvoted ? "favorite" : "thumb_up"}
+                            </span>
+                            <span>{currentUpvotes}</span>
+                            <span className="text-[10px] opacity-80">{lang === 'HI' ? 'समर्थन' : 'Supports'}</span>
+                        </button>
+
+                        {/* WhatsApp / Share button */}
+                        <button
+                            type="button"
+                            onClick={(e) => handleShareReport(report, e)}
+                            className="p-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-all cursor-pointer"
+                            title="Share on WhatsApp"
+                        >
+                            <span className="material-symbols-outlined text-base">share</span>
+                        </button>
+                    </div>
+
                     {/* View Details Button */}
                     <button
                         type="button"
@@ -1007,11 +1075,10 @@ export default function DashboardScreen() {
         </article>
     );
 })}
-</div>
 </main>
 
 {/*  RIGHT RAIL (col-span-3 on Desktop): Heatmap, Student Solvers, Hotline  */}
-<aside className="hidden xl:block w-80 shrink-0 space-y-5 sticky top-24">
+<aside className="hidden lg:block lg:col-span-3 space-y-5 sticky top-24">
 {/*  Ranchi Ward Map / Live Heatmap Card  */}
 <div className="bg-surface-container-lowest rounded-3xl p-5 whisper-border ambient-shadow">
 <div className="flex items-center justify-between mb-3">
@@ -1217,7 +1284,7 @@ export default function DashboardScreen() {
 </button>
 
 <button 
-    onClick={() => navigate('/solvers')} 
+    onClick={() => setShowStudentSolversModal(true)} 
     aria-label="Student Solvers" 
     className="flex flex-col items-center justify-center min-h-[44px] min-w-[54px] text-on-surface-variant px-2 py-1 hover:text-primary active:scale-90 transition-transform duration-150 cursor-pointer" 
     type="button"
@@ -1250,7 +1317,7 @@ export default function DashboardScreen() {
 
 {/*  Full-Width Multi-Column Footer (Spanning 100% Viewport)  */}
 <footer className="w-full bg-surface-container border-t border-outline-variant/30 text-on-surface-variant mt-auto">
-<div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-10 lg:py-14">
+<div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
 {/*  Col 1: Brand & Gov Info  */}
 <div className="space-y-3">
@@ -1346,18 +1413,12 @@ export default function DashboardScreen() {
 
             {/* Evidence Photo Preview */}
             <div className="rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-high relative max-h-56 shadow-xs">
-                {getReportEvidenceImage(selectedReport) ? (
-                    <img 
-                        src={getReportEvidenceImage(selectedReport)} 
-                        alt="Grievance Evidence" 
-                        className="w-full h-48 sm:h-56 object-cover" 
-                    />
-                ) : (
-                    <div className="w-full h-48 sm:h-56 flex flex-col items-center justify-center bg-surface-container-low text-on-surface-variant/40">
-                        <span className="material-symbols-outlined text-4xl mb-1">image_not_supported</span>
-                        <span className="text-xs font-bold uppercase tracking-wider">No Photo Provided</span>
-                    </div>
-                )}
+                <img 
+                    src={getReportEvidenceImage(selectedReport)} 
+                    alt="Grievance Evidence" 
+                    className="w-full h-48 sm:h-56 object-cover" 
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_CIVIC_IMAGE; }}
+                />
             </div>
 
             {/* Full Problem Description Box (User Requested Pop-Up Description) */}
@@ -1375,7 +1436,7 @@ export default function DashboardScreen() {
             <div className="flex items-center justify-between bg-surface-container-low/60 rounded-2xl p-3 border border-outline-variant/20">
                 <div>
                     <span className="text-xs font-bold text-on-surface block">Community Endorsements</span>
-                    <span className="text-[10px] text-on-surface-variant">Support this issue for municipal action</span>
+                    <span className="text-[10px] text-on-surface-variant">Boost priority score for municipal action</span>
                 </div>
                 <button
                     type="button"
@@ -1388,7 +1449,7 @@ export default function DashboardScreen() {
                 >
                     <span className="material-symbols-outlined text-sm font-bold">arrow_drop_up</span>
                     <span>
-                        {upvotes[selectedReport.id] || 0} {lang === 'HI' ? 'समर्थन' : 'Supports'}
+                        {(selectedReport.priority_score ? Math.round(selectedReport.priority_score * 10) : 5) + (upvotes[selectedReport.id] || 0)} {lang === 'HI' ? 'समर्थन' : 'Supports'}
                     </span>
                 </button>
             </div>
@@ -1480,7 +1541,31 @@ export default function DashboardScreen() {
                         <span className="text-primary font-semibold">{selectedReport.assigned_department}</span>
                     </div>
                 )}
-
+                <div className="flex items-center justify-between py-2 border-b border-outline-variant/20">
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-on-surface-variant">{lang === 'HI' ? 'प्राथमिकता स्तर:' : 'Priority Level:'}</span>
+                        <button
+                            type="button"
+                            onClick={() => setShowAiScoreInfoModal(true)}
+                            className="text-primary hover:text-primary-dark transition-colors inline-flex items-center cursor-pointer"
+                            title="How is priority calculated?"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">info</span>
+                        </button>
+                    </div>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                        (selectedReport.priority_score > 85 && selectedReport.urgency === "Urgent Attention")
+                            ? "bg-error/15 text-error"
+                            : (selectedReport.priority_score > 60 || selectedReport.urgency === "Standard Priority")
+                            ? "bg-amber-500/15 text-amber-700"
+                            : "bg-primary/15 text-primary"
+                    }`}>
+                        <span className="material-symbols-outlined text-[14px]">
+                            {(selectedReport.priority_score > 85 && selectedReport.urgency === "Urgent Attention") ? "warning" : "schedule"}
+                        </span>
+                        {selectedReport.urgency || ((selectedReport.priority_score > 85 && selectedReport.urgency === "Urgent Attention") ? "Urgent Attention" : (selectedReport.priority_score > 60) ? "Standard Priority" : "Routine")}
+                    </span>
+                </div>
                 {selectedReport.provider_deadline && (
                     <div className="flex justify-between py-1.5 border-b border-outline-variant/20">
                         <span className="text-on-surface-variant">Provider Target Deadline:</span>
@@ -1646,12 +1731,12 @@ export default function DashboardScreen() {
                 <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="font-bold text-sm text-on-surface">NIT Jamshedpur CleanGrid</span>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 text-[10px] font-bold">Industry Supported</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 text-[10px] font-bold">CSR Funded</span>
                     </div>
                     <p className="text-xs text-on-surface-variant">Decentralized Plastic Pyrolysis Micro-Unit with Tata Steel Foundation support.</p>
                     <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant border-t border-outline-variant/20">
                         <span>Lead: <strong>Rahul Sen</strong> (Env Science)</span>
-                        <span className="text-emerald-700 font-semibold">Tata Steel Adopted</span>
+                        <span className="text-emerald-700 font-semibold font-mono">₹5,00,000 Grant</span>
                     </div>
                 </div>
 
@@ -1779,7 +1864,85 @@ export default function DashboardScreen() {
     </div>
 )}
 
+{/*  HOW PRIORITY SCORE IS CALCULATED MODAL  */}
+{showAiScoreInfoModal && (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="bg-surface-container-lowest rounded-3xl max-w-lg w-full p-6 whisper-border ambient-shadow space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined text-2xl">psychology</span>
+                    </div>
+                    <div>
+                        <h3 className="font-headline-sm text-base font-bold text-on-surface">Priority Score Logic</h3>
+                        <p className="text-xs text-on-surface-variant">How SocioSolve calculates grievance triage</p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowAiScoreInfoModal(false)}
+                    className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant cursor-pointer"
+                >
+                    <span className="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
 
+            <p className="text-xs text-on-surface-variant leading-normal">
+                Priority is calculated automatically across 4 objective criteria:
+            </p>
+
+            <div className="space-y-2.5">
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-error text-xl shrink-0 mt-0.5">warning</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">1. Public Safety Hazard</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Live electric wires, pipeline ruptures, and structural collapses get immediate emergency status.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-blue-600 text-xl shrink-0 mt-0.5">domain</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">2. Civic Domain Weight</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Drinking water, sanitation, and health hazards are prioritized over routine aesthetics.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-secondary text-xl shrink-0 mt-0.5">groups</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">3. Population Density</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Issues near schools, hospitals, and busy transit hubs automatically receive boosted scores.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/20 flex gap-3">
+                    <span className="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5">thumb_up</span>
+                    <div>
+                        <h4 className="text-xs font-bold text-on-surface">4. Community Endorsements</h4>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 leading-normal">
+                            Every resident upvote pushes unresolved complaints higher on the official daily dashboard.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                onClick={() => setShowAiScoreInfoModal(false)}
+                className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+            >
+                <span>Understood</span>
+            </button>
+        </div>
+    </div>
+)}
 
 
 

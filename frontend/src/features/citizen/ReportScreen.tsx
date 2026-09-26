@@ -132,7 +132,7 @@ export default function ReportScreen() {
             if (res.is_duplicate) {
                 showToast(`Similar issue detected! Clustered with existing grievance (${res.duplicate_reason || 'Nearby report'})`, "info");
             } else {
-                showToast(`Grievance #${res.report_id || ''} submitted successfully! Priority score: ${Math.round((res.routing?.priority_score || 0.8) * 100)}%`, "success");
+                showToast(`Grievance #${res.report_id || ''} submitted successfully!`, "success");
             }
             navigate("/dashboard");
         } catch (err: any) {
@@ -241,7 +241,7 @@ export default function ReportScreen() {
     onChange={(e) => setTitle(e.target.value)}
 />
 <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center text-xs text-[#3e644a] bg-[#c2edcb]/50 px-2 py-1 rounded-md font-mono">
-              Auto-clarity: High
+              Auto-clarity: Optimal
             </div>
 </div>
 <p className="text-xs text-[#727972] mt-2 flex items-center gap-1">

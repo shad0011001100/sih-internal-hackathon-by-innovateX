@@ -2,6 +2,7 @@
 export const MOCK_MY_REPORTS = [
     {
         id: 901,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/3/37/Pile_That_Garbage_-_New_Orleans_after_Hurricane_Ida.jpg',
         category: "Sanitation & Solid Waste",
         description: "Overflowing residential garbage bin & drain water logging near Harmu Housing Colony, Sector 2.",
         challenge_summary: "Local garbage accumulation causing street obstruction and foul odor near Harmu playground.",
@@ -20,6 +21,7 @@ export const MOCK_MY_REPORTS = [
     },
     {
         id: 902,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Newport_Carisbrooke_Road_pothole_2.JPG',
         category: "Smart Transportation & Infrastructure",
         description: "Deep dangerous pothole near Kishoreganj Chowk crossing following pipeline trenching.",
         challenge_summary: "Unrepaired utility trenching causing recurrent vehicular bottleneck and accident hazard.",
@@ -41,10 +43,11 @@ export const MOCK_MY_REPORTS = [
 export const MOCK_REPORTS = [
     {
         id: 101,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/Overflowing_garbage_bin_in_Helsinki%2C_Finland%2C_2019.jpg',
         category: "Sanitation & Solid Waste",
         description: "Severe garbage dumping and choked stormwater drain near Morabadi Ground gate 3.",
         challenge_summary: "Unmanaged municipal solid waste accumulation blocking critical stormwater runoff channel.",
-        urgency: "Standard Priority",
+        urgency: "Active Casework",
         priority_score: 68,
         gps_lat: 23.3854,
         gps_lon: 85.3341,
@@ -59,6 +62,7 @@ export const MOCK_REPORTS = [
     },
     {
         id: 102,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/5/53/US_Navy_041113-M-1250B-011_A_U.S._Navy_Seabee_assigned_to_the_24th_Marine_Expeditionary_Unit_%28MEU%29%2C_seals_a_leak_on_a_broken_pipe_beside_a_bridge_in_Lutafiyah%2C_Iraq.jpg',
         category: "Water Supply & Quality",
         description: "Contaminated municipal tap water pipeline rupture behind Doranda Main Road Market.",
         challenge_summary: "High-turbidity water pipeline fracture threatening microbial contamination in dense urban settlement.",
@@ -77,10 +81,11 @@ export const MOCK_REPORTS = [
     },
     {
         id: 103,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/2/22/Subsidence_on_Tanners_Street_-_geograph.org.uk_-_385028.jpg',
         category: "Smart Transportation & Infrastructure",
         description: "Critical arterial pavement structural subsidence and recurrent subgrade shear failure on Ratu Road corridor.",
         challenge_summary: "Recurrent subgrade subsidence requiring automated IoT vibration sensor telemetry and durable geo-polymer asphalt composite engineering.",
-        urgency: "Standard Priority",
+        urgency: "Active Casework",
         priority_score: 75,
         gps_lat: 23.3719,
         gps_lon: 85.2987,
@@ -95,6 +100,7 @@ export const MOCK_REPORTS = [
     },
     {
         id: 104,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/e/ed/A_tangle_of_power_lines_-_geograph.org.uk_-_3524920.jpg',
         category: "Electricity & Smart Grid",
         description: "Exposed 11kV overhead wire dangling dangerously close to pedestrian pathway in Kokar.",
         challenge_summary: "High-voltage distribution cable sagging into pedestrian zone without ground insulation.",
@@ -113,10 +119,11 @@ export const MOCK_REPORTS = [
     },
     {
         id: 105,
+        photo_url: 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Trash_in_stagnant_drain_water_at_umuzocha_Awka.jpg',
         category: "Health & Vector Control",
         description: "Stagnant drainage pool leading to extreme mosquito breeding near Bariatu Medical Staff Quarters.",
         challenge_summary: "Dengue/malaria vector proliferation in stagnant urban basin adjacent to healthcare facilities.",
-        urgency: "Standard Priority",
+        urgency: "Active Casework",
         priority_score: 84,
         gps_lat: 23.3912,
         gps_lon: 85.3481,
@@ -239,7 +246,7 @@ export const MOCK_UNIVERSITY_DATA = {
         active_projects_count: 8,
         students_participating: 42,
         credits_awarded: 16,
-        csr_grants_received: 1450000,
+        industry_partners_count: 8,
         departments: [
             { name: "Computer Science & Engineering", student_count: 18, project_count: 4, faculty_head: "Dr. B. K. Singh" },
             { name: "Civil & Environmental Engineering", student_count: 14, project_count: 3, faculty_head: "Prof. S. Soren" },
@@ -286,15 +293,16 @@ export const MOCK_UNIVERSITY_DATA = {
 export const MOCK_INDUSTRY_DATA = {
     dashboard: {
         company_name: "Tata Steel Foundation (Jamshedpur)",
-        total_invested: 1450000,
-        issues_funded: 6,
+        mentorship_hours: 120,
+        issues_supported: 6,
         success_rate: 92,
         funded_projects: [
             {
                 id: 401,
                 title: "IoT Sub-Surface Water Contamination Telemetry",
                 category: "Water Supply & Quality",
-                amount: 350000,
+                offer_type: "lab_sponsorship",
+                support_type: "Hardware Sensors & Lab Testing",
                 status: "in_progress",
                 location: "Doranda, Ranchi",
                 university: "BIT Mesra",
@@ -307,7 +315,8 @@ export const MOCK_INDUSTRY_DATA = {
                 id: 402,
                 title: "Decentralized Plastic Pyrolysis Micro-Unit",
                 category: "Sanitation & Solid Waste",
-                amount: 500000,
+                offer_type: "mentorship",
+                support_type: "Technical Mentorship",
                 status: "completed",
                 location: "Jamshedpur Ward 3",
                 university: "NIT Jamshedpur",
@@ -320,7 +329,8 @@ export const MOCK_INDUSTRY_DATA = {
                 id: 403,
                 title: "Solar Water Filtration for Tribal Anganwadi Centers",
                 category: "Public Health",
-                amount: 600000,
+                offer_type: "field_adoption",
+                support_type: "Field Pilot Deployment",
                 status: "in_progress",
                 location: "Khunti District",
                 university: "Ranchi University",
@@ -337,7 +347,7 @@ export const MOCK_INDUSTRY_DATA = {
             title: "Automated Water Purity IoT Telemetry System",
             description: "Install solar-powered sub-surface water monitors for arsenic/iron detection in rural Ranchi.",
             category: "Water Quality",
-            estimated_cost: 350000,
+            support_needed: "Hardware Sensors & Lab Testing",
             impact: "Critical",
             university: "BIT Mesra"
         },
@@ -346,7 +356,7 @@ export const MOCK_INDUSTRY_DATA = {
             title: "AI Pothole Classifier with Road Maintenance Routing",
             description: "Deploy vehicle-mounted edge AI cameras to auto-map and prioritize municipal road craters.",
             category: "Smart Mobility",
-            estimated_cost: 250000,
+            support_needed: "Camera Kits & Technical Mentorship",
             impact: "High Impact",
             university: "IIIT Ranchi"
         },
@@ -355,7 +365,7 @@ export const MOCK_INDUSTRY_DATA = {
             title: "Bio-Enzymatic Wastewater Odor & Microbe Suppressor",
             description: "Field deployment of organic enzymes in choked open drains near hospital zones.",
             category: "Public Sanitation",
-            estimated_cost: 180000,
+            support_needed: "Biotech Reagents & Field Pilot",
             impact: "High Impact",
             university: "NIT Jamshedpur"
         }
@@ -500,8 +510,8 @@ function resolveMockResponse(url, options = {}) {
     if (path.includes("/api/industry/marketplace")) {
         return MOCK_INDUSTRY_DATA.marketplace;
     }
-    if (path.includes("/api/industry/fund")) {
-        return { message: "CSR funding grant initiated successfully" };
+    if (path.includes("/api/industry/fund") || path.includes("/api/industry/support")) {
+        return { message: "CSR sponsorship commitment initiated successfully" };
     }
 
     return { status: "ok" };

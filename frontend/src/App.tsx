@@ -16,6 +16,7 @@ const ReportScreen      = lazy(() => import("./features/citizen/ReportScreen"));
 const CitizenProfileScreen = lazy(() => import("./features/citizen/CitizenProfileScreen"));
 const OfficialDashboard  = lazy(() => import("./features/official/OfficialDashboard"));
 const StudentDashboard   = lazy(() => import("./features/student/StudentDashboard"));
+const StudentSolversLeaderboard = lazy(() => import("./features/citizen/StudentSolversLeaderboard"));
 const UniversityDashboard = lazy(() => import("./features/university/UniversityDashboard"));
 const IndustryDashboard  = lazy(() => import("./features/industry/IndustryDashboard"));
 
@@ -75,6 +76,11 @@ function AppContent() {
                 <Route path="/report" element={
                     <ProtectedRoute allowedRoles={["citizen"]}>
                         <Suspense fallback={<LoadingSpinner />}><ReportScreen /></Suspense>
+                    </ProtectedRoute>
+                } />
+                                <Route path="/solvers" element={
+                    <ProtectedRoute allowedRoles={["citizen"]}>
+                        <Suspense fallback={<LoadingSpinner />}><StudentSolversLeaderboard /></Suspense>
                     </ProtectedRoute>
                 } />
                 <Route path="/profile" element={

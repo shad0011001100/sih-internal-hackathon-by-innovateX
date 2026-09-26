@@ -184,7 +184,7 @@ export default function UniversityDashboard() {
     const activeProjectsCount = dashboardData?.projects_in_progress?.length ?? dashboardData?.active_projects_count ?? 8;
     const studentParticipationCount = students.length || dashboardData?.students_participating || 42;
     const creditsAwardedCount = dashboardData?.credits_awarded || 16;
-    const csrGrantsTotal = dashboardData?.csr_grants_received || 1450000;
+    const industryPartnersCount = dashboardData?.industry_partners_count || 8;
     const universityName = dashboardData?.university_info?.name || dashboardData?.university_name || "Birla Institute of Technology (BIT Mesra)";
 
     const departmentsList = [
@@ -212,7 +212,7 @@ export default function UniversityDashboard() {
             status: "ready_for_credit",
             demo_url: "https://sociosolve-eight.vercel.app",
             repo_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
-            csr_grant: "₹3,50,000 (Tata Steel Foundation)"
+            industry_partner: "Tata Steel Foundation (Lab & Hardware Kit)"
         },
         {
             id: 202,
@@ -224,7 +224,7 @@ export default function UniversityDashboard() {
             status: "pilot_testing",
             demo_url: "https://sociosolve-eight.vercel.app",
             repo_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
-            csr_grant: "₹2,50,000 (CCL Ranchi)"
+            industry_partner: "CCL Ranchi (Technical Mentorship)"
         },
         {
             id: 203,
@@ -236,7 +236,7 @@ export default function UniversityDashboard() {
             status: "prototyping",
             demo_url: "https://sociosolve-eight.vercel.app",
             repo_url: "https://github.com/shad0011001100/sih-internal-hackathon-by-innovateX",
-            csr_grant: "₹4,00,000 (JSPL CSR)"
+            industry_partner: "JSPL Industry Chapter (Field Pilot Support)"
         }
     ];
 
@@ -244,7 +244,7 @@ export default function UniversityDashboard() {
         <div className="min-h-screen flex flex-col bg-background text-on-background selection:bg-tertiary-fixed selection:text-on-tertiary-fixed pb-24">
             {/* Top Institutional Header */}
             <header className="bg-gradient-to-r from-tertiary via-[#4d6055] to-tertiary sticky top-0 z-40 shadow-md border-b border-tertiary-container/30">
-                <div className="max-w-[1240px] mx-auto px-4 h-18 flex items-center justify-between">
+                <div className="w-full px-4 h-18 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-11 h-11 rounded-2xl bg-surface-container-lowest/20 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white shadow-xs">
                             <span className="material-symbols-outlined text-2xl" data-icon="school">school</span>
@@ -291,7 +291,7 @@ export default function UniversityDashboard() {
                 </div>
             </header>
 
-            <main className="flex-1 w-full max-w-[1240px] mx-auto px-4 py-6 space-y-6">
+            <main className="flex-1 w-full px-4 py-6 space-y-6">
                 {error && (
                     <div className="p-4 rounded-2xl bg-error-container text-on-error-container flex items-center justify-between shadow-xs">
                         <div className="flex items-center gap-2">
@@ -349,11 +349,11 @@ export default function UniversityDashboard() {
 
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="col-span-2 sm:col-span-1 bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/25 flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">CSR Grants</span>
-                                <span className="material-symbols-outlined text-amber-600 text-lg">account_balance</span>
+                                <span className="text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">Industry Partners</span>
+                                <span className="material-symbols-outlined text-amber-600 text-lg">handshake</span>
                             </div>
-                            <span className="text-xl font-bold font-mono text-amber-700">₹{(csrGrantsTotal / 100000).toFixed(1)}L</span>
-                            <span className="text-[10px] text-on-surface-variant/70 mt-1">Tata Steel &amp; CCL funded</span>
+                            <span className="text-2xl font-bold font-mono text-amber-700">{industryPartnersCount} Chapters</span>
+                            <span className="text-[10px] text-on-surface-variant/70 mt-1">Tata Steel &amp; CCL Supported</span>
                         </motion.div>
                     </div>
                 </section>
@@ -438,10 +438,6 @@ export default function UniversityDashboard() {
                                                 {prob.category || "Civil & Environmental"}
                                             </span>
                                             <div className="flex items-center gap-1.5">
-                                                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-error-container text-on-error-container flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[12px]">flag</span>
-                                                    {prob.priority_score ? (prob.priority_score > 1 ? `${prob.priority_score}/100 Priority` : `${Math.round(prob.priority_score * 100)}/100 Priority`) : "88/100 Priority"}
-                                                </span>
                                                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container uppercase">
                                                     {prob.status || "ASSIGNED"}
                                                 </span>
@@ -532,8 +528,8 @@ export default function UniversityDashboard() {
                                             <strong>Team Leader:</strong> {proj.team_leader} • <strong>Mentor:</strong> {proj.mentor} • <strong>Dept:</strong> {proj.department}
                                         </p>
                                         <p className="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg inline-flex items-center gap-1.5 border border-amber-200/60 font-medium">
-                                            <span className="material-symbols-outlined text-sm text-amber-600">volunteer_activism</span>
-                                            <span>CSR Sponsorship: {proj.csr_grant}</span>
+                                            <span className="material-symbols-outlined text-sm text-amber-600">domain</span>
+                                            <span>Industry Partner: {proj.industry_partner}</span>
                                         </p>
 
                                         {/* Milestone Tracker Bar */}
@@ -670,7 +666,7 @@ export default function UniversityDashboard() {
                                 <span className="material-symbols-outlined text-secondary" data-icon="emoji_events">emoji_events</span>
                                 Jharkhand State University Innovation Index
                             </h2>
-                            <p className="text-xs text-on-surface-variant">Rankings evaluated by Department of Higher Education &amp; SIH based on resolved civic problems and CSR capital</p>
+                            <p className="text-xs text-on-surface-variant">Rankings evaluated by Department of Higher Education &amp; SIH based on resolved civic problems and Industry Partnerships</p>
                         </div>
 
                         <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-outline-variant/30">
