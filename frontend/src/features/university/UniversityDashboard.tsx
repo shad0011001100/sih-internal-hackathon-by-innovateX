@@ -310,7 +310,7 @@ export default function UniversityDashboard() {
 
                 {/* 5-Card Academic Innovation Telemetry Strip */}
                 <section>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/25 flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">Assigned Grievances</span>
@@ -347,14 +347,7 @@ export default function UniversityDashboard() {
                             <span className="text-[10px] text-on-surface-variant/70 mt-1">4-Credit B.Tech degree courses</span>
                         </motion.div>
 
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="col-span-2 sm:col-span-1 bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/25 flex flex-col justify-between">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">Industry Partners</span>
-                                <span className="material-symbols-outlined text-amber-600 text-lg">handshake</span>
-                            </div>
-                            <span className="text-2xl font-bold font-mono text-amber-700">{industryPartnersCount} Chapters</span>
-                            <span className="text-[10px] text-on-surface-variant/70 mt-1">Tata Steel &amp; CCL Supported</span>
-                        </motion.div>
+                        
                     </div>
                 </section>
 
