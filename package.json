@@ -8,7 +8,7 @@
     "dev:client": "vite",
     "dev:server": "node server/index.js",
     "server": "node server/index.js",
-    "build": "vite build",
+    "build": "cd frontend && npm install && npm run build && rm -rf ../dist && cp -R dist ../dist",
     "android:build": "vite build && cap sync android",
     "android:open": "cap open android",
     "video:render": "npm run build --prefix video",
